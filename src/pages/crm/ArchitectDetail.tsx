@@ -5,6 +5,7 @@ import { StageBadge } from '@/components/crm/StageBadge'
 import { PulseBar } from '@/components/crm/PulseBar'
 import { TouchpointLog } from '@/components/crm/TouchpointLog'
 import { AIModal } from '@/components/ai/AIModal'
+import { EmailSeriesModal } from '@/components/ai/EmailSeriesModal'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -13,10 +14,10 @@ import type { ArchitectStage } from '@/types'
 import {
   ArrowLeft,
   Sparkles,
+  Mail,
   Pencil,
   Check,
   X,
-  Mail,
   Phone,
   Globe,
   MapPin,
@@ -30,6 +31,7 @@ export function ArchitectDetail() {
   const { architect, touchpoints, loading, refetch, updateArchitect } =
     useArchitectDetail(id ?? '')
   const [showAI, setShowAI] = useState(false)
+  const [showEmailSeries, setShowEmailSeries] = useState(false)
   const [editing, setEditing] = useState(false)
 
   // Edit form state
@@ -356,6 +358,14 @@ export function ArchitectDetail() {
               >
                 <Sparkles className="h-3.5 w-3.5" /> Generate brief
               </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full justify-start gap-2"
+                onClick={() => setShowEmailSeries(true)}
+              >
+                <Mail className="h-3.5 w-3.5" /> Email series
+              </Button>
             </div>
           </div>
 
@@ -380,6 +390,13 @@ export function ArchitectDetail() {
         architectName={architect.name}
         open={showAI}
         onClose={() => setShowAI(false)}
+      />
+
+      <EmailSeriesModal
+        architectId={architect.id}
+        architectName={architect.name}
+        open={showEmailSeries}
+        onClose={() => setShowEmailSeries(false)}
       />
     </div>
   )

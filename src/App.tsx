@@ -12,6 +12,9 @@ import { AddProject } from '@/pages/kb/AddProject'
 import { AddVECase } from '@/pages/kb/AddVECase'
 import { RadarIndex } from '@/pages/radar/RadarIndex'
 import { MapIndex } from '@/pages/map/MapIndex'
+import { SignalsIndex } from '@/pages/signals/SignalsIndex'
+import { CompetitorsIndex } from '@/pages/competitors/CompetitorsIndex'
+import { CompetitorDetail } from '@/pages/competitors/CompetitorDetail'
 import { SettingsIndex } from '@/pages/settings/SettingsIndex'
 import { Toaster } from '@/components/ui/sonner'
 
@@ -39,6 +42,9 @@ export default function App() {
               <Route path="/kb/ve/new" element={<AddVECase />} />
               <Route path="/radar" element={<RadarIndex />} />
               <Route path="/map" element={<MapIndex />} />
+              <Route path="/signals" element={<SignalsIndex />} />
+              <Route path="/competitors" element={<CompetitorsIndex />} />
+              <Route path="/competitors/:id" element={<CompetitorDetail />} />
               <Route path="/settings" element={<SettingsIndex />} />
             </Route>
           </Route>

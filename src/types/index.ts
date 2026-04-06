@@ -272,6 +272,18 @@ export interface AIDraft {
   created_at: string
 }
 
+// ─── GOOGLE PLACES ───────────────────────────────────────────────────────────
+
+export interface GooglePlaceResult {
+  id: string
+  displayName: { text: string; languageCode: string }
+  formattedAddress: string
+  rating?: number
+  userRatingCount?: number
+  websiteUri?: string
+  location: { latitude: number; longitude: number }
+}
+
 // ─── UI HELPERS ───────────────────────────────────────────────────────────────
 
 export interface StageStyle {

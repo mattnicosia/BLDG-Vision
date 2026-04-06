@@ -6,6 +6,8 @@ import {
   Map,
   Settings,
   Building2,
+  Zap,
+  Swords,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
 import { cn } from '@/lib/utils'
@@ -15,6 +17,8 @@ const navItems = [
   { to: '/kb', label: 'Knowledge Base', icon: BookOpen },
   { to: '/radar', label: 'Radar', icon: Radar },
   { to: '/map', label: 'Map', icon: Map },
+  { to: '/signals', label: 'Signals', icon: Zap },
+  { to: '/competitors', label: 'Competitors', icon: Swords },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
