@@ -5,16 +5,34 @@ import type { Architect } from '@/types'
 import { STAGE_STYLES } from '@/types'
 import { StageBadge } from '@/components/crm/StageBadge'
 import { PulseBar } from '@/components/crm/PulseBar'
+import type { DiscoveredPlace } from '@/hooks/useDiscoveredPlaces'
+import { Button } from '@/components/ui/button'
+import { Plus, Star } from 'lucide-react'
 
 interface ArchitectMapProps {
   architects: Architect[]
+  discoveredPlaces?: DiscoveredPlace[]
   center: { lat: number; lng: number }
   zoom?: number
+  onAddToCRM?: (place: DiscoveredPlace) => void
 }
 
-export function ArchitectMap({ architects, center, zoom = 10 }: ArchitectMapProps) {
-  const [selected, setSelected] = useState<Architect | null>(null)
+export function ArchitectMap({
+  architects,
+  discoveredPlaces = [],
+  center,
+  zoom = 10,
+  onAddToCRM,
+}: ArchitectMapProps) {
+  const [selectedArchitect, setSelectedArchitect] = useState<Architect | null>(null)
+  const [selectedPlace, setSelectedPlace] = useState<DiscoveredPlace | null>(null)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+
+  const crmPlaceIds = new Set(architects.map((a) => a.google_place_id).filter(Boolean))
+  // Only show discovered places that aren't already in CRM
+  const undiscovered = discoveredPlaces.filter(
+    (p) => !p.added_to_crm && !crmPlaceIds.has(p.google_place_id) && p.lat && p.lng
+  )
 
   if (!apiKey) {
     return (
@@ -34,15 +52,40 @@ export function ArchitectMap({ architects, center, zoom = 10 }: ArchitectMapProp
         mapId="bldg-vision-map"
         style={{ width: '100%', height: '100%' }}
         gestureHandling="greedy"
+        onClick={() => {
+          setSelectedArchitect(null)
+          setSelectedPlace(null)
+        }}
       >
+        {/* Layer 1: Discovered places (gray dots) */}
+        {undiscovered.map((place) => (
+          <AdvancedMarker
+            key={`dp-${place.id}`}
+            position={{ lat: Number(place.lat), lng: Number(place.lng) }}
+            onClick={() => {
+              setSelectedArchitect(null)
+              setSelectedPlace(place)
+            }}
+          >
+            <div
+              className="h-2.5 w-2.5 rounded-full border border-white"
+              style={{ backgroundColor: '#a1a1aa' }}
+            />
+          </AdvancedMarker>
+        ))}
+
+        {/* Layer 2: CRM architects (colored stage pins) */}
         {architects.map((architect) => {
           if (!architect.lat || !architect.lng) return null
           const style = STAGE_STYLES[architect.stage]
           return (
             <AdvancedMarker
-              key={architect.id}
+              key={`crm-${architect.id}`}
               position={{ lat: architect.lat, lng: architect.lng }}
-              onClick={() => setSelected(architect)}
+              onClick={() => {
+                setSelectedPlace(null)
+                setSelectedArchitect(architect)
+              }}
             >
               <div
                 className="flex h-5 w-5 items-center justify-center rounded-full border-2"
@@ -60,33 +103,80 @@ export function ArchitectMap({ architects, center, zoom = 10 }: ArchitectMapProp
           )
         })}
 
-        {selected && selected.lat && selected.lng && (
+        {/* InfoWindow for CRM architect */}
+        {selectedArchitect && selectedArchitect.lat && selectedArchitect.lng && (
           <InfoWindow
-            position={{ lat: selected.lat, lng: selected.lng }}
-            onCloseClick={() => setSelected(null)}
+            position={{ lat: selectedArchitect.lat, lng: selectedArchitect.lng }}
+            onCloseClick={() => setSelectedArchitect(null)}
           >
             <div className="flex flex-col gap-1 p-1">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">{selected.name}</span>
-                <StageBadge stage={selected.stage} />
+                <span className="text-sm font-medium">{selectedArchitect.name}</span>
+                <StageBadge stage={selectedArchitect.stage} />
               </div>
-              {selected.firm && (
+              {selectedArchitect.firm && (
                 <span className="text-xs text-muted-foreground">
-                  {selected.firm}
+                  {selectedArchitect.firm}
                 </span>
               )}
-              <PulseBar score={selected.pulse_score} />
-              {selected.active_lead && (
+              <PulseBar score={selectedArchitect.pulse_score} />
+              {selectedArchitect.active_lead && (
                 <span className="text-xs" style={{ color: '#0F6E56' }}>
-                  Active lead: {selected.active_lead}
+                  Active lead: {selectedArchitect.active_lead}
                 </span>
               )}
               <Link
-                to={`/crm/${selected.id}`}
+                to={`/crm/${selectedArchitect.id}`}
                 className="mt-1 text-xs text-primary hover:underline"
               >
                 View profile
               </Link>
+            </div>
+          </InfoWindow>
+        )}
+
+        {/* InfoWindow for discovered place */}
+        {selectedPlace && selectedPlace.lat && selectedPlace.lng && (
+          <InfoWindow
+            position={{ lat: Number(selectedPlace.lat), lng: Number(selectedPlace.lng) }}
+            onCloseClick={() => setSelectedPlace(null)}
+          >
+            <div className="flex flex-col gap-1.5 p-1">
+              <span className="text-sm font-medium">{selectedPlace.name}</span>
+              {selectedPlace.address && (
+                <span className="text-xs text-muted-foreground">
+                  {selectedPlace.address}
+                </span>
+              )}
+              <div className="flex items-center gap-2">
+                {selectedPlace.rating && (
+                  <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                    <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                    {selectedPlace.rating}
+                    {selectedPlace.review_count && ` (${selectedPlace.review_count})`}
+                  </span>
+                )}
+                {selectedPlace.website && (
+                  <a
+                    href={selectedPlace.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    Website
+                  </a>
+                )}
+              </div>
+              {onAddToCRM && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-1 gap-1 text-xs"
+                  onClick={() => onAddToCRM(selectedPlace)}
+                >
+                  <Plus className="h-3 w-3" /> Add to CRM
+                </Button>
+              )}
             </div>
           </InfoWindow>
         )}

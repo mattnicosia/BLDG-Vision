@@ -1,25 +1,78 @@
 import { useState } from 'react'
 import { useOrg } from '@/hooks/useOrg'
 import { useArchitects } from '@/hooks/useArchitects'
+import { useDiscoveredPlaces } from '@/hooks/useDiscoveredPlaces'
 import { supabase } from '@/lib/supabase'
 import { RadarCard } from '@/components/radar/RadarCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Radar, Search } from 'lucide-react'
+import { Radar, Search, ScanLine } from 'lucide-react'
 import { toast } from 'sonner'
 import type { GooglePlaceResult } from '@/types'
 
 export function RadarIndex() {
   const { org } = useOrg()
   const { architects, createArchitect } = useArchitects()
+  const { places: discoveredPlaces, bulkUpsert, markAddedToCRM } = useDiscoveredPlaces()
   const [results, setResults] = useState<GooglePlaceResult[]>([])
   const [loading, setLoading] = useState(false)
+  const [scanning, setScanning] = useState(false)
   const [searched, setSearched] = useState(false)
   const [keyword, setKeyword] = useState('residential architect')
   const [radius, setRadius] = useState('30')
   const counties = (org?.service_counties ?? []) as Array<{ name: string; state: string; lat: number; lng: number }>
 
   const addedPlaceIds = new Set(architects.map((a) => a.google_place_id).filter(Boolean))
+
+  async function searchPlaces(
+    points: Array<{ lat: number; lng: number }>,
+    searchKeyword: string,
+    searchRadius: string
+  ): Promise<GooglePlaceResult[]> {
+    const session = await supabase.auth.getSession()
+    const token = session.data.session?.access_token
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+    const allPlaces: GooglePlaceResult[] = []
+    const seenIds = new Set<string>()
+
+    for (const point of points) {
+      const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({
+          lat: point.lat,
+          lng: point.lng,
+          radius: parseInt(searchRadius) || 30,
+          keyword: searchKeyword,
+        }),
+      })
+
+      const data = await res.json()
+      if (data.places) {
+        for (const place of data.places) {
+          if (!seenIds.has(place.id)) {
+            seenIds.add(place.id)
+            allPlaces.push(place)
+          }
+        }
+      }
+    }
+    return allPlaces
+  }
+
+  function getSearchPoints(maxPoints: number) {
+    const searchPoints = counties.length > 0
+      ? counties.map((c) => ({ lat: c.lat, lng: c.lng }))
+      : [{ lat: Number(org!.territory_lat), lng: Number(org!.territory_lng) }]
+    const step = Math.max(1, Math.floor(searchPoints.length / maxPoints))
+    return searchPoints.filter((_, i) => i % step === 0).slice(0, maxPoints)
+  }
 
   async function handleSearch() {
     if (counties.length === 0 && !org?.territory_lat) {
@@ -30,51 +83,25 @@ export function RadarIndex() {
     setSearched(true)
 
     try {
-      const session = await supabase.auth.getSession()
-      const token = session.data.session?.access_token
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+      const points = getSearchPoints(5)
+      const allPlaces = await searchPlaces(points, keyword, radius)
+      setResults(allPlaces)
 
-      // Search from each county center and deduplicate
-      const searchPoints = counties.length > 0
-        ? counties.map((c) => ({ lat: c.lat, lng: c.lng }))
-        : [{ lat: Number(org!.territory_lat), lng: Number(org!.territory_lng) }]
-
-      // Limit to 5 searches to avoid rate limits, pick evenly spaced counties
-      const step = Math.max(1, Math.floor(searchPoints.length / 5))
-      const points = searchPoints.filter((_, i) => i % step === 0).slice(0, 5)
-
-      const allPlaces: GooglePlaceResult[] = []
-      const seenIds = new Set<string>()
-
-      for (const point of points) {
-        const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'apikey': anonKey,
-          },
-          body: JSON.stringify({
-            lat: point.lat,
-            lng: point.lng,
-            radius: parseInt(radius) || 30,
-            keyword,
-          }),
-        })
-
-        const data = await res.json()
-        if (data.places) {
-          for (const place of data.places) {
-            if (!seenIds.has(place.id)) {
-              seenIds.add(place.id)
-              allPlaces.push(place)
-            }
-          }
-        }
+      // Persist to discovered_places
+      if (allPlaces.length > 0) {
+        const rows = allPlaces.map((p) => ({
+          google_place_id: p.id,
+          name: p.displayName.text,
+          address: p.formattedAddress,
+          lat: p.location.latitude,
+          lng: p.location.longitude,
+          rating: p.rating,
+          review_count: p.userRatingCount,
+          website: p.websiteUri,
+        }))
+        await bulkUpsert(rows)
       }
 
-      setResults(allPlaces)
       if (allPlaces.length === 0) {
         toast('No results found. Try a different keyword or larger radius.')
       }
@@ -83,6 +110,57 @@ export function RadarIndex() {
       setResults([])
     }
     setLoading(false)
+  }
+
+  async function handleScanTerritory() {
+    if (counties.length === 0) {
+      toast.error('Set your service counties first')
+      return
+    }
+    setScanning(true)
+
+    try {
+      // Search every county with multiple keywords
+      const keywords = ['residential architect', 'architect', 'architectural firm']
+      const allPlaces: GooglePlaceResult[] = []
+      const seenIds = new Set<string>()
+
+      for (const kw of keywords) {
+        toast(`Scanning: "${kw}"...`)
+        const points = counties.map((c) => ({ lat: c.lat, lng: c.lng }))
+        const results = await searchPlaces(points, kw, '30')
+        for (const place of results) {
+          if (!seenIds.has(place.id)) {
+            seenIds.add(place.id)
+            allPlaces.push(place)
+          }
+        }
+      }
+
+      // Persist all to discovered_places
+      if (allPlaces.length > 0) {
+        const rows = allPlaces.map((p) => ({
+          google_place_id: p.id,
+          name: p.displayName.text,
+          address: p.formattedAddress,
+          lat: p.location.latitude,
+          lng: p.location.longitude,
+          rating: p.rating,
+          review_count: p.userRatingCount,
+          website: p.websiteUri,
+        }))
+        const count = await bulkUpsert(rows)
+        toast.success(`Territory scan complete. ${count} architects discovered.`)
+      } else {
+        toast('No architects found in your territory.')
+      }
+
+      setResults(allPlaces)
+      setSearched(true)
+    } catch (err) {
+      toast.error('Scan failed. Try again.')
+    }
+    setScanning(false)
   }
 
   async function handleAdd(place: GooglePlaceResult) {
@@ -102,6 +180,7 @@ export function RadarIndex() {
       referral_value: 0,
     })
     if (result) {
+      await markAddedToCRM(place.id, result.id)
       toast.success(`${place.displayName.text} added to CRM`)
     }
   }
@@ -124,11 +203,24 @@ export function RadarIndex() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-6">
-        <h1 className="text-xl font-medium">Regional Radar</h1>
-        <p className="text-sm text-muted-foreground">
-          Discover architects in your service territory
-        </p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-medium">Regional Radar</h1>
+          <p className="text-sm text-muted-foreground">
+            {discoveredPlaces.length > 0
+              ? `${discoveredPlaces.length} architects discovered in your territory`
+              : 'Discover architects in your service territory'}
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={handleScanTerritory}
+          disabled={scanning}
+          className="gap-2"
+        >
+          <ScanLine className="h-4 w-4" />
+          {scanning ? 'Scanning...' : 'Scan territory'}
+        </Button>
       </div>
 
       <div className="mb-4 flex items-end gap-3">
