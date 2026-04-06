@@ -3,15 +3,12 @@ import { useSignals } from '@/hooks/useSignals'
 import { SignalCard } from '@/components/signals/SignalCard'
 import { AddSignalDialog } from '@/components/signals/AddSignalDialog'
 import { Button } from '@/components/ui/button'
-import { Plus, Zap, FileUp } from 'lucide-react'
-import { PermitCSVUpload } from '@/components/permits/PermitCSVUpload'
-import { PermitSyncButton } from '@/components/permits/PermitSyncButton'
+import { Plus, Zap } from 'lucide-react'
 import type { SignalType } from '@/types'
 
 export function SignalsIndex() {
   const { signals, loading, createSignal, actionSignal, dismissSignal } = useSignals()
   const [showAdd, setShowAdd] = useState(false)
-  const [showPermitImport, setShowPermitImport] = useState(false)
   const [priorityFilter, setPriorityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all')
   const [typeFilter, setTypeFilter] = useState<'all' | SignalType>('all')
   const [showActioned, setShowActioned] = useState(false)
@@ -114,29 +111,6 @@ export function SignalsIndex() {
         />
       )}
 
-      {/* Permit data sync */}
-      <div className="mt-8 rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
-        <h2 className="mb-1 text-base font-medium">Permit data</h2>
-        <p className="mb-4 text-sm text-muted-foreground">
-          Pull permits from county databases. Contractors are auto-added to your Competitors list.
-        </p>
-        <div className="flex flex-col gap-3">
-          <PermitSyncButton />
-          <div className="flex items-center gap-2">
-            <div className="h-px flex-1 bg-border" />
-            <span className="text-xs text-muted-foreground">or</span>
-            <div className="h-px flex-1 bg-border" />
-          </div>
-          <Button variant="ghost" onClick={() => setShowPermitImport(true)} className="gap-2 self-start text-muted-foreground">
-            <FileUp className="h-4 w-4" /> Import from CSV
-          </Button>
-        </div>
-      </div>
-
-      <PermitCSVUpload
-        open={showPermitImport}
-        onClose={() => setShowPermitImport(false)}
-      />
     </div>
   )
 }

@@ -7,117 +7,47 @@ const corsHeaders = {
 }
 
 const ENERGOV_BASE = 'https://rocklandcountyny-energovpub.tylerhost.net/apps/selfservice/api'
-const TENANT_HEADERS = {
+const TENANT_HEADERS: Record<string, string> = {
   'Content-Type': 'application/json',
   'tenantid': '1',
   'tenantname': 'RocklandCountyNYProd',
 }
 
-interface PermitSearchResult {
-  CaseId: string
-  CaseNumber: string
-  CaseType: string
-  CaseStatus: string
-  ProjectName: string
-  Address: {
-    FullAddress: string
-    City: string
-    StateName: string
-    PostalCode: string
-  }
-  Description: string
-  ApplyDate: string
-  IssueDate: string
-  ModuleName: number | string
-}
-
-interface PermitContact {
-  ContactTypeName: string
-  GlobalEntityName: string
-  FirstName: string
-  LastName: string
-  EmailTo: string
-  Phone: string
-  MainAddress: string
-  ContactNumber: string
-}
-
-interface PermitDetail {
-  permitId: string
-  PermitNumber: string
-  Description: string
-  ValuationValue: number
-  SquareFeet: number
-  Addresses: Array<{
-    AddressLine1: string
-    AddressLine2: string
-    City: string
-    State: string
-    PostalCode: string
-    ParcelNumber: string
-  }>
-  Contacts: PermitContact[]
-}
-
-// Get the full search criteria template
 async function getSearchCriteria(): Promise<any> {
-  const res = await fetch(`${ENERGOV_BASE}/energov/search/criteria`, {
-    headers: TENANT_HEADERS,
-  })
+  const res = await fetch(`${ENERGOV_BASE}/energov/search/criteria`, { headers: TENANT_HEADERS })
   const data = await res.json()
   return data.Result
 }
 
-// Search permits with date range
-async function searchPermits(criteria: any, keyword: string, pageNum: number, pageSize: number): Promise<{ results: PermitSearchResult[], total: number }> {
+async function searchPermits(criteria: any, keyword: string, pageNum: number, pageSize: number) {
   criteria.Keyword = keyword
   criteria.ExactMatch = false
-  criteria.SearchModule = 1 // All modules
-  criteria.FilterModule = 1 // Filter to permits
-
-  // Set top-level page size (required by API)
+  criteria.SearchModule = 1
+  criteria.FilterModule = 1
   criteria.PageNumber = pageNum
   criteria.PageSize = pageSize
-
-  // Set page size on ALL criteria sections (API requires > 0 on all)
   for (const key of Object.keys(criteria)) {
     if (key.endsWith('Criteria') && criteria[key] && typeof criteria[key] === 'object' && 'PageSize' in criteria[key]) {
       criteria[key].PageNumber = key === 'PermitCriteria' ? pageNum : 1
       criteria[key].PageSize = key === 'PermitCriteria' ? pageSize : 1
     }
   }
-
   const res = await fetch(`${ENERGOV_BASE}/energov/search/search`, {
-    method: 'POST',
-    headers: TENANT_HEADERS,
-    body: JSON.stringify(criteria),
+    method: 'POST', headers: TENANT_HEADERS, body: JSON.stringify(criteria),
   })
   const data = await res.json()
-
-  if (!data.Result) {
-    console.error('Search failed:', JSON.stringify(data).slice(0, 500))
-    return { results: [], total: 0 }
-  }
-
-  return {
-    results: data.Result.EntityResults || [],
-    total: data.Result.PermitsFound || data.Result.TotalFound || 0,
-  }
+  if (!data.Result) return { results: [], total: 0 }
+  return { results: data.Result.EntityResults || [], total: data.Result.PermitsFound || data.Result.TotalFound || 0 }
 }
 
-// Get permit detail with contacts
-async function getPermitDetail(permitId: string): Promise<PermitDetail | null> {
-  const res = await fetch(`${ENERGOV_BASE}/energov/permits/permit/${permitId}`, {
-    headers: TENANT_HEADERS,
-  })
+async function getPermitDetail(permitId: string) {
+  const res = await fetch(`${ENERGOV_BASE}/energov/permits/permit/${permitId}`, { headers: TENANT_HEADERS })
   const data = await res.json()
   return data.Result || null
 }
 
 Deno.serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
-  }
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
     const authHeader = req.headers.get('Authorization')
@@ -129,53 +59,26 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const { data: memberData } = await supabase
-      .from('org_members')
-      .select('org_id')
-      .single()
-
+    const { data: memberData } = await supabase.from('org_members').select('org_id').single()
     if (!memberData?.org_id) throw new Error('No org found')
     const orgId = memberData.org_id
 
     const body = await req.json()
     const action = body.action as string
 
-    if (action === 'search') {
-      // Search for permits
-      const criteria = await getSearchCriteria()
-      const { results, total } = await searchPermits(
-        criteria,
-        body.keyword || 'building permit',
-        body.page || 1,
-        body.pageSize || 20
-      )
-
-      return new Response(
-        JSON.stringify({ results, total }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    if (action === 'sync') {
-      // Full sync: search permits, get details, extract contractors, save everything
+    // FETCH: Pull permits from EnerGov and return for preview. Nothing saved.
+    if (action === 'fetch') {
       const criteria = await getSearchCriteria()
       const keyword = body.keyword || 'building permit'
       const maxPages = body.maxPages || 3
       const pageSize = 20
+      const previews: any[] = []
 
-      const allPermits: any[] = []
-      const allContractors: Map<string, any> = new Map()
-      const permitContractorLinks: Array<{ permitId: string, contractorName: string, contactType: string }> = []
-
-      // Search multiple pages
       for (let page = 1; page <= maxPages; page++) {
-        const { results, total } = await searchPermits(criteria, keyword, page, pageSize)
+        const { results } = await searchPermits(criteria, keyword, page, pageSize)
         if (results.length === 0) break
 
-        // Get details for each permit (limit to avoid rate limiting)
         for (const permit of results) {
-          // ModuleName can be number or string depending on the EnerGov version
-          // Skip non-permit records (plans, inspections, etc.)
           const mod = String(permit.ModuleName).toLowerCase()
           if (mod !== 'permit' && mod !== '1' && mod !== '2') continue
 
@@ -183,112 +86,148 @@ Deno.serve(async (req) => {
             const detail = await getPermitDetail(permit.CaseId)
             if (!detail) continue
 
-            const address = detail.Addresses?.[0]
-            const fullAddress = address
-              ? `${address.AddressLine1} ${address.AddressLine2}, ${address.City}, ${address.State} ${address.PostalCode}`.trim()
+            const addr = detail.Addresses?.[0]
+            const fullAddr = addr
+              ? `${addr.AddressLine1 || ''} ${addr.AddressLine2 || ''}, ${addr.City || ''}, ${addr.State || ''} ${addr.PostalCode || ''}`.replace(/\s+/g, ' ').trim()
               : permit.Address?.FullAddress || ''
 
-            // Save permit
-            allPermits.push({
-              org_id: orgId,
-              permit_number: detail.PermitNumber || permit.CaseNumber,
-              project_address: fullAddress,
-              county: 'Rockland',
-              town: address?.City || permit.Address?.City || '',
-              permit_type: permit.CaseType,
-              status: permit.CaseStatus,
-              filed_date: permit.ApplyDate || null,
-              estimated_value: detail.ValuationValue || null,
-              scope_description: detail.Description || permit.Description || '',
-              source_system: 'energov',
-              source_url: `https://rocklandcountyny-energovpub.tylerhost.net/apps/selfservice#/permit/${permit.CaseId}`,
-              our_project: false,
-              opportunity: false,
-            })
+            // Extract ALL contacts with their types
+            const contacts = (detail.Contacts || []).map((c: any) => ({
+              type: c.ContactTypeName || 'Unknown',
+              company: c.GlobalEntityName || '',
+              firstName: c.FirstName || '',
+              lastName: c.LastName || '',
+              email: c.EmailTo || '',
+              phone: c.Phone || '',
+              address: c.MainAddress || '',
+            }))
 
-            // Extract contractors from contacts
-            if (detail.Contacts) {
-              for (const contact of detail.Contacts) {
-                const typeName = contact.ContactTypeName?.toLowerCase() || ''
-                if (typeName === 'contractor' || typeName === 'authorized representative') {
-                  const name = contact.GlobalEntityName || `${contact.FirstName} ${contact.LastName}`.trim()
-                  if (name && name !== 'null') {
-                    allContractors.set(name.toLowerCase(), {
-                      name,
-                      location: contact.MainAddress || '',
-                      phone: contact.Phone || '',
-                      email: contact.EmailTo || '',
-                    })
-                    permitContractorLinks.push({
-                      permitId: detail.PermitNumber || permit.CaseNumber,
-                      contractorName: name,
-                      contactType: contact.ContactTypeName || 'Unknown',
-                    })
-                  }
-                }
-              }
-            }
+            previews.push({
+              caseId: permit.CaseId,
+              permitNumber: detail.PermitNumber || permit.CaseNumber,
+              permitType: permit.CaseType || '',
+              status: permit.CaseStatus || '',
+              applyDate: permit.ApplyDate || null,
+              issueDate: permit.IssueDate || null,
+              address: fullAddr,
+              town: addr?.City || '',
+              county: 'Rockland',
+              parcel: addr?.ParcelNumber || '',
+              value: detail.ValuationValue || 0,
+              sqft: detail.SquareFeet || 0,
+              description: detail.Description || permit.Description || '',
+              contacts,
+              sourceUrl: `https://rocklandcountyny-energovpub.tylerhost.net/apps/selfservice#/permit/${permit.CaseId}`,
+            })
           } catch (e) {
-            // Skip individual permit errors
-            console.error(`Error fetching permit ${permit.CaseId}:`, e)
+            console.error('Permit detail error:', e)
           }
         }
-
         if (results.length < pageSize) break
       }
 
-      // Bulk insert permits (upsert by permit_number)
-      if (allPermits.length > 0) {
-        for (let i = 0; i < allPermits.length; i += 50) {
-          const batch = allPermits.slice(i, i + 50)
-          await supabase
+      return new Response(
+        JSON.stringify({ previews, total: previews.length }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // IMPORT: Save selected permits + create competitors/architects as requested
+    if (action === 'import') {
+      const permits = body.permits || []
+      const contractorsToTrack = body.contractorsToTrack || [] // [{name, location, phone, email}]
+      const architectsToAdd = body.architectsToAdd || [] // [{name, firm, location, email, phone}]
+
+      // Insert permits
+      let permitsImported = 0
+      if (permits.length > 0) {
+        const rows = permits.map((p: any) => ({
+          org_id: orgId,
+          permit_number: p.permitNumber,
+          project_address: p.address,
+          county: p.county || 'Rockland',
+          town: p.town || '',
+          permit_type: p.permitType,
+          status: p.status,
+          filed_date: p.applyDate || null,
+          estimated_value: p.value || null,
+          scope_description: p.description || '',
+          contractor_name: p.contractorName || null,
+          architect_name: p.architectName || null,
+          source_system: 'energov',
+          source_url: p.sourceUrl || '',
+          our_project: false,
+          opportunity: !p.contractorName,
+          raw_data: p,
+        }))
+
+        for (let i = 0; i < rows.length; i += 50) {
+          const { data } = await supabase
             .from('permits')
-            .upsert(batch, { onConflict: 'org_id,permit_number,county' })
+            .upsert(rows.slice(i, i + 50), { onConflict: 'org_id,permit_number,county' })
+            .select()
+          if (data) permitsImported += data.length
         }
       }
 
-      // Auto-create competitors from contractors
-      const contractorList = Array.from(allContractors.values())
-      const newCompetitors: string[] = []
-      if (contractorList.length > 0) {
-        // Get existing competitors to avoid duplicates
-        const { data: existing } = await supabase
-          .from('competitors')
-          .select('name')
-          .eq('org_id', orgId)
-
+      // Create competitors from selected contractors
+      let competitorsCreated = 0
+      if (contractorsToTrack.length > 0) {
+        const { data: existing } = await supabase.from('competitors').select('name').eq('org_id', orgId)
         const existingNames = new Set((existing || []).map((c: any) => c.name.toLowerCase()))
 
-        for (const contractor of contractorList) {
+        for (const contractor of contractorsToTrack) {
           if (!existingNames.has(contractor.name.toLowerCase())) {
             const { error } = await supabase.from('competitors').insert({
               org_id: orgId,
               name: contractor.name,
-              location: contractor.location || undefined,
+              location: contractor.address || contractor.location || undefined,
               displacement_score: 50,
               strengths: [],
               weaknesses: [],
               active_liens: false,
             })
-            if (!error) newCompetitors.push(contractor.name)
+            if (!error) competitorsCreated++
+          }
+        }
+      }
+
+      // Create architects from selected contacts
+      let architectsCreated = 0
+      if (architectsToAdd.length > 0) {
+        const { data: existing } = await supabase.from('architects').select('name').eq('org_id', orgId)
+        const existingNames = new Set((existing || []).map((a: any) => a.name.toLowerCase()))
+
+        for (const arch of architectsToAdd) {
+          if (!existingNames.has(arch.name.toLowerCase())) {
+            const { error } = await supabase.from('architects').insert({
+              org_id: orgId,
+              name: arch.name,
+              firm: arch.firm || arch.name,
+              location: arch.location || undefined,
+              email: arch.email || undefined,
+              phone: arch.phone || undefined,
+              stage: 'Cold',
+              tier: 'Prospect',
+              pulse_score: 30,
+              projects_together: 0,
+              referral_value: 0,
+              source: 'manual',
+              is_in_radar: false,
+            })
+            if (!error) architectsCreated++
           }
         }
       }
 
       return new Response(
-        JSON.stringify({
-          permitsImported: allPermits.length,
-          contractorsFound: contractorList.length,
-          newCompetitorsCreated: newCompetitors.length,
-          newCompetitorNames: newCompetitors,
-          links: permitContractorLinks.length,
-        }),
+        JSON.stringify({ permitsImported, competitorsCreated, architectsCreated }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
+    // DETAIL: Get single permit
     if (action === 'detail') {
-      // Get single permit detail
       const detail = await getPermitDetail(body.permitId)
       return new Response(
         JSON.stringify({ detail }),
@@ -298,7 +237,7 @@ Deno.serve(async (req) => {
 
     throw new Error(`Unknown action: ${action}`)
   } catch (error) {
-    console.error('EnerGov sync error:', error)
+    console.error('EnerGov error:', error)
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -189,7 +189,7 @@ export interface Permit {
   permit_type?: string
   status?: string
   scope_description?: string
-  source_system: 'accela' | 'tyler' | 'manual' | 'csv' | 'buildzoom'
+  source_system: 'accela' | 'tyler' | 'manual' | 'csv' | 'buildzoom' | 'energov'
   source_url?: string
   our_project: boolean
   opportunity: boolean
@@ -284,6 +284,36 @@ export interface AIDraft {
   model: string
   sent_at?: string
   created_at: string
+}
+
+// ─── ENERGOV PREVIEW ─────────────────────────────────────────────────────────
+
+export interface EnerGovContact {
+  type: string
+  company: string
+  firstName: string
+  lastName: string
+  email: string
+  phone: string
+  address: string
+}
+
+export interface EnerGovPermitPreview {
+  caseId: string
+  permitNumber: string
+  permitType: string
+  status: string
+  applyDate: string | null
+  issueDate: string | null
+  address: string
+  town: string
+  county: string
+  parcel: string
+  value: number
+  sqft: number
+  description: string
+  contacts: EnerGovContact[]
+  sourceUrl: string
 }
 
 // ─── GOOGLE PLACES ───────────────────────────────────────────────────────────
