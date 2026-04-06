@@ -4,6 +4,7 @@ import { useArchitects } from '@/hooks/useArchitects'
 import { ArchitectMap } from '@/components/map/ArchitectMap'
 import { Map as MapIcon } from 'lucide-react'
 import type { ArchitectStage } from '@/types'
+import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 
 const STAGES: ArchitectStage[] = ['Active', 'Warm', 'Cooling', 'Cold']
 
@@ -17,7 +18,18 @@ export function MapIndex() {
     return a.lat != null && a.lng != null
   })
 
-  if (!org?.territory_lat || !org?.territory_lng) {
+  const counties = (org?.service_counties ?? []) as CountyData[]
+  const hasTerritory = counties.length > 0 || (org?.territory_lat && org?.territory_lng)
+
+  // Compute center from counties, fall back to org territory
+  const center = counties.length > 0
+    ? computeTerritoryCenter(counties)
+    : { lat: Number(org?.territory_lat ?? 0), lng: Number(org?.territory_lng ?? 0), radiusMiles: 50 }
+
+  // Auto-calculate zoom from radius
+  const zoom = center.radiusMiles > 100 ? 7 : center.radiusMiles > 60 ? 8 : center.radiusMiles > 30 ? 9 : 10
+
+  if (!hasTerritory) {
     return (
       <div className="mx-auto max-w-4xl">
         <div className="mb-6">
@@ -26,7 +38,7 @@ export function MapIndex() {
         <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border">
           <MapIcon className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Set your territory coordinates in Settings to use the map
+            Set your service counties in Settings to use the map
           </p>
         </div>
       </div>
@@ -41,6 +53,7 @@ export function MapIndex() {
           <p className="text-sm text-muted-foreground">
             {filtered.length} architect{filtered.length !== 1 ? 's' : ''} with
             coordinates
+            {counties.length > 0 && ` across ${counties.length} counties`}
           </p>
         </div>
         <select
@@ -68,10 +81,8 @@ export function MapIndex() {
         >
           <ArchitectMap
             architects={filtered}
-            center={{
-              lat: Number(org.territory_lat),
-              lng: Number(org.territory_lng),
-            }}
+            center={{ lat: center.lat, lng: center.lng }}
+            zoom={zoom}
           />
         </div>
       )}

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Building2, Plus, Trash2, ArrowRight, ArrowLeft, Check } from 'lucide-react'
+import { CountyPicker } from '@/components/territory/CountyPicker'
+import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 
 interface ProjectDraft {
   name: string
@@ -62,8 +64,9 @@ export function OnboardingWizard() {
   const [error, setError] = useState('')
 
   // Step 1: Company info
-  const [region, setRegion] = useState(org?.region ?? '')
-  const [territoryLabel, setTerritoryLabel] = useState(org?.territory_label ?? '')
+  const [selectedCounties, setSelectedCounties] = useState<CountyData[]>(
+    (org?.service_counties as CountyData[]) ?? []
+  )
   const [budgetMin, setBudgetMin] = useState(org?.budget_min?.toString() ?? '1000000')
   const [budgetMax, setBudgetMax] = useState(org?.budget_max?.toString() ?? '8000000')
 
@@ -82,7 +85,7 @@ export function OnboardingWizard() {
   function canProceed(): boolean {
     switch (step) {
       case 1:
-        return region.length > 0
+        return selectedCounties.length > 0
       case 2:
         return story.length > 0
       case 3:
@@ -96,11 +99,21 @@ export function OnboardingWizard() {
 
   async function saveStep1() {
     if (!org) return
+    const center = computeTerritoryCenter(selectedCounties)
+    const states = [...new Set(selectedCounties.map((c) => c.state))]
+    const territoryLabel = selectedCounties
+      .slice(0, 3)
+      .map((c) => `${c.name} ${c.state}`)
+      .join(', ') + (selectedCounties.length > 3 ? ` +${selectedCounties.length - 3} more` : '')
     const { error: e } = await supabase
       .from('organizations')
       .update({
-        region,
+        service_counties: selectedCounties,
+        region: states.join(', '),
         territory_label: territoryLabel,
+        territory_lat: center.lat,
+        territory_lng: center.lng,
+        territory_radius_miles: center.radiusMiles,
         budget_min: parseInt(budgetMin) || 1000000,
         budget_max: parseInt(budgetMax) || 10000000,
       })
@@ -241,26 +254,18 @@ export function OnboardingWizard() {
           </p>
         </div>
 
-        {/* Step 1: Company Info */}
+        {/* Step 1: Service Territory */}
         {step === 1 && (
           <div className="flex flex-col gap-4">
             <h2 className="text-lg font-medium">Your service territory</h2>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-muted-foreground">Region</label>
-              <Input
-                value={region}
-                onChange={(e) => setRegion(e.target.value)}
-                placeholder="Hudson Valley, NY"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm text-muted-foreground">Territory label</label>
-              <Input
-                value={territoryLabel}
-                onChange={(e) => setTerritoryLabel(e.target.value)}
-                placeholder="Hudson Valley + Catskills"
-              />
-            </div>
+            <p className="text-sm text-muted-foreground">
+              Select the counties where you build. This powers your Radar,
+              Map, and competitive intelligence.
+            </p>
+            <CountyPicker
+              selected={selectedCounties}
+              onChange={setSelectedCounties}
+            />
             <div className="flex gap-4">
               <div className="flex flex-1 flex-col gap-1.5">
                 <label className="text-sm text-muted-foreground">Min budget ($)</label>

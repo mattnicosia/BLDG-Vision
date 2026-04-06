@@ -16,13 +16,14 @@ export function RadarIndex() {
   const [loading, setLoading] = useState(false)
   const [searched, setSearched] = useState(false)
   const [keyword, setKeyword] = useState('residential architect')
-  const [radius, setRadius] = useState(org?.territory_radius_miles?.toString() ?? '50')
+  const [radius, setRadius] = useState('30')
+  const counties = (org?.service_counties ?? []) as Array<{ name: string; state: string; lat: number; lng: number }>
 
   const addedPlaceIds = new Set(architects.map((a) => a.google_place_id).filter(Boolean))
 
   async function handleSearch() {
-    if (!org?.territory_lat || !org?.territory_lng) {
-      toast.error('Set your territory coordinates in Settings first')
+    if (counties.length === 0 && !org?.territory_lat) {
+      toast.error('Set your service counties in Settings or Onboarding first')
       return
     }
     setLoading(true)
@@ -34,31 +35,48 @@ export function RadarIndex() {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
       const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-      const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'apikey': anonKey,
-        },
-        body: JSON.stringify({
-          lat: Number(org.territory_lat),
-          lng: Number(org.territory_lng),
-          radius: parseInt(radius) || 50,
-          keyword,
-        }),
-      })
+      // Search from each county center and deduplicate
+      const searchPoints = counties.length > 0
+        ? counties.map((c) => ({ lat: c.lat, lng: c.lng }))
+        : [{ lat: Number(org!.territory_lat), lng: Number(org!.territory_lng) }]
 
-      const data = await res.json()
+      // Limit to 5 searches to avoid rate limits, pick evenly spaced counties
+      const step = Math.max(1, Math.floor(searchPoints.length / 5))
+      const points = searchPoints.filter((_, i) => i % step === 0).slice(0, 5)
 
-      if (!res.ok || data.error) {
-        toast.error(data.error || 'Search failed')
-        setResults([])
-      } else {
-        setResults(data.places ?? [])
-        if ((data.places ?? []).length === 0) {
-          toast('No results found. Try a different keyword or larger radius.')
+      const allPlaces: GooglePlaceResult[] = []
+      const seenIds = new Set<string>()
+
+      for (const point of points) {
+        const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'apikey': anonKey,
+          },
+          body: JSON.stringify({
+            lat: point.lat,
+            lng: point.lng,
+            radius: parseInt(radius) || 30,
+            keyword,
+          }),
+        })
+
+        const data = await res.json()
+        if (data.places) {
+          for (const place of data.places) {
+            if (!seenIds.has(place.id)) {
+              seenIds.add(place.id)
+              allPlaces.push(place)
+            }
+          }
         }
+      }
+
+      setResults(allPlaces)
+      if (allPlaces.length === 0) {
+        toast('No results found. Try a different keyword or larger radius.')
       }
     } catch (err) {
       toast.error('Search failed. Check your connection.')
@@ -88,7 +106,7 @@ export function RadarIndex() {
     }
   }
 
-  if (!org?.territory_lat || !org?.territory_lng) {
+  if (counties.length === 0 && !org?.territory_lat) {
     return (
       <div className="mx-auto max-w-4xl">
         <div className="mb-6">
@@ -97,7 +115,7 @@ export function RadarIndex() {
         <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border">
           <Radar className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Set your territory coordinates in Settings to use Radar
+            Set your service counties in Settings to use Radar
           </p>
         </div>
       </div>

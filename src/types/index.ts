@@ -4,6 +4,14 @@
 
 // ─── CORE ─────────────────────────────────────────────────────────────────────
 
+export interface ServiceCounty {
+  name: string
+  state: string
+  fips: string
+  lat: number
+  lng: number
+}
+
 export interface Organization {
   id: string
   name: string
@@ -13,6 +21,7 @@ export interface Organization {
   territory_lat: number
   territory_lng: number
   territory_radius_miles: number
+  service_counties: ServiceCounty[]
   budget_min: number
   budget_max: number
   project_types: string[]
