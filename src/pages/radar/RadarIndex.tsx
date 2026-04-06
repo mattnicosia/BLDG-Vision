@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useOrg } from '@/hooks/useOrg'
 import { useArchitects } from '@/hooks/useArchitects'
 import { useDiscoveredPlaces } from '@/hooks/useDiscoveredPlaces'
+import { useBlockedPlaces } from '@/hooks/useBlockedPlaces'
 import { supabase } from '@/lib/supabase'
 import { RadarCard } from '@/components/radar/RadarCard'
 import { Button } from '@/components/ui/button'
@@ -14,6 +15,7 @@ export function RadarIndex() {
   const { org } = useOrg()
   const { architects, createArchitect } = useArchitects()
   const { places: discoveredPlaces, bulkUpsert, markAddedToCRM } = useDiscoveredPlaces()
+  const { isBlocked } = useBlockedPlaces()
   const [results, setResults] = useState<GooglePlaceResult[]>([])
   const [loading, setLoading] = useState(false)
   const [scanning, setScanning] = useState(false)
@@ -258,7 +260,7 @@ export function RadarIndex() {
       )}
 
       <div className="flex flex-col gap-2">
-        {results.map((place) => (
+        {results.filter((place) => !isBlocked(place.id, place.displayName.text)).map((place) => (
           <RadarCard
             key={place.id}
             place={place}

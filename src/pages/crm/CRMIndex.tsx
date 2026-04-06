@@ -1,20 +1,34 @@
 import { useState } from 'react'
 import { useArchitects } from '@/hooks/useArchitects'
+import { useBlockedPlaces } from '@/hooks/useBlockedPlaces'
 import { ArchitectCard } from '@/components/crm/ArchitectCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Plus, Search, Filter } from 'lucide-react'
-import type { ArchitectStage } from '@/types'
+import { toast } from 'sonner'
+import type { Architect, ArchitectStage } from '@/types'
 import { AddArchitectDialog } from './AddArchitectDialog'
 
 const STAGES: ArchitectStage[] = ['Active', 'Warm', 'Cooling', 'Cold']
 
 export function CRMIndex() {
-  const { architects, loading, createArchitect } = useArchitects()
+  const { architects, loading, createArchitect, deleteArchitect } = useArchitects()
+  const { blockPlace } = useBlockedPlaces()
   const [search, setSearch] = useState('')
   const [stageFilter, setStageFilter] = useState<ArchitectStage | 'all'>('all')
   const [sortBy, setSortBy] = useState<'pulse' | 'name' | 'contact'>('pulse')
   const [showAdd, setShowAdd] = useState(false)
+
+  async function handleDelete(id: string) {
+    await deleteArchitect(id)
+    toast.success('Architect removed from CRM')
+  }
+
+  async function handleBlock(architect: Architect) {
+    await blockPlace(architect.google_place_id ?? undefined, architect.name)
+    await deleteArchitect(architect.id)
+    toast.success(`${architect.name} blocked and removed`)
+  }
 
   const filtered = architects
     .filter((a) => {
@@ -112,7 +126,12 @@ export function CRMIndex() {
           </div>
         ) : (
           filtered.map((architect) => (
-            <ArchitectCard key={architect.id} architect={architect} />
+            <ArchitectCard
+              key={architect.id}
+              architect={architect}
+              onDelete={handleDelete}
+              onBlock={handleBlock}
+            />
           ))
         )}
       </div>
