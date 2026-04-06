@@ -1,121 +1,54 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from '@/components/layout/AuthProvider'
+import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
+import { AppShell } from '@/components/layout/AppShell'
+import { SignIn } from '@/pages/auth/SignIn'
+import { SignUp } from '@/pages/auth/SignUp'
+import { OnboardingWizard } from '@/pages/onboarding/OnboardingWizard'
+import { CRMIndex } from '@/pages/crm/CRMIndex'
+import { ArchitectDetail } from '@/pages/crm/ArchitectDetail'
+import { KBIndex } from '@/pages/kb/KBIndex'
+import { AddProject } from '@/pages/kb/AddProject'
+import { AddVECase } from '@/pages/kb/AddVECase'
+import { RadarIndex } from '@/pages/radar/RadarIndex'
+import { MapIndex } from '@/pages/map/MapIndex'
+import { SettingsIndex } from '@/pages/settings/SettingsIndex'
+import { Toaster } from '@/components/ui/sonner'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
 
-      <div className="ticks"></div>
+          {/* Protected: onboarding */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/onboarding" element={<OnboardingWizard />} />
+          </Route>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* Protected: app shell */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppShell />}>
+              <Route path="/crm" element={<CRMIndex />} />
+              <Route path="/crm/:id" element={<ArchitectDetail />} />
+              <Route path="/kb" element={<KBIndex />} />
+              <Route path="/kb/projects/new" element={<AddProject />} />
+              <Route path="/kb/ve/new" element={<AddVECase />} />
+              <Route path="/radar" element={<RadarIndex />} />
+              <Route path="/map" element={<MapIndex />} />
+              <Route path="/settings" element={<SettingsIndex />} />
+            </Route>
+          </Route>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {/* Root redirect */}
+          <Route path="/" element={<Navigate to="/crm" replace />} />
+          <Route path="*" element={<Navigate to="/crm" replace />} />
+        </Routes>
+        <Toaster />
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
-
-export default App

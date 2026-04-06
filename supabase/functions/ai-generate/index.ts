@@ -63,11 +63,31 @@ Rules: No em dashes. Direct and confident tone. Sound like a real person. Refere
       case 'outreach':
         userPrompt = `Write personalized outreach to architect ${architect?.name ?? 'this architect'} of ${architect?.firm ?? 'their firm'}.
 Style: ${architect?.style ?? 'not specified'}. Projects together: ${architect?.projects_together ?? 0}. Stage: ${architect?.stage ?? 'Cold'}.
+Notes: ${architect?.notes ?? 'none'}. Awards: ${architect?.awards ?? 'none'}.
 Write 3-5 sentences. Reference their specific work. No sign-off needed.`
         break
       case 'brief':
         userPrompt = `Generate a pre-call intelligence brief for architect ${architect?.name ?? 'this architect'} of ${architect?.firm ?? 'their firm'}.
-Format: 1. WHO THEY ARE 2. WHAT THEY VALUE IN A GC 3. WHERE WE FIT 4. RISK FLAGS 5. OPENING MOVE`
+Style: ${architect?.style ?? 'not specified'}. Project types: ${architect?.project_types ?? 'not specified'}. Awards: ${architect?.awards ?? 'none'}.
+History together: ${architect?.projects_together ?? 0} projects. Notes: ${architect?.notes ?? 'none'}.
+Format: 1. WHO THEY ARE (2 sentences) 2. WHAT THEY VALUE IN A GC (3 bullets) 3. WHERE WE FIT (2 sentences) 4. RISK FLAGS (1-2 bullets) 5. OPENING MOVE (1 specific action)`
+        break
+      case 'email_series':
+        userPrompt = `Write a 3-email nurture series for architect ${architect?.name ?? 'this architect'} of ${architect?.firm ?? 'their firm'}.
+Type: ${body.emailSeriesType ?? 'general'}. Topic: ${body.emailSeriesTopic ?? 'relationship building'}.
+Each email: subject line + 3-5 sentence body. Space them 5-7 days apart. Progressive depth.`
+        break
+      case 've_email':
+        userPrompt = `Write an email to architect ${architect?.name ?? 'this architect'} sharing a value engineering case study.
+Position this as collaborative problem-solving, not cost-cutting. 3-5 sentences.`
+        break
+      case 'showcase':
+        userPrompt = `Write a project showcase summary suitable for sharing with prospective architect partners.
+Highlight craftsmanship, collaboration, and outcomes. 4-6 sentences.`
+        break
+      case 'signal_response':
+        userPrompt = `Write a brief, timely response to a signal/event related to architect ${architect?.name ?? 'this architect'}.
+This should be conversational and reference the specific event. 2-3 sentences.`
         break
       default:
         userPrompt = body.prompt ?? 'Generate helpful content.'
