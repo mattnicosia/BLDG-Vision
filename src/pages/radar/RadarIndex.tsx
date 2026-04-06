@@ -28,23 +28,41 @@ export function RadarIndex() {
     setLoading(true)
     setSearched(true)
 
-    const { data, error } = await supabase.functions.invoke('google-places-proxy', {
-      body: {
-        lat: org.territory_lat,
-        lng: org.territory_lng,
-        radius: parseInt(radius) || 50,
-        keyword,
-      },
-    })
+    try {
+      const session = await supabase.auth.getSession()
+      const token = session.data.session?.access_token
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-    if (error) {
-      toast.error('Search failed. Check your Google Places API key.')
-      setResults([])
-    } else {
-      setResults(data?.places ?? [])
-      if ((data?.places ?? []).length === 0) {
-        toast('No results found. Try a different keyword or larger radius.')
+      const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({
+          lat: Number(org.territory_lat),
+          lng: Number(org.territory_lng),
+          radius: parseInt(radius) || 50,
+          keyword,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok || data.error) {
+        toast.error(data.error || 'Search failed')
+        setResults([])
+      } else {
+        setResults(data.places ?? [])
+        if ((data.places ?? []).length === 0) {
+          toast('No results found. Try a different keyword or larger radius.')
+        }
       }
+    } catch (err) {
+      toast.error('Search failed. Check your connection.')
+      setResults([])
     }
     setLoading(false)
   }
