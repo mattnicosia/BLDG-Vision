@@ -15,6 +15,7 @@ export function AddProject() {
   const [year, setYear] = useState(new Date().getFullYear().toString())
   const [architectName, setArchitectName] = useState('')
   const [projectType, setProjectType] = useState('New Construction')
+  const [category, setCategory] = useState<'residential' | 'commercial' | 'hospitality'>('residential')
   const [budgetValue, setBudgetValue] = useState('')
   const [description, setDescription] = useState('')
   const [saving, setSaving] = useState(false)
@@ -24,6 +25,7 @@ export function AddProject() {
     setSaving(true)
     const result = await createProject({
       name,
+      category,
       location: location || undefined,
       year: parseInt(year) || new Date().getFullYear(),
       architect_name: architectName || undefined,
@@ -76,6 +78,18 @@ export function AddProject() {
           onChange={(e) => setArchitectName(e.target.value)}
           placeholder="Architect name"
         />
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs text-muted-foreground">Category</label>
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value as 'residential' | 'commercial' | 'hospitality')}
+            className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+          >
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+            <option value="hospitality">Hospitality</option>
+          </select>
+        </div>
         <div className="flex gap-3">
           <Input
             className="flex-1"

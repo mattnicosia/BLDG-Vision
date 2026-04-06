@@ -49,10 +49,13 @@ export interface CompanyProfile {
   updated_at: string
 }
 
+export type ProjectCategory = 'residential' | 'commercial' | 'hospitality'
+
 export interface KBProject {
   id: string
   org_id: string
   name: string
+  category: ProjectCategory
   location?: string
   lat?: number
   lng?: number

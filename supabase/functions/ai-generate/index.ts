@@ -35,17 +35,23 @@ Deno.serve(async (req) => {
 
     const [profileRes, projectsRes] = await Promise.all([
       supabase.from('company_profiles').select('*').eq('org_id', orgId).single(),
-      supabase.from('kb_projects').select('*').eq('org_id', orgId).order('year', { ascending: false }).limit(5),
+      supabase.from('kb_projects').select('*').eq('org_id', orgId).order('year', { ascending: false }).limit(10),
     ])
 
     const profile = profileRes.data
-    const projects = projectsRes.data ?? []
+    const allProjects = projectsRes.data ?? []
+
+    // For architect outreach, prefer residential/hospitality projects
+    // For other modes, use all projects
+    const isArchitectMode = ['outreach', 'brief', 'email_series'].includes(body.mode)
+    const residentialProjects = allProjects.filter((p: any) => p.category === 'residential' || p.category === 'hospitality')
+    const projects = isArchitectMode && residentialProjects.length > 0 ? residentialProjects.slice(0, 5) : allProjects.slice(0, 5)
 
     const projectSummary = projects
-      .map((p: any) => `${p.name} (${p.year}, ${p.architect_name ?? 'architect'}, ${p.project_type}, ${p.location})`)
+      .map((p: any) => `${p.name} (${p.category}, ${p.architect_name ?? 'architect'}, ${p.project_type}, ${p.location})`)
       .join('; ')
 
-    const systemPrompt = `You are the business development lead for a premium custom residential general contractor.
+    const systemPrompt = `You are the business development lead for a full-service general contractor.
 ${profile?.story ? `About us: ${profile.story}` : ''}
 ${profile?.differentiators?.length ? `What makes us different: ${profile.differentiators.join('; ')}` : ''}
 ${projectSummary ? `Recent notable projects: ${projectSummary}` : ''}
