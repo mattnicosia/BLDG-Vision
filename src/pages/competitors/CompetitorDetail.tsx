@@ -16,6 +16,7 @@ import {
   Trash2,
   Plus,
   Users,
+  Star,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
@@ -132,6 +133,13 @@ export function CompetitorDetail() {
                 {competitor.displacement_score} displacement
               </span>
             </div>
+            {competitor.google_rating && (
+              <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
+                <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                {competitor.google_rating} rating
+                {competitor.google_review_count && ` (${competitor.google_review_count} reviews)`}
+              </div>
+            )}
           </div>
         </div>
         <div className="flex gap-2">

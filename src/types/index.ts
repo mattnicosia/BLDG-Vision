@@ -201,6 +201,8 @@ export interface Competitor {
   org_id: string
   name: string
   location?: string
+  lat?: number
+  lng?: number
   website?: string
   instagram_handle?: string
   google_place_id?: string

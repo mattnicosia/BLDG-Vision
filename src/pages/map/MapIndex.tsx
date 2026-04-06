@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useOrg } from '@/hooks/useOrg'
 import { useArchitects } from '@/hooks/useArchitects'
 import { useDiscoveredPlaces, type DiscoveredPlace } from '@/hooks/useDiscoveredPlaces'
+import { useCompetitors } from '@/hooks/useCompetitors'
 import { ArchitectMap } from '@/components/map/ArchitectMap'
 import { Map as MapIcon } from 'lucide-react'
 import type { ArchitectStage } from '@/types'
@@ -14,8 +15,10 @@ export function MapIndex() {
   const { org } = useOrg()
   const { architects, loading, createArchitect } = useArchitects()
   const { places: discoveredPlaces, markAddedToCRM } = useDiscoveredPlaces()
+  const { competitors } = useCompetitors()
   const [stageFilter, setStageFilter] = useState<ArchitectStage | 'all'>('all')
   const [showDiscovered, setShowDiscovered] = useState(true)
+  const [showCompetitors, setShowCompetitors] = useState(true)
 
   const filtered = architects.filter((a) => {
     if (stageFilter !== 'all' && a.stage !== stageFilter) return false
@@ -85,6 +88,17 @@ export function MapIndex() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {competitors.length > 0 && (
+            <label className="flex items-center gap-2 text-xs text-muted-foreground">
+              <input
+                type="checkbox"
+                checked={showCompetitors}
+                onChange={(e) => setShowCompetitors(e.target.checked)}
+                className="rounded"
+              />
+              Competitors ({competitors.filter((c) => c.lat).length})
+            </label>
+          )}
           {undiscoveredCount > 0 && (
             <label className="flex items-center gap-2 text-xs text-muted-foreground">
               <input
@@ -93,7 +107,7 @@ export function MapIndex() {
                 onChange={(e) => setShowDiscovered(e.target.checked)}
                 className="rounded"
               />
-              Show discovered ({undiscoveredCount})
+              Discovered ({undiscoveredCount})
             </label>
           )}
           <select
@@ -117,6 +131,10 @@ export function MapIndex() {
           <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#a1a1aa' }} />
           Discovered
         </div>
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="h-2.5 w-2.5 rounded-sm" style={{ backgroundColor: '#FEE2E2', border: '1px solid #A32D2D' }} />
+          Competitor
+        </div>
         {STAGES.map((s) => (
           <div key={s} className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <div
@@ -139,6 +157,7 @@ export function MapIndex() {
         >
           <ArchitectMap
             architects={filtered}
+            competitors={showCompetitors ? competitors : []}
             discoveredPlaces={showDiscovered ? discoveredPlaces : []}
             center={{ lat: center.lat, lng: center.lng }}
             zoom={zoom}

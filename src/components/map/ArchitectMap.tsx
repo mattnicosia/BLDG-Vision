@@ -1,16 +1,17 @@
 import { useState } from 'react'
 import { APIProvider, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps'
 import { Link } from 'react-router-dom'
-import type { Architect } from '@/types'
+import type { Architect, Competitor } from '@/types'
 import { STAGE_STYLES } from '@/types'
 import { StageBadge } from '@/components/crm/StageBadge'
 import { PulseBar } from '@/components/crm/PulseBar'
 import type { DiscoveredPlace } from '@/hooks/useDiscoveredPlaces'
 import { Button } from '@/components/ui/button'
-import { Plus, Star } from 'lucide-react'
+import { Plus, Star, Swords } from 'lucide-react'
 
 interface ArchitectMapProps {
   architects: Architect[]
+  competitors?: Competitor[]
   discoveredPlaces?: DiscoveredPlace[]
   center: { lat: number; lng: number }
   zoom?: number
@@ -19,6 +20,7 @@ interface ArchitectMapProps {
 
 export function ArchitectMap({
   architects,
+  competitors = [],
   discoveredPlaces = [],
   center,
   zoom = 10,
@@ -26,6 +28,7 @@ export function ArchitectMap({
 }: ArchitectMapProps) {
   const [selectedArchitect, setSelectedArchitect] = useState<Architect | null>(null)
   const [selectedPlace, setSelectedPlace] = useState<DiscoveredPlace | null>(null)
+  const [selectedCompetitor, setSelectedCompetitor] = useState<Competitor | null>(null)
   const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
   const crmPlaceIds = new Set(architects.map((a) => a.google_place_id).filter(Boolean))
@@ -74,7 +77,30 @@ export function ArchitectMap({
           </AdvancedMarker>
         ))}
 
-        {/* Layer 2: CRM architects (colored stage pins) */}
+        {/* Layer 2: Competitors (red pins) */}
+        {competitors.map((comp) => {
+          if (!comp.lat || !comp.lng) return null
+          return (
+            <AdvancedMarker
+              key={`comp-${comp.id}`}
+              position={{ lat: Number(comp.lat), lng: Number(comp.lng) }}
+              onClick={() => {
+                setSelectedArchitect(null)
+                setSelectedPlace(null)
+                setSelectedCompetitor(comp)
+              }}
+            >
+              <div
+                className="flex h-4 w-4 items-center justify-center rounded-sm border-2"
+                style={{ backgroundColor: '#FEE2E2', borderColor: '#A32D2D' }}
+              >
+                <Swords className="h-2 w-2" style={{ color: '#A32D2D' }} />
+              </div>
+            </AdvancedMarker>
+          )
+        })}
+
+        {/* Layer 3: CRM architects (colored stage pins) */}
         {architects.map((architect) => {
           if (!architect.lat || !architect.lng) return null
           const style = STAGE_STYLES[architect.stage]
@@ -177,6 +203,39 @@ export function ArchitectMap({
                   <Plus className="h-3 w-3" /> Add to CRM
                 </Button>
               )}
+            </div>
+          </InfoWindow>
+        )}
+        {/* InfoWindow for competitor */}
+        {selectedCompetitor && selectedCompetitor.lat && selectedCompetitor.lng && (
+          <InfoWindow
+            position={{ lat: Number(selectedCompetitor.lat), lng: Number(selectedCompetitor.lng) }}
+            onCloseClick={() => setSelectedCompetitor(null)}
+          >
+            <div className="flex flex-col gap-1.5 p-1">
+              <div className="flex items-center gap-2">
+                <Swords className="h-3 w-3" style={{ color: '#A32D2D' }} />
+                <span className="text-sm font-medium">{selectedCompetitor.name}</span>
+              </div>
+              {selectedCompetitor.location && (
+                <span className="text-xs text-muted-foreground">{selectedCompetitor.location}</span>
+              )}
+              {selectedCompetitor.google_rating && (
+                <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                  <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                  {selectedCompetitor.google_rating}
+                  {selectedCompetitor.google_review_count && ` (${selectedCompetitor.google_review_count})`}
+                </span>
+              )}
+              <span className="text-xs font-medium" style={{ color: '#A32D2D' }}>
+                Displacement: {selectedCompetitor.displacement_score}
+              </span>
+              <Link
+                to={`/competitors/${selectedCompetitor.id}`}
+                className="mt-1 text-xs text-primary hover:underline"
+              >
+                View profile
+              </Link>
             </div>
           </InfoWindow>
         )}
