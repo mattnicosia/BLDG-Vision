@@ -7,131 +7,204 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
-import type { Architect, ArchitectStage } from '@/types'
-import { STAGE_STYLES } from '@/types'
+import { supabase } from '@/lib/supabase'
+import { useOrg } from '@/hooks/useOrg'
+import { useBlockedPlaces } from '@/hooks/useBlockedPlaces'
+import { Search, Loader2, Plus, Check, Star, Globe } from 'lucide-react'
+import { toast } from 'sonner'
+import { getInitials, getAvatarColor } from '@/types'
+import type { Architect, GooglePlaceResult } from '@/types'
 
 interface Props {
   onClose: () => void
   onCreate: (
     architect: Omit<Architect, 'id' | 'org_id' | 'created_at' | 'updated_at' | 'pulse_score'>
   ) => Promise<Architect | null>
+  existingPlaceIds: Set<string>
 }
 
-export function AddArchitectDialog({ onClose, onCreate }: Props) {
-  const [name, setName] = useState('')
-  const [firm, setFirm] = useState('')
-  const [email, setEmail] = useState('')
-  const [phone, setPhone] = useState('')
-  const [location, setLocation] = useState('')
-  const [website, setWebsite] = useState('')
-  const [stage, setStage] = useState<ArchitectStage>('Warm')
-  const [notes, setNotes] = useState('')
-  const [saving, setSaving] = useState(false)
+export function AddArchitectDialog({ onClose, onCreate, existingPlaceIds }: Props) {
+  const { org } = useOrg()
+  const { isBlocked } = useBlockedPlaces()
+  const [query, setQuery] = useState('')
+  const [results, setResults] = useState<GooglePlaceResult[]>([])
+  const [searching, setSearching] = useState(false)
+  const [searched, setSearched] = useState(false)
+  const [adding, setAdding] = useState<string | null>(null)
+  const [added, setAdded] = useState<Set<string>>(new Set())
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setSaving(true)
+  async function handleSearch() {
+    if (!query.trim()) return
+    setSearching(true)
+    setSearched(true)
+
+    try {
+      const session = await supabase.auth.getSession()
+      const token = session.data.session?.access_token
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+      const lat = org?.territory_lat ? Number(org.territory_lat) : 41.0
+      const lng = org?.territory_lng ? Number(org.territory_lng) : -74.0
+
+      const res = await fetch(`${supabaseUrl}/functions/v1/google-places-proxy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'apikey': anonKey,
+        },
+        body: JSON.stringify({
+          lat,
+          lng,
+          radius: 100,
+          keyword: query,
+        }),
+      })
+
+      const data = await res.json()
+      const places = (data.places ?? []).filter(
+        (p: GooglePlaceResult) => !isBlocked(p.id, p.displayName.text)
+      )
+      setResults(places)
+    } catch {
+      toast.error('Search failed')
+      setResults([])
+    }
+    setSearching(false)
+  }
+
+  async function handleAdd(place: GooglePlaceResult) {
+    setAdding(place.id)
     const result = await onCreate({
-      name,
-      firm,
-      email: email || undefined,
-      phone: phone || undefined,
-      location: location || undefined,
-      website: website || undefined,
-      stage,
+      name: place.displayName.text,
+      firm: place.displayName.text,
+      location: place.formattedAddress,
+      website: place.websiteUri,
+      lat: place.location.latitude,
+      lng: place.location.longitude,
+      google_place_id: place.id,
+      source: 'google_places',
+      is_in_radar: true,
+      stage: 'Cold',
       tier: 'Prospect',
-      notes: notes || undefined,
       projects_together: 0,
       referral_value: 0,
-      source: 'manual',
-      is_in_radar: false,
     })
-    setSaving(false)
-    if (result) onClose()
+    if (result) {
+      setAdded((prev) => new Set([...prev, place.id]))
+      toast.success(`${place.displayName.text} added`)
+    }
+    setAdding(null)
   }
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Add architect</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Architect name"
-            required
-          />
-          <Input
-            value={firm}
-            onChange={(e) => setFirm(e.target.value)}
-            placeholder="Firm name"
-          />
-          <div className="flex gap-3">
+
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              className="flex-1"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email"
-              type="email"
-            />
-            <Input
-              className="flex-1"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Phone"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by name, firm, or type..."
+              className="pl-9"
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              autoFocus
             />
           </div>
-          <Input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location"
-          />
-          <Input
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            placeholder="Website"
-          />
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm text-muted-foreground">Stage</label>
-            <div className="flex gap-2">
-              {(Object.keys(STAGE_STYLES) as ArchitectStage[]).map((s) => {
-                const style = STAGE_STYLES[s]
-                return (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setStage(s)}
-                    className="rounded-full px-3 py-1 text-xs font-medium transition-colors"
-                    style={{
-                      backgroundColor: stage === s ? style.bg : 'transparent',
-                      color: stage === s ? style.text : '#71717a',
-                      border: `1px solid ${stage === s ? style.border : '#e4e4e7'}`,
-                    }}
-                  >
-                    {s}
-                  </button>
-                )
-              })}
+          <Button onClick={handleSearch} disabled={searching || !query.trim()}>
+            {searching ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Search'}
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          {searching && (
+            <div className="flex h-32 items-center justify-center">
+              <p className="text-sm text-muted-foreground">Searching...</p>
             </div>
+          )}
+
+          {!searching && searched && results.length === 0 && (
+            <div className="flex h-32 items-center justify-center">
+              <p className="text-sm text-muted-foreground">No results found. Try a different search.</p>
+            </div>
+          )}
+
+          {!searching && results.map((place) => {
+            const isAdded = added.has(place.id) || existingPlaceIds.has(place.id)
+            const colors = getAvatarColor(place.displayName.text)
+            return (
+              <div
+                key={place.id}
+                className="flex items-center gap-3 rounded-lg border border-border p-3"
+                style={{ borderWidth: '0.5px' }}
+              >
+                <div
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-medium"
+                  style={{ backgroundColor: colors.bg, color: colors.text }}
+                >
+                  {getInitials(place.displayName.text)}
+                </div>
+                <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="truncate text-sm font-medium">{place.displayName.text}</span>
+                  <span className="truncate text-xs text-muted-foreground">{place.formattedAddress}</span>
+                  <div className="flex items-center gap-2">
+                    {place.rating && (
+                      <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
+                        <Star className="h-2.5 w-2.5" style={{ color: '#BA7517' }} />
+                        {place.rating}
+                      </span>
+                    )}
+                    {place.websiteUri && (
+                      <a
+                        href={place.websiteUri}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-0.5 text-xs text-primary hover:underline"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Globe className="h-2.5 w-2.5" /> Website
+                      </a>
+                    )}
+                  </div>
+                </div>
+                {isAdded ? (
+                  <Button variant="outline" size="sm" disabled className="gap-1 shrink-0">
+                    <Check className="h-3 w-3" /> Added
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAdd(place)}
+                    disabled={adding === place.id}
+                    className="gap-1 shrink-0"
+                  >
+                    {adding === place.id ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <Plus className="h-3 w-3" />
+                    )}
+                    Add
+                  </Button>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {!searched && !searching && (
+          <div className="flex h-32 items-center justify-center">
+            <p className="text-sm text-muted-foreground">
+              Search for an architect by name, firm, or specialty
+            </p>
           </div>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="Notes (optional)"
-            rows={2}
-          />
-          <div className="flex justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={!name || saving}>
-              {saving ? 'Adding...' : 'Add architect'}
-            </Button>
-          </div>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   )

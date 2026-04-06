@@ -140,6 +140,7 @@ export function CRMIndex() {
         <AddArchitectDialog
           onClose={() => setShowAdd(false)}
           onCreate={createArchitect}
+          existingPlaceIds={new Set(architects.map((a) => a.google_place_id).filter(Boolean) as string[])}
         />
       )}
     </div>
