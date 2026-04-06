@@ -13,7 +13,7 @@ import type { GooglePlaceResult } from '@/types'
 
 export function CompetitorsIndex() {
   const { org } = useOrg()
-  const { competitors, loading, createCompetitor } = useCompetitors()
+  const { competitors, loading, createCompetitor, deleteCompetitor } = useCompetitors()
   const { contractors: discovered, bulkUpsert, markAdded } = useDiscoveredContractors()
   const [search, setSearch] = useState('')
   const [showAdd, setShowAdd] = useState(false)
@@ -213,7 +213,16 @@ export function CompetitorsIndex() {
               </p>
             </div>
           ) : (
-            filtered.map((c) => <CompetitorCard key={c.id} competitor={c} />)
+            filtered.map((c) => (
+              <CompetitorCard
+                key={c.id}
+                competitor={c}
+                onDelete={async (id) => {
+                  await deleteCompetitor(id)
+                  toast.success('Competitor removed')
+                }}
+              />
+            ))
           )}
         </div>
       )}
