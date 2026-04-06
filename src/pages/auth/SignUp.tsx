@@ -72,6 +72,13 @@ export function SignUp() {
       return
     }
 
+    // 4. Create empty company profile (onboarding will fill it in)
+    await supabase.from('company_profiles').insert({
+      org_id: orgData.id,
+      differentiators: [],
+      core_values: [],
+    })
+
     navigate('/onboarding')
   }
 

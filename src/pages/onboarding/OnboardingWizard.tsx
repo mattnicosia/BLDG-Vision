@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import { useOrg } from '@/hooks/useOrg'
@@ -43,8 +43,21 @@ const emptyArchitect = (): ArchitectDraft => ({
 
 export function OnboardingWizard() {
   const navigate = useNavigate()
-  const { org, refetch } = useOrg()
+  const { org, loading: orgLoading, refetch } = useOrg()
   const [step, setStep] = useState(1)
+
+  // Refetch org on mount in case signup just created it
+  useEffect(() => {
+    refetch()
+  }, [])
+
+  if (orgLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-muted-foreground">Setting up your account...</p>
+      </div>
+    )
+  }
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
