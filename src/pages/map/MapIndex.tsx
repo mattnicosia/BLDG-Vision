@@ -128,7 +128,7 @@ export function MapIndex() {
       {/* Legend */}
       <div className="mb-3 flex items-center gap-4">
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: '#a1a1aa' }} />
+          <div className="h-3 w-3 rounded-full border border-white" style={{ backgroundColor: '#6366f1' }} />
           Discovered
         </div>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
