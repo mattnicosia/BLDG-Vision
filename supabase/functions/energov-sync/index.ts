@@ -74,8 +74,18 @@ async function searchPermits(criteria: any, keyword: string, pageNum: number, pa
   criteria.ExactMatch = false
   criteria.SearchModule = 1 // All modules
   criteria.FilterModule = 1 // Filter to permits
-  criteria.PermitCriteria.PageNumber = pageNum
-  criteria.PermitCriteria.PageSize = pageSize
+
+  // Set top-level page size (required by API)
+  criteria.PageNumber = pageNum
+  criteria.PageSize = pageSize
+
+  // Set page size on ALL criteria sections (API requires > 0 on all)
+  for (const key of Object.keys(criteria)) {
+    if (key.endsWith('Criteria') && criteria[key] && typeof criteria[key] === 'object' && 'PageSize' in criteria[key]) {
+      criteria[key].PageNumber = key === 'PermitCriteria' ? pageNum : 1
+      criteria[key].PageSize = key === 'PermitCriteria' ? pageSize : 1
+    }
+  }
 
   const res = await fetch(`${ENERGOV_BASE}/energov/search/search`, {
     method: 'POST',
@@ -84,11 +94,14 @@ async function searchPermits(criteria: any, keyword: string, pageNum: number, pa
   })
   const data = await res.json()
 
-  if (!data.Result) return { results: [], total: 0 }
+  if (!data.Result) {
+    console.error('Search failed:', JSON.stringify(data).slice(0, 500))
+    return { results: [], total: 0 }
+  }
 
   return {
     results: data.Result.EntityResults || [],
-    total: data.Result.PermitsFound || 0,
+    total: data.Result.PermitsFound || data.Result.TotalFound || 0,
   }
 }
 
@@ -161,7 +174,10 @@ Deno.serve(async (req) => {
 
         // Get details for each permit (limit to avoid rate limiting)
         for (const permit of results) {
-          if (permit.ModuleName !== 'Permit' && permit.ModuleName !== 1) continue
+          // ModuleName can be number or string depending on the EnerGov version
+          // Skip non-permit records (plans, inspections, etc.)
+          const mod = String(permit.ModuleName).toLowerCase()
+          if (mod !== 'permit' && mod !== '1' && mod !== '2') continue
 
           try {
             const detail = await getPermitDetail(permit.CaseId)
