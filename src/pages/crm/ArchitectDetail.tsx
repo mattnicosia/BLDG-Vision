@@ -7,6 +7,7 @@ import { TouchpointLog } from '@/components/crm/TouchpointLog'
 import { AIModal } from '@/components/ai/AIModal'
 import { EmailSeriesModal } from '@/components/ai/EmailSeriesModal'
 import { useKBProjects } from '@/hooks/useKB'
+import { OpportunityPanel } from '@/components/crm/OpportunityPanel'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -412,6 +413,9 @@ export function ArchitectDetail() {
               </Button>
             </div>
           </div>
+
+          {/* Pipeline */}
+          <OpportunityPanel architectId={architect.id} architectName={architect.name} />
 
           {architect.style && (
             <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>

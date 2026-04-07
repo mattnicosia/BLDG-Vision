@@ -286,6 +286,51 @@ export interface AIDraft {
   created_at: string
 }
 
+// ─── OPPORTUNITIES ───────────────────────────────────────────────────────────
+
+export type OpportunityStage = 'lead' | 'interview' | 'proposal' | 'negotiation' | 'won' | 'lost'
+
+export interface Opportunity {
+  id: string
+  org_id: string
+  architect_id?: string
+  architect_name?: string
+  project_name: string
+  location?: string
+  estimated_value?: number
+  stage: OpportunityStage
+  probability: number
+  expected_close_date?: string
+  competitor_ids?: string[]
+  competitor_names?: string[]
+  source?: string
+  notes?: string
+  won_date?: string
+  lost_date?: string
+  lost_reason?: string
+  permit_id?: string
+  created_at: string
+  updated_at: string
+}
+
+export const OPPORTUNITY_STAGE_LABELS: Record<OpportunityStage, string> = {
+  lead: 'Lead',
+  interview: 'Interview',
+  proposal: 'Proposal',
+  negotiation: 'Negotiation',
+  won: 'Won',
+  lost: 'Lost',
+}
+
+export const OPPORTUNITY_STAGE_STYLES: Record<OpportunityStage, { bg: string; text: string }> = {
+  lead: { bg: '#F1EFE8', text: '#5F5E5A' },
+  interview: { bg: '#FAEEDA', text: '#854F0B' },
+  proposal: { bg: '#EEEDFE', text: '#3C3489' },
+  negotiation: { bg: '#E1F5EE', text: '#085041' },
+  won: { bg: '#0F6E56', text: '#ffffff' },
+  lost: { bg: '#FEE2E2', text: '#A32D2D' },
+}
+
 // ─── ENERGOV PREVIEW ─────────────────────────────────────────────────────────
 
 export interface EnerGovContact {
