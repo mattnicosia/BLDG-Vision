@@ -9,6 +9,7 @@ import { DashboardIndex } from '@/pages/dashboard/DashboardIndex'
 import { IntelligenceIndex } from '@/pages/intelligence/IntelligenceIndex'
 import { PipelineIndex } from '@/pages/pipeline/PipelineIndex'
 import { CRMIndex } from '@/pages/crm/CRMIndex'
+import { RelationshipsIndex } from '@/pages/relationships/RelationshipsIndex'
 import { ArchitectDetail } from '@/pages/crm/ArchitectDetail'
 import { OutreachIndex } from '@/pages/outreach/OutreachIndex'
 import { ReconIndex } from '@/pages/recon/ReconIndex'
@@ -40,7 +41,7 @@ export default function App() {
               <Route path="/dashboard" element={<DashboardIndex />} />
               <Route path="/opportunities" element={<IntelligenceIndex />} />
               <Route path="/pipeline" element={<PipelineIndex />} />
-              <Route path="/relationships" element={<CRMIndex />} />
+              <Route path="/relationships" element={<RelationshipsIndex />} />
               <Route path="/relationships/:id" element={<ArchitectDetail />} />
               <Route path="/outreach" element={<OutreachIndex />} />
               <Route path="/recon" element={<ReconIndex />} />

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { PermitsIndex } from '@/pages/permits/PermitsIndex'
 import { BoardsIndex } from '@/pages/boards/BoardsIndex'
-import { RadarIndex } from '@/pages/radar/RadarIndex'
 import { SignalsIndex } from '@/pages/signals/SignalsIndex'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
@@ -10,9 +9,9 @@ import { toast } from 'sonner'
 
 export function IntelligenceIndex() {
   const [scanning, setScanning] = useState(false)
-  const [view, setView] = useState<'all' | 'permits' | 'boards' | 'radar' | 'signals'>('all')
+  const [view, setView] = useState<'all' | 'permits' | 'boards' | 'signals'>('all')
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(['permits', 'boards', 'radar', 'signals'])
+    new Set(['permits', 'boards', 'signals'])
   )
 
   function toggleSection(section: string) {
@@ -69,7 +68,6 @@ export function IntelligenceIndex() {
   const sections = [
     { key: 'permits', label: 'Permits' },
     { key: 'boards', label: 'Board Meetings' },
-    { key: 'radar', label: 'Radar Discovery' },
     { key: 'signals', label: 'Signals' },
   ]
 
@@ -100,7 +98,6 @@ export function IntelligenceIndex() {
           { key: 'all', label: 'All sources' },
           { key: 'permits', label: 'Permits' },
           { key: 'boards', label: 'Boards' },
-          { key: 'radar', label: 'Radar' },
           { key: 'signals', label: 'Signals' },
         ].map((v) => (
           <button
@@ -138,7 +135,6 @@ export function IntelligenceIndex() {
                 <div>
                   {section.key === 'permits' && <PermitsIndex />}
                   {section.key === 'boards' && <BoardsIndex />}
-                  {section.key === 'radar' && <RadarIndex />}
                   {section.key === 'signals' && <SignalsIndex />}
                 </div>
               )}
@@ -149,7 +145,6 @@ export function IntelligenceIndex() {
         <div>
           {view === 'permits' && <PermitsIndex />}
           {view === 'boards' && <BoardsIndex />}
-          {view === 'radar' && <RadarIndex />}
           {view === 'signals' && <SignalsIndex />}
         </div>
       )}
