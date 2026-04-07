@@ -179,21 +179,53 @@ Deno.serve(async (req) => {
 
     const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') })
 
-    // CRON mode: uses service role key, processes all orgs
+    // CRON mode: uses service role key, processes all orgs based on their schedule
     if (action === 'cron') {
       const supabase = createClient(
         Deno.env.get('SUPABASE_URL') ?? '',
         Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       )
 
-      // Get all distinct org_ids that have enabled board sources
+      // Check which orgs should run now based on their scan_schedule
+      const currentHourUTC = new Date().getUTCHours()
+      const scheduleHoursUTC: Record<string, number[]> = {
+        '6am': [10],        // 6am ET = 10 UTC
+        '7am': [11],
+        '8am': [12],
+        '9am': [13],
+        '12pm': [16],
+        '6pm': [22],
+        'twice_daily': [10, 22],
+        'hourly': Array.from({ length: 24 }, (_, i) => i),
+      }
+
+      // Get all orgs with their scan settings
+      const { data: orgs } = await supabase
+        .from('organizations')
+        .select('id, scan_schedule, scan_enabled')
+        .eq('scan_enabled', true)
+
+      const eligibleOrgIds = new Set<string>()
+      for (const org of orgs || []) {
+        const allowedHours = scheduleHoursUTC[org.scan_schedule] || scheduleHoursUTC['6am']
+        if (allowedHours.includes(currentHourUTC)) {
+          eligibleOrgIds.add(org.id)
+        }
+      }
+
+      if (eligibleOrgIds.size === 0) {
+        return new Response(JSON.stringify({ message: 'No orgs scheduled for this hour' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
+
+      // Get enabled board sources for eligible orgs
       const { data: sources } = await supabase
         .from('board_sources')
         .select('id, org_id, town_name, board_type, meeting_page_url')
         .eq('enabled', true)
+        .in('org_id', Array.from(eligibleOrgIds))
 
       if (!sources || sources.length === 0) {
-        return new Response(JSON.stringify({ message: 'No enabled sources' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+        return new Response(JSON.stringify({ message: 'No enabled sources for scheduled orgs' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
       }
 
       const year = new Date().getFullYear()

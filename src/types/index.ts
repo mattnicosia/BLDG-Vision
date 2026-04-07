@@ -22,6 +22,8 @@ export interface Organization {
   territory_lng: number
   territory_radius_miles: number
   service_counties: ServiceCounty[]
+  scan_schedule?: string
+  scan_enabled?: boolean
   budget_min: number
   budget_max: number
   project_types: string[]

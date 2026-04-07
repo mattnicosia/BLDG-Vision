@@ -146,6 +146,44 @@ export function SettingsIndex() {
           )}
         </div>
 
+        {/* Scan schedule */}
+        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+          <h2 className="mb-1 text-base font-medium">Automated scanning</h2>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Automatically check board meetings, permits, and other data sources for new activity.
+          </p>
+          <div className="flex items-center gap-3">
+            <select
+              value={org?.scan_schedule ?? '6am'}
+              onChange={async (e) => {
+                const schedule = e.target.value
+                const { error } = await supabase
+                  .from('organizations')
+                  .update({ scan_schedule: schedule, scan_enabled: schedule !== 'disabled' })
+                  .eq('id', org?.id)
+                if (error) {
+                  toast.error(error.message)
+                } else {
+                  toast.success(`Scan schedule updated to ${schedule === 'disabled' ? 'off' : schedule}`)
+                  refetch()
+                }
+              }}
+              className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+            >
+              <option value="6am">Daily at 6:00 AM</option>
+              <option value="7am">Daily at 7:00 AM</option>
+              <option value="8am">Daily at 8:00 AM</option>
+              <option value="9am">Daily at 9:00 AM</option>
+              <option value="12pm">Daily at 12:00 PM</option>
+              <option value="6pm">Daily at 6:00 PM</option>
+              <option value="twice_daily">Twice daily (6 AM + 6 PM)</option>
+              <option value="hourly">Every hour</option>
+              <option value="disabled">Disabled</option>
+            </select>
+            <span className="text-xs text-muted-foreground">Eastern Time</span>
+          </div>
+        </div>
+
         {/* Email settings */}
         <EmailSignatureSettings />
 
