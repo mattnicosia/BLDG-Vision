@@ -388,6 +388,29 @@ export const OPPORTUNITY_STAGE_STYLES: Record<OpportunityStage, { bg: string; te
   lost: { bg: '#FEE2E2', text: '#A32D2D' },
 }
 
+// ─── EMAIL TEMPLATES ─────────────────────────────────────────────────────────
+
+export type TemplateCategory = 'introduction' | 'follow_up' | 'project_showcase' | 've_case_study' | 'custom'
+
+export interface EmailTemplate {
+  id: string
+  org_id: string
+  name: string
+  category: TemplateCategory
+  subject_template?: string
+  body_template: string
+  created_at: string
+  updated_at: string
+}
+
+export const TEMPLATE_CATEGORY_LABELS: Record<TemplateCategory, string> = {
+  introduction: 'Introduction',
+  follow_up: 'Follow-up',
+  project_showcase: 'Project Showcase',
+  ve_case_study: 'VE Case Study',
+  custom: 'Custom',
+}
+
 // ─── ENERGOV PREVIEW ─────────────────────────────────────────────────────────
 
 export interface EnerGovContact {
