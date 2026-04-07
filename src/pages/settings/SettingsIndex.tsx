@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase'
 import { CountyPicker } from '@/components/territory/CountyPicker'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
-import { Pencil, Check, MapPin } from 'lucide-react'
+import { Pencil, Check, MapPin, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function SettingsIndex() {
@@ -16,6 +16,7 @@ export function SettingsIndex() {
     (org?.service_counties as CountyData[]) ?? []
   )
   const [saving, setSaving] = useState(false)
+  const [enriching, setEnriching] = useState(false)
 
   async function saveTerritory() {
     if (!org) return
@@ -141,6 +142,50 @@ export function SettingsIndex() {
               No counties set. Click Edit to select your service territory.
             </p>
           )}
+        </div>
+
+        {/* Data enrichment */}
+        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+          <h2 className="mb-1 text-base font-medium">Data enrichment</h2>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Fetch missing website and phone data from Google Places for all your architects, discovered places, and contractors.
+          </p>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={enriching}
+            className="gap-2"
+            onClick={async () => {
+              setEnriching(true)
+              try {
+                const session = await supabase.auth.getSession()
+                const token = session.data.session?.access_token
+                const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+                const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+                const res = await fetch(`${supabaseUrl}/functions/v1/enrich-places`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                    'apikey': anonKey,
+                  },
+                  body: JSON.stringify({ tables: ['architects', 'discovered_places', 'discovered_contractors'] }),
+                })
+                const data = await res.json()
+                if (data.error) {
+                  toast.error(data.error)
+                } else {
+                  toast.success(`Enriched ${data.enriched} records with website/phone data`)
+                }
+              } catch {
+                toast.error('Enrichment failed')
+              }
+              setEnriching(false)
+            }}
+          >
+            <RefreshCw className={`h-4 w-4 ${enriching ? 'animate-spin' : ''}`} />
+            {enriching ? 'Enriching...' : 'Enrich all records'}
+          </Button>
         </div>
 
         {/* Account */}
