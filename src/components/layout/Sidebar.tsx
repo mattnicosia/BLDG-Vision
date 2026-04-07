@@ -1,22 +1,24 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import {
+  LayoutDashboard,
+  Lightbulb,
+  Kanban,
   Users,
-  BookOpen,
-  Map,
+  Send,
+  Radar,
   Settings,
   Building2,
-  Crosshair,
-  Kanban,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
 import { cn } from '@/lib/utils'
 
 const navItems = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/opportunities', label: 'Opportunities', icon: Lightbulb },
   { to: '/pipeline', label: 'Pipeline', icon: Kanban },
-  { to: '/crm', label: 'Architects', icon: Users },
-  { to: '/map', label: 'Map', icon: Map },
-  { to: '/intelligence', label: 'Intelligence', icon: Crosshair },
-  { to: '/kb', label: 'Playbook', icon: BookOpen },
+  { to: '/relationships', label: 'Relationships', icon: Users },
+  { to: '/outreach', label: 'Outreach', icon: Send },
+  { to: '/recon', label: 'Recon', icon: Radar },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 

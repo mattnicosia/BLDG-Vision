@@ -5,14 +5,16 @@ import { AppShell } from '@/components/layout/AppShell'
 import { SignIn } from '@/pages/auth/SignIn'
 import { SignUp } from '@/pages/auth/SignUp'
 import { OnboardingWizard } from '@/pages/onboarding/OnboardingWizard'
+import { DashboardIndex } from '@/pages/dashboard/DashboardIndex'
+import { IntelligenceIndex } from '@/pages/intelligence/IntelligenceIndex'
 import { PipelineIndex } from '@/pages/pipeline/PipelineIndex'
 import { CRMIndex } from '@/pages/crm/CRMIndex'
 import { ArchitectDetail } from '@/pages/crm/ArchitectDetail'
+import { OutreachIndex } from '@/pages/outreach/OutreachIndex'
+import { MapIndex } from '@/pages/map/MapIndex'
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { AddProject } from '@/pages/kb/AddProject'
 import { AddVECase } from '@/pages/kb/AddVECase'
-import { IntelligenceIndex } from '@/pages/intelligence/IntelligenceIndex'
-import { MapIndex } from '@/pages/map/MapIndex'
 import { CompetitorDetail } from '@/pages/competitors/CompetitorDetail'
 import { SettingsIndex } from '@/pages/settings/SettingsIndex'
 import { Toaster } from '@/components/ui/sonner'
@@ -34,29 +36,44 @@ export default function App() {
           {/* Protected: app shell */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppShell />}>
+              {/* Core workflow */}
+              <Route path="/dashboard" element={<DashboardIndex />} />
+              <Route path="/opportunities" element={<IntelligenceIndex />} />
               <Route path="/pipeline" element={<PipelineIndex />} />
-              <Route path="/crm" element={<CRMIndex />} />
+              <Route path="/relationships" element={<CRMIndex />} />
+              <Route path="/relationships/:id" element={<ArchitectDetail />} />
+              <Route path="/outreach" element={<OutreachIndex />} />
+              <Route path="/recon" element={<MapIndex />} />
+
+              {/* Settings (includes company profile / playbook) */}
+              <Route path="/settings" element={<SettingsIndex />} />
+              <Route path="/settings/projects/new" element={<AddProject />} />
+              <Route path="/settings/ve/new" element={<AddVECase />} />
+
+              {/* Legacy routes that still need to work */}
+              <Route path="/crm" element={<Navigate to="/relationships" replace />} />
               <Route path="/crm/:id" element={<ArchitectDetail />} />
-              <Route path="/map" element={<MapIndex />} />
-              <Route path="/intelligence" element={<IntelligenceIndex />} />
-              <Route path="/kb" element={<KBIndex />} />
+              <Route path="/competitors/:id" element={<CompetitorDetail />} />
+
+              {/* KB routes redirect to settings */}
+              <Route path="/kb" element={<Navigate to="/settings" replace />} />
               <Route path="/kb/projects/new" element={<AddProject />} />
               <Route path="/kb/ve/new" element={<AddVECase />} />
-              <Route path="/competitors/:id" element={<CompetitorDetail />} />
-              <Route path="/settings" element={<SettingsIndex />} />
 
-              {/* Redirects from old routes */}
-              <Route path="/signals" element={<Navigate to="/intelligence" replace />} />
-              <Route path="/permits" element={<Navigate to="/intelligence" replace />} />
-              <Route path="/competitors" element={<Navigate to="/intelligence" replace />} />
-              <Route path="/radar" element={<Navigate to="/intelligence" replace />} />
-              <Route path="/territory" element={<Navigate to="/intelligence" replace />} />
+              {/* All other legacy redirects */}
+              <Route path="/intelligence" element={<Navigate to="/opportunities" replace />} />
+              <Route path="/map" element={<Navigate to="/recon" replace />} />
+              <Route path="/signals" element={<Navigate to="/opportunities" replace />} />
+              <Route path="/permits" element={<Navigate to="/opportunities" replace />} />
+              <Route path="/competitors" element={<Navigate to="/opportunities" replace />} />
+              <Route path="/radar" element={<Navigate to="/opportunities" replace />} />
+              <Route path="/territory" element={<Navigate to="/recon" replace />} />
             </Route>
           </Route>
 
-          {/* Root redirect -> Pipeline */}
-          <Route path="/" element={<Navigate to="/pipeline" replace />} />
-          <Route path="*" element={<Navigate to="/pipeline" replace />} />
+          {/* Root redirect -> Dashboard */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
         <Toaster />
       </AuthProvider>

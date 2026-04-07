@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { CountyPicker } from '@/components/territory/CountyPicker'
 import { EmailSignatureSettings } from '@/components/settings/EmailSignatureSettings'
+import { KBIndex } from '@/pages/kb/KBIndex'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
 import { Pencil, Check, MapPin, RefreshCw } from 'lucide-react'
@@ -54,12 +55,40 @@ export function SettingsIndex() {
 
   const counties = (org?.service_counties as CountyData[]) ?? []
 
+  const [settingsTab, setSettingsTab] = useState<'general' | 'playbook'>('general')
+
   return (
-    <div className="mx-auto max-w-2xl">
-      <div className="mb-6">
+    <div className="mx-auto max-w-4xl">
+      <div className="mb-4">
         <h1 className="text-xl font-medium">Settings</h1>
       </div>
 
+      <div className="mb-4 flex items-center gap-4 border-b border-border">
+        <button
+          onClick={() => setSettingsTab('general')}
+          className="pb-2 text-sm font-medium"
+          style={{
+            color: settingsTab === 'general' ? '#0F6E56' : '#71717a',
+            borderBottom: settingsTab === 'general' ? '2px solid #0F6E56' : '2px solid transparent',
+          }}
+        >
+          General
+        </button>
+        <button
+          onClick={() => setSettingsTab('playbook')}
+          className="pb-2 text-sm font-medium"
+          style={{
+            color: settingsTab === 'playbook' ? '#0F6E56' : '#71717a',
+            borderBottom: settingsTab === 'playbook' ? '2px solid #0F6E56' : '2px solid transparent',
+          }}
+        >
+          Playbook
+        </button>
+      </div>
+
+      {settingsTab === 'playbook' ? (
+        <KBIndex />
+      ) : (
       <div className="flex flex-col gap-4">
         {/* Organization */}
         <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
@@ -281,6 +310,7 @@ export function SettingsIndex() {
           </div>
         </div>
       </div>
+      )}
     </div>
   )
 }
