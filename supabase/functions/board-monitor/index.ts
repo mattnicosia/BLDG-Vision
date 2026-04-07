@@ -174,6 +174,58 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
+    const body = await req.json()
+    const action = body.action as string
+
+    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') })
+
+    // CRON mode: uses service role key, processes all orgs
+    if (action === 'cron') {
+      const supabase = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      )
+
+      // Get all distinct org_ids that have enabled board sources
+      const { data: sources } = await supabase
+        .from('board_sources')
+        .select('id, org_id, town_name, board_type, meeting_page_url')
+        .eq('enabled', true)
+
+      if (!sources || sources.length === 0) {
+        return new Response(JSON.stringify({ message: 'No enabled sources' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+      }
+
+      const year = new Date().getFullYear()
+      const results: any[] = []
+
+      for (const source of sources) {
+        const orgId = source.org_id
+        const meetingPageUrl = source.meeting_page_url.replace('{year}', String(year))
+        const meetings = await scrapeMeetingPage(meetingPageUrl)
+        const allDocs: Array<{ title: string; url: string }> = []
+        for (const meeting of meetings.slice(0, 8)) {
+          const docs = await findDocumentUrls(meeting.url)
+          allDocs.push(...docs)
+        }
+        const { data: existing } = await supabase.from('board_documents').select('document_url').eq('org_id', orgId).eq('source_id', source.id)
+        const existingUrls = new Set((existing || []).map((d: any) => d.document_url))
+        const newDocs = allDocs.filter((d) => !existingUrls.has(d.url))
+        let inserted = 0
+        for (const doc of newDocs) {
+          const dateMatch = doc.title.match(/(\w+ \d+,? \d{4})/i)
+          const meetingDate = dateMatch ? new Date(dateMatch[1]).toISOString().split('T')[0] : null
+          const { error } = await supabase.from('board_documents').insert({ org_id: orgId, source_id: source.id, town_name: source.town_name, board_type: source.board_type, title: doc.title, document_url: doc.url, meeting_date: meetingDate, parsed: false })
+          if (!error) inserted++
+        }
+        await supabase.from('board_sources').update({ last_checked_at: new Date().toISOString() }).eq('id', source.id)
+        results.push({ town: source.town_name, board: source.board_type, newDocs: inserted })
+      }
+
+      return new Response(JSON.stringify({ mode: 'cron', sources: results }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    }
+
+    // User-initiated actions require auth
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) throw new Error('No auth header')
 
@@ -183,14 +235,9 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const anthropic = new Anthropic({ apiKey: Deno.env.get('ANTHROPIC_API_KEY') })
-
     const { data: memberData } = await supabase.from('org_members').select('org_id').single()
     if (!memberData?.org_id) throw new Error('No org found')
     const orgId = memberData.org_id
-
-    const body = await req.json()
-    const action = body.action as string
 
     // SCAN: Check for new documents at a specific source
     if (action === 'scan') {
