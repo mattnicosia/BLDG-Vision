@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { EnerGovPermitPreview } from '@/types'
-import { categorizePermit, type ConstructionType, type PermitRelevance } from '@/lib/permitCategories'
+import { categorizePermit, CONSTRUCTION_TYPE_STYLES, RELEVANCE_STYLES, type ConstructionType, type PermitRelevance } from '@/lib/permitCategories'
 
 export function PermitsIndex() {
   const { permits: importedPermits, loading: loadingImported, refetch } = usePermits()
@@ -370,51 +370,68 @@ export function PermitsIndex() {
               <p className="text-sm text-muted-foreground">No permits imported yet</p>
             </div>
           ) : (
-            importedPermits.map((permit) => (
-              <div
-                key={permit.id}
-                className="rounded-xl border border-border bg-white p-4"
-                style={{ borderWidth: '0.5px' }}
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{permit.permit_number}</span>
-                      {permit.status && (
-                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-                          {permit.status}
+            importedPermits.map((permit) => {
+              const cat = categorizePermit(permit.permit_type ?? '', permit.scope_description ?? '')
+              const ctStyle = CONSTRUCTION_TYPE_STYLES[cat.constructionType]
+              const relStyle = RELEVANCE_STYLES[cat.relevance]
+              return (
+                <div
+                  key={permit.id}
+                  className="rounded-xl border border-border bg-white p-4"
+                  style={{ borderWidth: '0.5px' }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span className="text-sm font-medium">{permit.permit_number}</span>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                          style={{ backgroundColor: ctStyle.bg, color: ctStyle.text }}
+                        >
+                          {cat.constructionType}
                         </span>
+                        <span
+                          className="rounded-full px-2 py-0.5 text-[10px] font-medium capitalize"
+                          style={{ backgroundColor: relStyle.bg, color: relStyle.text }}
+                        >
+                          {cat.relevance}
+                        </span>
+                        {permit.status && (
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                            {permit.status}
+                          </span>
+                        )}
+                      </div>
+                      {permit.permit_type && (
+                        <p className="text-xs text-muted-foreground">{permit.permit_type}</p>
                       )}
                     </div>
-                    {permit.permit_type && (
-                      <p className="text-xs text-muted-foreground">{permit.permit_type}</p>
+                    {permit.source_url && (
+                      <a href={permit.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
+                        <ExternalLink className="h-3 w-3" /> Source
+                      </a>
                     )}
                   </div>
-                  {permit.source_url && (
-                    <a href={permit.source_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-xs text-primary hover:underline">
-                      <ExternalLink className="h-3 w-3" /> Source
-                    </a>
+                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
+                    {permit.project_address && (
+                      <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {permit.project_address}</span>
+                    )}
+                    {permit.filed_date && (
+                      <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(permit.filed_date).toLocaleDateString()}</span>
+                    )}
+                    {permit.estimated_value ? (
+                      <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> ${permit.estimated_value.toLocaleString()}</span>
+                    ) : null}
+                    {permit.contractor_name && (
+                      <span className="flex items-center gap-1 font-medium" style={{ color: '#A32D2D' }}>Contractor: {permit.contractor_name}</span>
+                    )}
+                  </div>
+                  {permit.scope_description && (
+                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{permit.scope_description}</p>
                   )}
                 </div>
-                <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
-                  {permit.project_address && (
-                    <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {permit.project_address}</span>
-                  )}
-                  {permit.filed_date && (
-                    <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {new Date(permit.filed_date).toLocaleDateString()}</span>
-                  )}
-                  {permit.estimated_value ? (
-                    <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> ${permit.estimated_value.toLocaleString()}</span>
-                  ) : null}
-                  {permit.contractor_name && (
-                    <span className="flex items-center gap-1 font-medium" style={{ color: '#A32D2D' }}>Contractor: {permit.contractor_name}</span>
-                  )}
-                </div>
-                {permit.scope_description && (
-                  <p className="mt-1 text-xs text-muted-foreground line-clamp-2">{permit.scope_description}</p>
-                )}
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       )}
