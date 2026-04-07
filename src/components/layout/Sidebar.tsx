@@ -2,25 +2,19 @@ import { NavLink, useLocation } from 'react-router-dom'
 import {
   Users,
   BookOpen,
-  Radar,
   Map,
   Settings,
   Building2,
-  Zap,
-  Swords,
-  FileText,
+  Crosshair,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { to: '/crm', label: 'Architects', icon: Users },
-  { to: '/kb', label: 'Knowledge Base', icon: BookOpen },
-  { to: '/radar', label: 'Radar', icon: Radar },
-  { to: '/map', label: 'Map', icon: Map },
-  { to: '/permits', label: 'Permits', icon: FileText },
-  { to: '/signals', label: 'Signals', icon: Zap },
-  { to: '/competitors', label: 'Competitors', icon: Swords },
+  { to: '/intelligence', label: 'Intelligence', icon: Crosshair },
+  { to: '/territory', label: 'Territory', icon: Map },
+  { to: '/kb', label: 'Playbook', icon: BookOpen },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]
 
