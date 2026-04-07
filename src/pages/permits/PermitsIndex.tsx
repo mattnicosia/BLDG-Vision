@@ -33,6 +33,9 @@ export function PermitsIndex() {
   const [fetched, setFetched] = useState(false)
   const [typeFilter, setTypeFilter] = useState<ConstructionType | 'all'>('all')
   const [relevanceFilter, setRelevanceFilter] = useState<PermitRelevance | 'all'>('all')
+  const [importedTypeFilter, setImportedTypeFilter] = useState<ConstructionType | 'all'>('all')
+  const [importedRelevanceFilter, setImportedRelevanceFilter] = useState<PermitRelevance | 'all'>('all')
+  const [importedSort, setImportedSort] = useState<'date' | 'value' | 'relevance'>('date')
 
   const filteredPreviews = previews.filter((p) => {
     const { constructionType, relevance } = categorizePermit(p.permitType, p.description)
@@ -40,6 +43,30 @@ export function PermitsIndex() {
     if (relevanceFilter !== 'all' && relevance !== relevanceFilter) return false
     return true
   })
+
+  const RELEVANCE_RANK = { high: 0, medium: 1, low: 2 }
+
+  const filteredImported = importedPermits
+    .filter((p) => {
+      const cat = categorizePermit(p.permit_type ?? '', p.scope_description ?? '')
+      if (importedTypeFilter !== 'all' && cat.constructionType !== importedTypeFilter) return false
+      if (importedRelevanceFilter !== 'all' && cat.relevance !== importedRelevanceFilter) return false
+      return true
+    })
+    .sort((a, b) => {
+      if (importedSort === 'value') {
+        return (b.estimated_value ?? 0) - (a.estimated_value ?? 0)
+      }
+      if (importedSort === 'relevance') {
+        const ra = categorizePermit(a.permit_type ?? '', a.scope_description ?? '').relevance
+        const rb = categorizePermit(b.permit_type ?? '', b.scope_description ?? '').relevance
+        return RELEVANCE_RANK[ra] - RELEVANCE_RANK[rb]
+      }
+      // Default: date descending
+      const da = a.filed_date ? new Date(a.filed_date).getTime() : 0
+      const db = b.filed_date ? new Date(b.filed_date).getTime() : 0
+      return db - da
+    })
 
   async function handleFetch() {
     setFetching(true)
@@ -361,16 +388,60 @@ export function PermitsIndex() {
 
       {/* Imported tab */}
       {tab === 'imported' && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
+          {/* Imported filters */}
+          {importedPermits.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3">
+              <select
+                value={importedTypeFilter}
+                onChange={(e) => setImportedTypeFilter(e.target.value as ConstructionType | 'all')}
+                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="all">All types</option>
+                <option value="New Construction">New Construction</option>
+                <option value="Renovation">Renovation</option>
+                <option value="Addition">Addition</option>
+                <option value="Demolition">Demolition</option>
+                <option value="Mechanical/Electrical/Plumbing">MEP</option>
+                <option value="Site Work">Site Work</option>
+                <option value="Other">Other</option>
+              </select>
+              <select
+                value={importedRelevanceFilter}
+                onChange={(e) => setImportedRelevanceFilter(e.target.value as PermitRelevance | 'all')}
+                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="all">All relevance</option>
+                <option value="high">High relevance</option>
+                <option value="medium">Medium relevance</option>
+                <option value="low">Low relevance</option>
+              </select>
+              <select
+                value={importedSort}
+                onChange={(e) => setImportedSort(e.target.value as 'date' | 'value' | 'relevance')}
+                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="date">Sort by date</option>
+                <option value="value">Sort by value</option>
+                <option value="relevance">Sort by relevance</option>
+              </select>
+              <span className="text-xs text-muted-foreground">
+                Showing {filteredImported.length} of {importedPermits.length}
+              </span>
+            </div>
+          )}
+
           {loadingImported ? (
             <p className="text-sm text-muted-foreground">Loading...</p>
-          ) : importedPermits.length === 0 ? (
+          ) : filteredImported.length === 0 ? (
             <div className="flex h-40 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border">
               <FileText className="h-6 w-6 text-muted-foreground" />
-              <p className="text-sm text-muted-foreground">No permits imported yet</p>
+              <p className="text-sm text-muted-foreground">
+                {importedPermits.length === 0 ? 'No permits imported yet' : 'No permits match your filters'}
+              </p>
             </div>
           ) : (
-            importedPermits.map((permit) => {
+            filteredImported.map((permit) => {
               const cat = categorizePermit(permit.permit_type ?? '', permit.scope_description ?? '')
               const ctStyle = CONSTRUCTION_TYPE_STYLES[cat.constructionType]
               const relStyle = RELEVANCE_STYLES[cat.relevance]
