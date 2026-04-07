@@ -325,6 +325,7 @@ export interface GooglePlaceResult {
   rating?: number
   userRatingCount?: number
   websiteUri?: string
+  phone?: string
   location: { latitude: number; longitude: number }
 }
 

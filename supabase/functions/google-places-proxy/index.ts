@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
@@ -31,59 +32,56 @@ Deno.serve(async (req) => {
     const apiKey = Deno.env.get('GOOGLE_PLACES_API_KEY')
     if (!apiKey) throw new Error('Google Places API key not configured')
 
-    const radiusMeters = (radius ?? 50) * 1609.34
+    const radiusMeters = Math.round((radius ?? 50) * 1609.34)
+    const query = encodeURIComponent(keyword || 'residential architect')
 
-    const response = await fetch('https://places.googleapis.com/v1/places:searchNearby', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Goog-Api-Key': apiKey,
-        'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.websiteUri,places.location,places.userRatingCount',
-      },
-      body: JSON.stringify({
-        includedTypes: ['establishment'],
-        locationRestriction: {
-          circle: {
-            center: { latitude: lat, longitude: lng },
-            radius: radiusMeters,
-          },
-        },
-        textQuery: keyword || 'residential architect',
-        maxResultCount: 20,
-      }),
-    })
+    // Step 1: Text Search to get list of places
+    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&location=${lat},${lng}&radius=${radiusMeters}&key=${apiKey}`
+    const response = await fetch(url)
+    const data = await response.json()
 
-    // If searchNearby with textQuery fails, try without it
-    if (!response.ok) {
-      const textResponse = await fetch('https://places.googleapis.com/v1/places:searchText', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Goog-Api-Key': apiKey,
-          'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.rating,places.websiteUri,places.location,places.userRatingCount',
-        },
-        body: JSON.stringify({
-          textQuery: `${keyword || 'residential architect'} near ${lat},${lng}`,
-          locationBias: {
-            circle: {
-              center: { latitude: lat, longitude: lng },
-              radius: radiusMeters,
-            },
-          },
-          maxResultCount: 20,
-        }),
-      })
-
-      const textData = await textResponse.json()
-      return new Response(
-        JSON.stringify({ places: textData.places ?? [] }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+    if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+      throw new Error(`Places API: ${data.status} - ${data.error_message || ''}`)
     }
 
-    const data = await response.json()
+    const searchResults = data.results || []
+
+    // Step 2: Fetch Place Details for each result to get website + phone
+    const places = await Promise.all(
+      searchResults.map(async (r: any) => {
+        let website = undefined
+        let phone = undefined
+
+        try {
+          const detailUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${r.place_id}&fields=website,formatted_phone_number&key=${apiKey}`
+          const detailRes = await fetch(detailUrl)
+          const detailData = await detailRes.json()
+          if (detailData.result) {
+            website = detailData.result.website || undefined
+            phone = detailData.result.formatted_phone_number || undefined
+          }
+        } catch {
+          // Skip detail errors, still return the basic data
+        }
+
+        return {
+          id: r.place_id,
+          displayName: { text: r.name, languageCode: 'en' },
+          formattedAddress: r.formatted_address,
+          rating: r.rating,
+          userRatingCount: r.user_ratings_total,
+          websiteUri: website,
+          phone,
+          location: {
+            latitude: r.geometry?.location?.lat,
+            longitude: r.geometry?.location?.lng,
+          },
+        }
+      })
+    )
+
     return new Response(
-      JSON.stringify({ places: data.places ?? [] }),
+      JSON.stringify({ places }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
