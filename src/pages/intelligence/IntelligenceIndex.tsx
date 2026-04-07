@@ -1,17 +1,28 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
-import { SignalsIndex } from '@/pages/signals/SignalsIndex'
 import { PermitsIndex } from '@/pages/permits/PermitsIndex'
 import { BoardsIndex } from '@/pages/boards/BoardsIndex'
-import { CompetitorsIndex } from '@/pages/competitors/CompetitorsIndex'
 import { RadarIndex } from '@/pages/radar/RadarIndex'
+import { SignalsIndex } from '@/pages/signals/SignalsIndex'
 import { Button } from '@/components/ui/button'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 
 export function IntelligenceIndex() {
-  const [tab, setTab] = useState<'signals' | 'permits' | 'boards' | 'competitors' | 'radar'>('permits')
   const [scanning, setScanning] = useState(false)
+  const [view, setView] = useState<'all' | 'permits' | 'boards' | 'radar' | 'signals'>('all')
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(['permits', 'boards', 'radar', 'signals'])
+  )
+
+  function toggleSection(section: string) {
+    setExpandedSections((prev) => {
+      const next = new Set(prev)
+      if (next.has(section)) next.delete(section)
+      else next.add(section)
+      return next
+    })
+  }
 
   async function handleRescanAll() {
     setScanning(true)
@@ -28,14 +39,11 @@ export function IntelligenceIndex() {
         'apikey': anonKey,
       }
 
-      // Run all scans in parallel
       const results = await Promise.allSettled([
-        // Board scan
         fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
           method: 'POST', headers,
           body: JSON.stringify({ action: 'scan_all' }),
         }).then(r => r.json()),
-        // Permit fetch (1 page to keep it fast)
         fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
           method: 'POST', headers,
           body: JSON.stringify({ action: 'fetch', keyword: 'building permit', maxPages: 1 }),
@@ -51,40 +59,28 @@ export function IntelligenceIndex() {
         parts.push(`${results[1].value.total} permits available`)
       }
 
-      if (parts.length > 0) {
-        toast.success(`Scan complete: ${parts.join(', ')}`)
-      } else {
-        toast.success('Scan complete. No new data found.')
-      }
+      toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
     } catch {
       toast.error('Scan failed')
     }
     setScanning(false)
   }
 
+  const sections = [
+    { key: 'permits', label: 'Permits' },
+    { key: 'boards', label: 'Board Meetings' },
+    { key: 'radar', label: 'Radar Discovery' },
+    { key: 'signals', label: 'Signals' },
+  ]
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-4 border-b border-border">
-          {([
-            { key: 'permits', label: 'Permits' },
-            { key: 'boards', label: 'Boards' },
-            { key: 'competitors', label: 'Competitors' },
-            { key: 'radar', label: 'Radar' },
-            { key: 'signals', label: 'Signals' },
-          ] as const).map((t) => (
-            <button
-              key={t.key}
-              onClick={() => setTab(t.key)}
-              className="pb-2 text-sm font-medium transition-colors"
-              style={{
-                color: tab === t.key ? '#0F6E56' : '#71717a',
-                borderBottom: tab === t.key ? '2px solid #0F6E56' : '2px solid transparent',
-              }}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div>
+          <h1 className="text-xl font-medium">Opportunities</h1>
+          <p className="text-sm text-muted-foreground">
+            Permits, board meetings, and discovery sources for new work
+          </p>
         </div>
         <Button
           variant="outline"
@@ -98,11 +94,65 @@ export function IntelligenceIndex() {
         </Button>
       </div>
 
-      {tab === 'permits' && <PermitsIndex />}
-      {tab === 'boards' && <BoardsIndex />}
-      {tab === 'competitors' && <CompetitorsIndex />}
-      {tab === 'radar' && <RadarIndex />}
-      {tab === 'signals' && <SignalsIndex />}
+      {/* View filter */}
+      <div className="mb-4 flex items-center gap-2">
+        {[
+          { key: 'all', label: 'All sources' },
+          { key: 'permits', label: 'Permits' },
+          { key: 'boards', label: 'Boards' },
+          { key: 'radar', label: 'Radar' },
+          { key: 'signals', label: 'Signals' },
+        ].map((v) => (
+          <button
+            key={v.key}
+            onClick={() => setView(v.key as typeof view)}
+            className="rounded-full px-3 py-1 text-xs font-medium transition-colors"
+            style={{
+              backgroundColor: view === v.key ? '#0F6E56' : 'transparent',
+              color: view === v.key ? '#fff' : '#71717a',
+              border: `1px solid ${view === v.key ? '#0F6E56' : '#e4e4e7'}`,
+            }}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Unified view with collapsible sections */}
+      {view === 'all' ? (
+        <div className="flex flex-col gap-6">
+          {sections.map((section) => (
+            <div key={section.key}>
+              <button
+                onClick={() => toggleSection(section.key)}
+                className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary"
+              >
+                {expandedSections.has(section.key) ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+                {section.label}
+              </button>
+              {expandedSections.has(section.key) && (
+                <div>
+                  {section.key === 'permits' && <PermitsIndex />}
+                  {section.key === 'boards' && <BoardsIndex />}
+                  {section.key === 'radar' && <RadarIndex />}
+                  {section.key === 'signals' && <SignalsIndex />}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div>
+          {view === 'permits' && <PermitsIndex />}
+          {view === 'boards' && <BoardsIndex />}
+          {view === 'radar' && <RadarIndex />}
+          {view === 'signals' && <SignalsIndex />}
+        </div>
+      )}
     </div>
   )
 }

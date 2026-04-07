@@ -11,7 +11,7 @@ import { PipelineIndex } from '@/pages/pipeline/PipelineIndex'
 import { CRMIndex } from '@/pages/crm/CRMIndex'
 import { ArchitectDetail } from '@/pages/crm/ArchitectDetail'
 import { OutreachIndex } from '@/pages/outreach/OutreachIndex'
-import { MapIndex } from '@/pages/map/MapIndex'
+import { ReconIndex } from '@/pages/recon/ReconIndex'
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { AddProject } from '@/pages/kb/AddProject'
 import { AddVECase } from '@/pages/kb/AddVECase'
@@ -43,7 +43,7 @@ export default function App() {
               <Route path="/relationships" element={<CRMIndex />} />
               <Route path="/relationships/:id" element={<ArchitectDetail />} />
               <Route path="/outreach" element={<OutreachIndex />} />
-              <Route path="/recon" element={<MapIndex />} />
+              <Route path="/recon" element={<ReconIndex />} />
 
               {/* Settings (includes company profile / playbook) */}
               <Route path="/settings" element={<SettingsIndex />} />
