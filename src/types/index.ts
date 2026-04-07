@@ -283,6 +283,61 @@ export interface AIDraft {
   prompt_used?: string
   model: string
   sent_at?: string
+  outcome?: DraftOutcome
+  edited_body?: string
+  campaign_id?: string
+  created_at: string
+}
+
+// ─── EMAIL ───────────────────────────────────────────────────────────────────
+
+export type SignatureType = 'html_paste' | 'builder'
+export type DraftOutcome = 'sent' | 'copied' | 'discarded'
+export type CampaignStatus = 'active' | 'paused' | 'completed' | 'cancelled'
+export type CampaignEmailStatus = 'pending' | 'scheduled' | 'sent' | 'failed' | 'cancelled'
+
+export interface EmailSettings {
+  id: string
+  org_id: string
+  from_email?: string
+  from_name?: string
+  signature_html?: string
+  signature_type: SignatureType
+  builder_name?: string
+  builder_title?: string
+  builder_phone?: string
+  builder_email?: string
+  builder_logo_url?: string
+  resend_domain_id?: string
+  domain_verified: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface EmailCampaign {
+  id: string
+  org_id: string
+  architect_id?: string
+  architect_name?: string
+  series_type?: string
+  topic?: string
+  status: CampaignStatus
+  created_at: string
+}
+
+export interface CampaignEmail {
+  id: string
+  campaign_id: string
+  org_id: string
+  architect_id?: string
+  subject?: string
+  body_html: string
+  sequence_number: number
+  scheduled_at?: string
+  sent_at?: string
+  status: CampaignEmailStatus
+  resend_message_id?: string
+  error_message?: string
   created_at: string
 }
 

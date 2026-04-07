@@ -3,6 +3,7 @@ import { useOrg } from '@/hooks/useOrg'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { CountyPicker } from '@/components/territory/CountyPicker'
+import { EmailSignatureSettings } from '@/components/settings/EmailSignatureSettings'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
 import { Pencil, Check, MapPin, RefreshCw } from 'lucide-react'
@@ -144,6 +145,9 @@ export function SettingsIndex() {
             </p>
           )}
         </div>
+
+        {/* Email settings */}
+        <EmailSignatureSettings />
 
         {/* Data enrichment */}
         <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>

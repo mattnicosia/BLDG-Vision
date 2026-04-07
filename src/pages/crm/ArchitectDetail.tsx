@@ -468,15 +468,19 @@ export function ArchitectDetail() {
       <AIModal
         architectId={architect.id}
         architectName={architect.name}
+        architectEmail={architect.email}
         open={showAI}
         onClose={() => setShowAI(false)}
+        onSent={refetch}
       />
 
       <EmailSeriesModal
         architectId={architect.id}
         architectName={architect.name}
+        architectEmail={architect.email}
         open={showEmailSeries}
         onClose={() => setShowEmailSeries(false)}
+        onScheduled={refetch}
       />
     </div>
   )
