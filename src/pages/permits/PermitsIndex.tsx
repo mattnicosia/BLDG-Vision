@@ -25,7 +25,6 @@ export function PermitsIndex() {
   const { permits: importedPermits, loading: loadingImported, refetch } = usePermits()
   const [tab, setTab] = useState<'fetch' | 'imported'>('fetch')
   const [keyword, setKeyword] = useState('building permit')
-  const [maxPages, setMaxPages] = useState('3')
   const [fetching, setFetching] = useState(false)
   const [importing, setImporting] = useState(false)
   const [previews, setPreviews] = useState<EnerGovPermitPreview[]>([])
@@ -90,7 +89,7 @@ export function PermitsIndex() {
         body: JSON.stringify({
           action: 'fetch',
           keyword,
-          maxPages: parseInt(maxPages) || 3,
+          maxPages: 100,
         }),
       })
 
@@ -278,16 +277,6 @@ export function PermitsIndex() {
                   onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
                 />
               </div>
-            </div>
-            <div className="flex w-24 flex-col gap-1.5">
-              <label className="text-xs text-muted-foreground">Pages</label>
-              <Input
-                type="number"
-                min={1}
-                max={10}
-                value={maxPages}
-                onChange={(e) => setMaxPages(e.target.value)}
-              />
             </div>
             <Button onClick={handleFetch} disabled={fetching} className="gap-2">
               {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
