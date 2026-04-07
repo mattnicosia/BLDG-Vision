@@ -6,14 +6,16 @@ import {
   Settings,
   Building2,
   Crosshair,
+  Kanban,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
 import { cn } from '@/lib/utils'
 
 const navItems = [
+  { to: '/pipeline', label: 'Pipeline', icon: Kanban },
   { to: '/crm', label: 'Architects', icon: Users },
+  { to: '/map', label: 'Map', icon: Map },
   { to: '/intelligence', label: 'Intelligence', icon: Crosshair },
-  { to: '/territory', label: 'Territory', icon: Map },
   { to: '/kb', label: 'Playbook', icon: BookOpen },
   { to: '/settings', label: 'Settings', icon: Settings },
 ]

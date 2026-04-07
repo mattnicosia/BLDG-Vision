@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { SignalsIndex } from '@/pages/signals/SignalsIndex'
 import { PermitsIndex } from '@/pages/permits/PermitsIndex'
-import { CompetitorsIndex } from '@/pages/competitors/CompetitorsIndex'
 import { BoardsIndex } from '@/pages/boards/BoardsIndex'
+import { CompetitorsIndex } from '@/pages/competitors/CompetitorsIndex'
+import { RadarIndex } from '@/pages/radar/RadarIndex'
 
 export function IntelligenceIndex() {
-  const [tab, setTab] = useState<'signals' | 'permits' | 'boards' | 'competitors'>('signals')
+  const [tab, setTab] = useState<'signals' | 'permits' | 'boards' | 'competitors' | 'radar'>('signals')
 
   return (
     <div>
@@ -15,6 +16,7 @@ export function IntelligenceIndex() {
           { key: 'permits', label: 'Permits' },
           { key: 'boards', label: 'Boards' },
           { key: 'competitors', label: 'Competitors' },
+          { key: 'radar', label: 'Radar' },
         ] as const).map((t) => (
           <button
             key={t.key}
@@ -34,6 +36,7 @@ export function IntelligenceIndex() {
       {tab === 'permits' && <PermitsIndex />}
       {tab === 'boards' && <BoardsIndex />}
       {tab === 'competitors' && <CompetitorsIndex />}
+      {tab === 'radar' && <RadarIndex />}
     </div>
   )
 }

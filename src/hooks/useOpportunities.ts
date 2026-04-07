@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useOrg } from './useOrg'
-import type { Opportunity } from '@/types'
+import type { Opportunity, OpportunityStage } from '@/types'
 
 export function useOpportunities(architectId?: string) {
   const { org } = useOrg()
@@ -64,12 +64,27 @@ export function useOpportunities(architectId?: string) {
   }
 
   // Pipeline metrics
-  const pipeline = opportunities.filter((o) => o.stage !== 'won' && o.stage !== 'lost')
-  const pipelineValue = pipeline.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
-  const weightedValue = pipeline.reduce((s, o) => s + ((o.estimated_value ?? 0) * o.probability) / 100, 0)
-  const wonCount = opportunities.filter((o) => o.stage === 'won').length
-  const lostCount = opportunities.filter((o) => o.stage === 'lost').length
+  const active = opportunities.filter((o) => o.stage !== 'won' && o.stage !== 'lost')
+  const pipelineValue = active.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
+  const weightedValue = active.reduce((s, o) => s + ((o.estimated_value ?? 0) * o.probability) / 100, 0)
+  const wonDeals = opportunities.filter((o) => o.stage === 'won')
+  const lostDeals = opportunities.filter((o) => o.stage === 'lost')
+  const wonCount = wonDeals.length
+  const lostCount = lostDeals.length
   const winRate = wonCount + lostCount > 0 ? Math.round((wonCount / (wonCount + lostCount)) * 100) : 0
+  const avgDealSize = active.length > 0 ? pipelineValue / active.length : 0
+
+  // Group by stage for Kanban
+  const byStage: Record<OpportunityStage, Opportunity[]> = {
+    lead: [], interview: [], proposal: [], negotiation: [], won: [], lost: [],
+  }
+  for (const opp of opportunities) {
+    if (byStage[opp.stage]) byStage[opp.stage].push(opp)
+  }
+  // Sort each column by value descending
+  for (const stage of Object.keys(byStage) as OpportunityStage[]) {
+    byStage[stage].sort((a, b) => (b.estimated_value ?? 0) - (a.estimated_value ?? 0))
+  }
 
   return {
     opportunities,
@@ -78,6 +93,7 @@ export function useOpportunities(architectId?: string) {
     createOpportunity,
     updateOpportunity,
     deleteOpportunity,
-    metrics: { pipelineValue, weightedValue, wonCount, lostCount, winRate, pipelineCount: pipeline.length },
+    byStage,
+    metrics: { pipelineValue, weightedValue, wonCount, lostCount, winRate, pipelineCount: active.length, avgDealSize },
   }
 }
