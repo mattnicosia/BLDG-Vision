@@ -15,22 +15,42 @@ const BOARD_TYPE_LABELS: Record<string, string> = {
   town_board: 'Town Board',
 }
 
+const BROWSER_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'Accept-Encoding': 'identity',
+}
+
 // Scrape a meeting list page for document links
 async function scrapeMeetingPage(meetingPageUrl: string): Promise<Array<{ title: string; url: string; date: string }>> {
-  const res = await fetch(meetingPageUrl)
+  const res = await fetch(meetingPageUrl, { headers: BROWSER_HEADERS })
   if (!res.ok) return []
   const html = await res.text()
 
-  // Find links to individual meeting pages
+  // Find links to individual meeting pages (full URLs or relative)
   const meetingLinks: Array<{ title: string; url: string; date: string }> = []
-  const linkRegex = /href="(\/meeting\/[^"]+)"/gi
+  const seen = new Set<string>()
+
+  // Full URL pattern: href="https://www.orangetown.com/meeting/..."
+  const fullUrlRegex = /href="(https?:\/\/www\.orangetown\.com\/meeting\/[^"]+)"/gi
   let match
-  while ((match = linkRegex.exec(html)) !== null) {
-    meetingLinks.push({
-      title: match[1],
-      url: `https://www.orangetown.com${match[1]}`,
-      date: '',
-    })
+  while ((match = fullUrlRegex.exec(html)) !== null) {
+    if (!seen.has(match[1])) {
+      seen.add(match[1])
+      const title = match[1].split('/meeting/')[1]?.replace(/\/$/, '').replace(/-/g, ' ') ?? ''
+      meetingLinks.push({ title, url: match[1], date: '' })
+    }
+  }
+
+  // Relative URL pattern: href="/meeting/..."
+  const relativeRegex = /href="(\/meeting\/[^"]+)"/gi
+  while ((match = relativeRegex.exec(html)) !== null) {
+    const fullUrl = `https://www.orangetown.com${match[1]}`
+    if (!seen.has(fullUrl)) {
+      seen.add(fullUrl)
+      meetingLinks.push({ title: match[1], url: fullUrl, date: '' })
+    }
   }
 
   return meetingLinks
@@ -38,19 +58,23 @@ async function scrapeMeetingPage(meetingPageUrl: string): Promise<Array<{ title:
 
 // Scrape a single meeting page for PDF document links
 async function findDocumentUrls(meetingUrl: string): Promise<Array<{ title: string; url: string }>> {
-  const res = await fetch(meetingUrl)
+  const res = await fetch(meetingUrl, { headers: BROWSER_HEADERS })
   if (!res.ok) return []
   const html = await res.text()
 
   const docs: Array<{ title: string; url: string }> = []
 
-  // Find PDF links in wp-content/uploads
+  // Find PDF links in wp-content/uploads (filter out logos, potholes, etc.)
   const pdfRegex = /href="(https?:\/\/www\.orangetown\.com\/wp-content\/uploads\/[^"]+\.pdf)"/gi
   let match
   while ((match = pdfRegex.exec(html)) !== null) {
     const url = match[1]
     const filename = url.split('/').pop()?.replace('.pdf', '').replace(/-/g, ' ') ?? ''
-    docs.push({ title: filename, url })
+    // Only include minutes, agendas, and project plans
+    const lower = filename.toLowerCase()
+    if (lower.includes('minute') || lower.includes('agenda') || lower.includes('plan') || lower.includes('site') || lower.includes('subd')) {
+      docs.push({ title: filename, url })
+    }
   }
 
   // Also look for document page links that contain PDFs
