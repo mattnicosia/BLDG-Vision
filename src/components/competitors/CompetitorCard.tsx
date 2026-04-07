@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Competitor } from '@/types'
 import { getInitials, getAvatarColor } from '@/types'
-import { MapPin, Globe, Trash2 } from 'lucide-react'
+import { MapPin, Globe, Trash2, Instagram } from 'lucide-react'
 
 function getDisplacementColor(score: number): string {
   if (score >= 70) return '#A32D2D'
@@ -38,23 +38,38 @@ export function CompetitorCard({ competitor, onDelete }: CompetitorCardProps) {
           <span className="truncate text-sm font-medium text-foreground">
             {competitor.name}
           </span>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {competitor.location && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MapPin className="h-3 w-3" /> {competitor.location}
-              </div>
+              <span className="truncate text-xs text-muted-foreground">
+                {competitor.location}
+              </span>
             )}
-            {competitor.website && (
-              <a
-                href={competitor.website.startsWith('http') ? competitor.website : `https://${competitor.website}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex items-center gap-1 text-xs text-primary hover:underline"
-              >
-                <Globe className="h-3 w-3" /> Website
-              </a>
-            )}
+            <div className="flex items-center gap-1.5">
+              {competitor.website && (
+                <a
+                  href={competitor.website.startsWith('http') ? competitor.website : `https://${competitor.website}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-muted-foreground hover:text-primary"
+                  title="Website"
+                >
+                  <Globe className="h-3 w-3" />
+                </a>
+              )}
+              {competitor.instagram_handle && (
+                <a
+                  href={`https://instagram.com/${competitor.instagram_handle.replace('@', '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-muted-foreground hover:text-primary"
+                  title="Instagram"
+                >
+                  <Instagram className="h-3 w-3" />
+                </a>
+              )}
+            </div>
           </div>
         </div>
 

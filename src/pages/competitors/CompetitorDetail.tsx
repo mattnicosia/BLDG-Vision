@@ -17,6 +17,7 @@ import {
   Plus,
   Users,
   Star,
+  Instagram,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 
@@ -209,12 +210,31 @@ export function CompetitorDetail() {
             </div>
           ) : (
             <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
-              {competitor.website && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-                  <a href={competitor.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                    {competitor.website}
-                  </a>
+              {/* Links */}
+              {(competitor.website || competitor.instagram_handle) && (
+                <div className="flex flex-wrap gap-2">
+                  {competitor.website && (
+                    <a
+                      href={competitor.website.startsWith('http') ? competitor.website : `https://${competitor.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Globe className="h-3.5 w-3.5" />
+                      {competitor.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                    </a>
+                  )}
+                  {competitor.instagram_handle && (
+                    <a
+                      href={`https://instagram.com/${competitor.instagram_handle.replace('@', '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    >
+                      <Instagram className="h-3.5 w-3.5" />
+                      @{competitor.instagram_handle.replace('@', '')}
+                    </a>
+                  )}
                 </div>
               )}
               {competitor.strengths?.length > 0 && (
