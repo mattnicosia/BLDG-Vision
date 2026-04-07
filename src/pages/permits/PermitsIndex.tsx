@@ -264,24 +264,55 @@ export function PermitsIndex() {
       {tab === 'fetch' && (
         <div className="flex flex-col gap-4">
           {/* Search controls */}
-          <div className="flex items-end gap-3 rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
-            <div className="flex flex-1 flex-col gap-1.5">
-              <label className="text-xs text-muted-foreground">Search keyword</label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  placeholder="building permit"
-                  className="pl-9"
-                  onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
-                />
+          <div className="flex flex-col gap-3 rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+            <div className="flex items-end gap-3">
+              <div className="flex flex-1 flex-col gap-1.5">
+                <label className="text-xs text-muted-foreground">Search keyword</label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    value={keyword}
+                    onChange={(e) => setKeyword(e.target.value)}
+                    placeholder="building permit"
+                    className="pl-9"
+                    onKeyDown={(e) => e.key === 'Enter' && handleFetch()}
+                  />
+                </div>
               </div>
+              <Button onClick={handleFetch} disabled={fetching} className="gap-2">
+                {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
+                {fetching ? 'Fetching...' : 'Fetch from Rockland County'}
+              </Button>
             </div>
-            <Button onClick={handleFetch} disabled={fetching} className="gap-2">
-              {fetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4" />}
-              {fetching ? 'Fetching...' : 'Fetch from Rockland County'}
-            </Button>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                'new dwelling',
+                'new construction',
+                'renovation',
+                'alteration',
+                'addition',
+                'demolition',
+                'single family',
+                'multi family',
+                'commercial',
+                'plan review',
+                'foundation',
+                'certificate of occupancy',
+              ].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => setKeyword(suggestion)}
+                  className="rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors"
+                  style={{
+                    backgroundColor: keyword === suggestion ? '#0F6E56' : 'transparent',
+                    color: keyword === suggestion ? '#ffffff' : '#71717a',
+                    border: `1px solid ${keyword === suggestion ? '#0F6E56' : '#e4e4e7'}`,
+                  }}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Results */}
