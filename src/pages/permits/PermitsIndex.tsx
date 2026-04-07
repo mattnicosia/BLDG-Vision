@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import type { EnerGovPermitPreview } from '@/types'
+import { categorizePermit, type ConstructionType, type PermitRelevance } from '@/lib/permitCategories'
 
 export function PermitsIndex() {
   const { permits: importedPermits, loading: loadingImported, refetch } = usePermits()
@@ -30,6 +31,15 @@ export function PermitsIndex() {
   const [previews, setPreviews] = useState<EnerGovPermitPreview[]>([])
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [fetched, setFetched] = useState(false)
+  const [typeFilter, setTypeFilter] = useState<ConstructionType | 'all'>('all')
+  const [relevanceFilter, setRelevanceFilter] = useState<PermitRelevance | 'all'>('all')
+
+  const filteredPreviews = previews.filter((p) => {
+    const { constructionType, relevance } = categorizePermit(p.permitType, p.description)
+    if (typeFilter !== 'all' && constructionType !== typeFilter) return false
+    if (relevanceFilter !== 'all' && relevance !== relevanceFilter) return false
+    return true
+  })
 
   async function handleFetch() {
     setFetching(true)
@@ -81,7 +91,7 @@ export function PermitsIndex() {
   }
 
   function selectAll() {
-    setSelected(new Set(previews.map((p) => p.caseId)))
+    setSelected(new Set(filteredPreviews.map((p) => p.caseId)))
   }
 
   function selectNone() {
@@ -259,17 +269,50 @@ export function PermitsIndex() {
           </div>
 
           {/* Results */}
+          {/* Filters */}
+          {fetched && previews.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3">
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value as ConstructionType | 'all')}
+                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="all">All types</option>
+                <option value="New Construction">New Construction</option>
+                <option value="Renovation">Renovation</option>
+                <option value="Addition">Addition</option>
+                <option value="Demolition">Demolition</option>
+                <option value="Mechanical/Electrical/Plumbing">MEP</option>
+                <option value="Site Work">Site Work</option>
+                <option value="Other">Other</option>
+              </select>
+              <select
+                value={relevanceFilter}
+                onChange={(e) => setRelevanceFilter(e.target.value as PermitRelevance | 'all')}
+                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+              >
+                <option value="all">All relevance</option>
+                <option value="high">High relevance</option>
+                <option value="medium">Medium relevance</option>
+                <option value="low">Low relevance</option>
+              </select>
+              <span className="text-xs text-muted-foreground">
+                Showing {filteredPreviews.length} of {previews.length}
+              </span>
+            </div>
+          )}
+
           {fetched && previews.length > 0 && (
             <>
               {/* Action bar */}
               <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-2">
                 <div className="flex items-center gap-3">
-                  <button onClick={selectedCount === previews.length ? selectNone : selectAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-                    {selectedCount === previews.length ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
-                    {selectedCount === previews.length ? 'Deselect all' : 'Select all'}
+                  <button onClick={selectedCount === filteredPreviews.length ? selectNone : selectAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                    {selectedCount === filteredPreviews.length ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
+                    {selectedCount === filteredPreviews.length ? 'Deselect all' : 'Select all'}
                   </button>
                   <span className="text-xs text-muted-foreground">
-                    {selectedCount} of {previews.length} selected
+                    {selectedCount} of {filteredPreviews.length} selected
                     {contractorCount > 0 && ` (${contractorCount} contractor${contractorCount !== 1 ? 's' : ''})`}
                   </span>
                 </div>
@@ -286,7 +329,7 @@ export function PermitsIndex() {
 
               {/* Permit cards */}
               <div className="flex flex-col gap-2">
-                {previews.map((permit) => (
+                {filteredPreviews.map((permit) => (
                   <PermitPreviewCard
                     key={permit.caseId}
                     permit={permit}

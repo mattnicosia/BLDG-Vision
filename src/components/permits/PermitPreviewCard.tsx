@@ -1,5 +1,6 @@
 import type { EnerGovPermitPreview, EnerGovContact } from '@/types'
 import { MapPin, Calendar, DollarSign, ExternalLink, User, Building2, Briefcase, Ruler } from 'lucide-react'
+import { categorizePermit, CONSTRUCTION_TYPE_STYLES, RELEVANCE_STYLES } from '@/lib/permitCategories'
 
 const CONTACT_TYPE_STYLES: Record<string, { bg: string; text: string }> = {
   Contractor: { bg: '#FEE2E2', text: '#A32D2D' },
@@ -29,10 +30,9 @@ interface PermitPreviewCardProps {
 }
 
 export function PermitPreviewCard({ permit, selected, onToggle }: PermitPreviewCardProps) {
-  const contractors = permit.contacts.filter((c) => c.type === 'Contractor')
-  const owners = permit.contacts.filter((c) => c.type === 'Property Owner/Builder')
-  const architects = permit.contacts.filter((c) => c.type?.includes('Architect'))
-  const reps = permit.contacts.filter((c) => c.type === 'Authorized Representative')
+  const { constructionType, relevance } = categorizePermit(permit.permitType, permit.description)
+  const ctStyle = CONSTRUCTION_TYPE_STYLES[constructionType]
+  const relStyle = RELEVANCE_STYLES[relevance]
 
   return (
     <div
@@ -67,8 +67,20 @@ export function PermitPreviewCard({ permit, selected, onToggle }: PermitPreviewC
           {/* Header row */}
           <div className="flex items-start justify-between">
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-1.5">
                 <span className="text-sm font-medium">{permit.permitNumber}</span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                  style={{ backgroundColor: ctStyle.bg, color: ctStyle.text }}
+                >
+                  {constructionType}
+                </span>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[10px] font-medium capitalize"
+                  style={{ backgroundColor: relStyle.bg, color: relStyle.text }}
+                >
+                  {relevance}
+                </span>
                 <span
                   className="rounded-full px-2 py-0.5 text-[10px] font-medium"
                   style={{
