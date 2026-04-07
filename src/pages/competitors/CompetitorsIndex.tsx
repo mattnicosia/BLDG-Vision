@@ -53,7 +53,7 @@ export function CompetitorsIndex() {
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
       const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-      const keywords = ['general contractor residential', 'custom home builder', 'residential contractor']
+      const keywords = ['general contractor', 'construction company', 'home builder']
       const allPlaces: GooglePlaceResult[] = []
       const seenIds = new Set<string>()
 
