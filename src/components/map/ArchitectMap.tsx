@@ -7,7 +7,7 @@ import { StageBadge } from '@/components/crm/StageBadge'
 import { PulseBar } from '@/components/crm/PulseBar'
 import type { DiscoveredPlace } from '@/hooks/useDiscoveredPlaces'
 import { Button } from '@/components/ui/button'
-import { Plus, Star, Swords } from 'lucide-react'
+import { Plus, Star, Swords, Globe, Instagram } from 'lucide-react'
 
 interface ArchitectMapProps {
   architects: Architect[]
@@ -137,7 +137,7 @@ export function ArchitectMap({
             position={{ lat: selectedArchitect.lat, lng: selectedArchitect.lng }}
             onCloseClick={() => setSelectedArchitect(null)}
           >
-            <div className="flex flex-col gap-1 p-1">
+            <div className="flex flex-col gap-1.5 p-1" style={{ minWidth: 200 }}>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">{selectedArchitect.name}</span>
                 <StageBadge stage={selectedArchitect.stage} />
@@ -147,7 +147,47 @@ export function ArchitectMap({
                   {selectedArchitect.firm}
                 </span>
               )}
+              {selectedArchitect.location && (
+                <span className="text-xs text-muted-foreground">
+                  {selectedArchitect.location}
+                </span>
+              )}
               <PulseBar score={selectedArchitect.pulse_score} />
+              {/* Social links */}
+              <div className="flex items-center gap-2 pt-0.5">
+                {selectedArchitect.website && (
+                  <a
+                    href={selectedArchitect.website.startsWith('http') ? selectedArchitect.website : `https://${selectedArchitect.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Globe className="h-3 w-3" />
+                    Website
+                  </a>
+                )}
+                {selectedArchitect.instagram_handle && (
+                  <a
+                    href={`https://instagram.com/${selectedArchitect.instagram_handle.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-xs text-primary hover:underline"
+                  >
+                    <Instagram className="h-3 w-3" />
+                    IG
+                  </a>
+                )}
+                {selectedArchitect.linkedin_url && (
+                  <a
+                    href={selectedArchitect.linkedin_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    LinkedIn
+                  </a>
+                )}
+              </div>
               {selectedArchitect.active_lead && (
                 <span className="text-xs" style={{ color: '#0F6E56' }}>
                   Active lead: {selectedArchitect.active_lead}
@@ -155,7 +195,7 @@ export function ArchitectMap({
               )}
               <Link
                 to={`/crm/${selectedArchitect.id}`}
-                className="mt-1 text-xs text-primary hover:underline"
+                className="mt-0.5 text-xs text-primary hover:underline"
               >
                 View profile
               </Link>

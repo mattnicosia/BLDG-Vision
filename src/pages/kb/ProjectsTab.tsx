@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useKBProjects } from '@/hooks/useKB'
 import { Link } from 'react-router-dom'
+import { User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Plus, MapPin, Calendar, DollarSign } from 'lucide-react'
 import type { ProjectCategory } from '@/types'
@@ -68,8 +69,19 @@ export function ProjectsTab() {
                 <div>
                   <h3 className="text-sm font-medium">{p.name}</h3>
                   {p.architect_name && (
-                    <p className="text-xs text-muted-foreground">
-                      Architect: {p.architect_name}
+                    <p className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <User className="h-3 w-3" />
+                      {p.architect_id ? (
+                        <Link
+                          to={`/crm/${p.architect_id}`}
+                          className="text-primary hover:underline"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {p.architect_name}
+                        </Link>
+                      ) : (
+                        p.architect_name
+                      )}
                     </p>
                   )}
                 </div>

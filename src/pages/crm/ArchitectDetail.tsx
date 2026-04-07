@@ -6,6 +6,7 @@ import { PulseBar } from '@/components/crm/PulseBar'
 import { TouchpointLog } from '@/components/crm/TouchpointLog'
 import { AIModal } from '@/components/ai/AIModal'
 import { EmailSeriesModal } from '@/components/ai/EmailSeriesModal'
+import { useKBProjects } from '@/hooks/useKB'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -31,6 +32,10 @@ export function ArchitectDetail() {
   const navigate = useNavigate()
   const { architect, touchpoints, loading, refetch, updateArchitect } =
     useArchitectDetail(id ?? '')
+  const { projects: allProjects } = useKBProjects()
+  const linkedProjects = allProjects.filter(
+    (p) => p.architect_id === id || (p.architect_name && architect?.name && p.architect_name.toLowerCase() === architect.name.toLowerCase())
+  )
   const [showAI, setShowAI] = useState(false)
   const [showEmailSeries, setShowEmailSeries] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -421,6 +426,38 @@ export function ArchitectDetail() {
               <p className="mt-1 text-sm">{architect.awards}</p>
             </div>
           )}
+
+          {/* Linked projects */}
+          <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+            <h3 className="mb-2 text-sm font-medium">
+              Projects {linkedProjects.length > 0 && `(${linkedProjects.length})`}
+            </h3>
+            {linkedProjects.length === 0 ? (
+              <p className="text-xs text-muted-foreground">No projects linked yet</p>
+            ) : (
+              <div className="flex flex-col gap-2">
+                {linkedProjects.map((p) => (
+                  <div key={p.id} className="rounded-lg bg-muted/50 p-2">
+                    <p className="text-xs font-medium">{p.name}</p>
+                    {p.location && (
+                      <p className="text-[10px] text-muted-foreground">{p.location}</p>
+                    )}
+                    {p.budget_value ? (
+                      <p className="text-[10px] text-muted-foreground">
+                        ${(p.budget_value / 1000000).toFixed(1)}M
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            )}
+            <Link
+              to="/kb/projects/new"
+              className="mt-2 block text-xs text-primary hover:underline"
+            >
+              + Add project
+            </Link>
+          </div>
         </div>
       </div>
 
