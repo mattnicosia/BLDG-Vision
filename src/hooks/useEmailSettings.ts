@@ -15,8 +15,8 @@ export function useEmailSettings() {
       .from('email_settings')
       .select('*')
       .eq('org_id', org.id)
-      .single()
-    if (data) setSettings(data)
+      .maybeSingle()
+    setSettings(data ?? null)
     setLoading(false)
   }, [org])
 
