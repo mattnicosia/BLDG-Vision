@@ -27,14 +27,14 @@ export function Sidebar() {
   return (
     <aside
       className="flex w-60 flex-col"
-      style={{ backgroundColor: '#0A0A0F' }}
+      style={{ backgroundColor: '#000000' }}
     >
       {/* Logo */}
       <div className="px-4 pt-5 pb-3">
         <img
           src="/logo.png"
           alt="bldg vision"
-          className="h-12 w-auto object-contain object-left"
+          className="h-20 w-auto object-contain object-left"
         />
       </div>
 
@@ -83,7 +83,7 @@ export function Sidebar() {
       </nav>
 
       {/* Org footer */}
-      <div className="mx-3 mb-4 mt-auto rounded-lg px-3 py-3" style={{ backgroundColor: '#111118' }}>
+      <div className="mx-3 mb-4 mt-auto rounded-lg px-3 py-3" style={{ backgroundColor: '#0A0A0F' }}>
         <div className="flex items-center gap-2.5">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold"
