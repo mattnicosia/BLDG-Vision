@@ -38,24 +38,46 @@ export function IntelligenceIndex() {
         'apikey': anonKey,
       }
 
-      const results = await Promise.allSettled([
-        fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
-          method: 'POST', headers,
-          body: JSON.stringify({ action: 'scan_all' }),
-        }).then(r => r.json()),
-        fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
-          method: 'POST', headers,
-          body: JSON.stringify({ action: 'fetch', keyword: 'building permit', maxPages: 1 }),
-        }).then(r => r.json()),
-      ])
-
       const parts: string[] = []
-      if (results[0].status === 'fulfilled' && results[0].value.sources) {
-        const boardDocs = results[0].value.sources.reduce((s: number, r: any) => s + (r.newDocs || 0), 0)
-        if (boardDocs > 0) parts.push(`${boardDocs} new board documents`)
+
+      // Step 1: Scan boards for new documents
+      toast('Scanning board meetings...')
+      const boardScan = await fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
+        method: 'POST', headers,
+        body: JSON.stringify({ action: 'scan_all' }),
+      }).then(r => r.json()).catch(() => null)
+
+      if (boardScan?.sources) {
+        const newDocs = boardScan.sources.reduce((s: number, r: any) => s + (r.newDocs || 0), 0)
+        if (newDocs > 0) parts.push(`${newDocs} new board documents`)
       }
-      if (results[1].status === 'fulfilled' && results[1].value.total) {
-        parts.push(`${results[1].value.total} permits available`)
+
+      // Step 2: Parse any unparsed board documents with AI
+      toast('Analyzing board documents with AI...')
+      const boardParse = await fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
+        method: 'POST', headers,
+        body: JSON.stringify({ action: 'parse_unparsed' }),
+      }).then(r => r.json()).catch(() => null)
+
+      if (boardParse?.itemsExtracted > 0) {
+        parts.push(`${boardParse.itemsExtracted} projects extracted`)
+      }
+      if (boardParse?.signalsGenerated > 0) {
+        parts.push(`${boardParse.signalsGenerated} signals created`)
+      }
+
+      // Step 3: Fetch and auto-import permits
+      toast('Fetching permits...')
+      const permitSync = await fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
+        method: 'POST', headers,
+        body: JSON.stringify({ action: 'sync', keyword: 'building permit', maxPages: 2 }),
+      }).then(r => r.json()).catch(() => null)
+
+      if (permitSync?.permitsImported > 0) {
+        parts.push(`${permitSync.permitsImported} permits imported`)
+      }
+      if (permitSync?.newCompetitorsCreated > 0) {
+        parts.push(`${permitSync.newCompetitorsCreated} new contractors found`)
       }
 
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
