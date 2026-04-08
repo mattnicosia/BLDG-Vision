@@ -119,6 +119,17 @@ export function IntelligenceIndex() {
         parts.push(`${totalContacts} contacts found at ${peopleResult.enriched} firms`)
       }
 
+      // Step 7: Generate alerts from new data
+      toast('Checking for alerts...')
+      const alertResult = await fetch(`${supabaseUrl}/functions/v1/generate-alerts`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.json()).catch(() => null)
+
+      if (alertResult?.alertsGenerated > 0) {
+        parts.push(`${alertResult.alertsGenerated} alerts`)
+      }
+
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
     } catch {
       toast.error('Scan failed')

@@ -1,8 +1,9 @@
 import { useAuth } from '@/hooks/useAuth'
 import { useOrg } from '@/hooks/useOrg'
-import { LogOut, User, Bell } from 'lucide-react'
+import { LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getInitials } from '@/types'
+import { NotificationBell } from './NotificationBell'
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -22,18 +23,7 @@ export function Header() {
         {org?.region ?? ''}
       </div>
       <div className="flex items-center gap-4">
-        <button
-          className="relative nav-item rounded-lg p-2"
-          style={{ color: '#7C7C7C' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#E8E8F0'; e.currentTarget.style.backgroundColor = '#1C1C1C' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#7C7C7C'; e.currentTarget.style.backgroundColor = 'transparent' }}
-        >
-          <Bell className="h-4 w-4" />
-          <span
-            className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full"
-            style={{ backgroundColor: '#6366F1' }}
-          />
-        </button>
+        <NotificationBell />
         <div className="flex items-center gap-2.5">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold"
