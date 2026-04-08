@@ -16,7 +16,7 @@ export function RadarIndex() {
   const { architects, createArchitect } = useArchitects()
   const { places: discoveredPlaces, bulkUpsert, markAddedToCRM } = useDiscoveredPlaces()
   const { isBlocked } = useBlockedPlaces()
-  const [results, setResults] = useState<GooglePlaceResult[]>([])
+  const [freshResults, setFreshResults] = useState<GooglePlaceResult[]>([])
   const [loading, setLoading] = useState(false)
   const [scanning, setScanning] = useState(false)
   const [searched, setSearched] = useState(false)
@@ -25,6 +25,18 @@ export function RadarIndex() {
   const counties = (org?.service_counties ?? []) as Array<{ name: string; state: string; lat: number; lng: number }>
 
   const addedPlaceIds = new Set(architects.map((a) => a.google_place_id).filter(Boolean))
+
+  // Show fresh search results if searching, otherwise show persisted discovered places
+  const displayResults: GooglePlaceResult[] = searched ? freshResults : discoveredPlaces.map((dp: any) => ({
+    id: dp.google_place_id,
+    displayName: { text: dp.name, languageCode: 'en' },
+    formattedAddress: dp.address || '',
+    rating: dp.rating,
+    userRatingCount: dp.review_count,
+    websiteUri: dp.website,
+    phone: dp.phone,
+    location: { latitude: dp.lat || 0, longitude: dp.lng || 0 },
+  }))
 
   async function searchPlaces(
     points: Array<{ lat: number; lng: number }>,
@@ -87,7 +99,7 @@ export function RadarIndex() {
     try {
       const points = getSearchPoints(5)
       const allPlaces = await searchPlaces(points, keyword, radius)
-      setResults(allPlaces)
+      setFreshResults(allPlaces)
 
       // Persist to discovered_places
       if (allPlaces.length > 0) {
@@ -109,7 +121,7 @@ export function RadarIndex() {
       }
     } catch (err) {
       toast.error('Search failed. Check your connection.')
-      setResults([])
+      setFreshResults([])
     }
     setLoading(false)
   }
@@ -152,12 +164,12 @@ export function RadarIndex() {
           website: p.websiteUri,
         }))
         const count = await bulkUpsert(rows)
-        toast.success(`Territory scan complete. ${count} architects discovered.`)
+        toast.success(`Territory scan complete. ${count} contacts discovered.`)
       } else {
-        toast('No architects found in your territory.')
+        toast('No contacts found in your territory.')
       }
 
-      setResults(allPlaces)
+      setFreshResults(allPlaces)
       setSearched(true)
     } catch (err) {
       toast.error('Scan failed. Try again.')
@@ -191,12 +203,12 @@ export function RadarIndex() {
     return (
       <div className="mx-auto max-w-4xl">
         <div className="mb-6">
-          <h1 className="text-xl font-medium">Regional Radar</h1>
+          <h1 className="text-xl font-medium">Discover</h1>
         </div>
         <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border">
           <Radar className="h-8 w-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">
-            Set your service counties in Settings to use Radar
+            Set your service counties in Settings to use Discover
           </p>
         </div>
       </div>
@@ -207,11 +219,11 @@ export function RadarIndex() {
     <div className="mx-auto max-w-4xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-medium">Regional Radar</h1>
+          <h1 className="text-xl font-medium">Discover</h1>
           <p className="text-sm text-muted-foreground">
             {discoveredPlaces.length > 0
-              ? `${discoveredPlaces.length} architects discovered in your territory`
-              : 'Discover architects in your service territory'}
+              ? `${discoveredPlaces.length} contacts discovered in your territory`
+              : 'Discover architects, attorneys, and other contacts in your service territory'}
           </p>
         </div>
         <Button
@@ -253,14 +265,55 @@ export function RadarIndex() {
         </Button>
       </div>
 
+      {/* Quick search pills for common contact types */}
+      <div className="mb-4 flex flex-wrap gap-1.5">
+        {[
+          'residential architect',
+          'land use attorney',
+          'zoning attorney',
+          'real estate developer',
+          'civil engineer',
+          'landscape architect',
+          'interior designer',
+          'general contractor',
+        ].map((suggestion) => (
+          <button
+            key={suggestion}
+            onClick={() => { setKeyword(suggestion); setSearched(false) }}
+            className="rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors"
+            style={{
+              backgroundColor: keyword === suggestion ? '#0F6E56' : 'transparent',
+              color: keyword === suggestion ? '#ffffff' : '#71717a',
+              border: `1px solid ${keyword === suggestion ? '#0F6E56' : '#e4e4e7'}`,
+            }}
+          >
+            {suggestion}
+          </button>
+        ))}
+      </div>
+
       {searched && (
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-sm text-muted-foreground">
+            {displayResults.length} result{displayResults.length !== 1 ? 's' : ''} found for "{keyword}"
+          </p>
+          <button
+            onClick={() => { setSearched(false); setFreshResults([]) }}
+            className="text-xs text-primary hover:underline"
+          >
+            Show all discovered
+          </button>
+        </div>
+      )}
+
+      {!searched && displayResults.length > 0 && (
         <p className="mb-3 text-sm text-muted-foreground">
-          {results.length} result{results.length !== 1 ? 's' : ''} found
+          {displayResults.length} previously discovered contacts
         </p>
       )}
 
       <div className="flex flex-col gap-2">
-        {results.filter((place) => !isBlocked(place.id, place.displayName.text)).map((place) => (
+        {displayResults.filter((place) => !isBlocked(place.id, place.displayName.text)).map((place) => (
           <RadarCard
             key={place.id}
             place={place}
@@ -268,10 +321,10 @@ export function RadarIndex() {
             alreadyAdded={addedPlaceIds.has(place.id)}
           />
         ))}
-        {searched && results.length === 0 && !loading && (
+        {displayResults.length === 0 && !loading && (
           <div className="flex h-40 items-center justify-center rounded-xl border border-dashed border-border">
             <p className="text-sm text-muted-foreground">
-              No architects found. Try broadening your search.
+              {searched ? 'No contacts found. Try a different keyword.' : 'Search or scan your territory to discover contacts.'}
             </p>
           </div>
         )}

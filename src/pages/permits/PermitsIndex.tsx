@@ -23,7 +23,7 @@ import { categorizePermit, CONSTRUCTION_TYPE_STYLES, RELEVANCE_STYLES, type Cons
 
 export function PermitsIndex() {
   const { permits: importedPermits, loading: loadingImported, refetch } = usePermits()
-  const [tab, setTab] = useState<'fetch' | 'imported'>('fetch')
+  const [tab, setTab] = useState<'fetch' | 'imported'>('imported')
   const [keyword, setKeyword] = useState('building permit')
   const [fetching, setFetching] = useState(false)
   const [importing, setImporting] = useState(false)
@@ -239,16 +239,6 @@ export function PermitsIndex() {
       {/* Tabs */}
       <div className="mb-4 flex items-center gap-4 border-b border-border">
         <button
-          onClick={() => setTab('fetch')}
-          className="pb-2 text-sm font-medium"
-          style={{
-            color: tab === 'fetch' ? '#0F6E56' : '#71717a',
-            borderBottom: tab === 'fetch' ? '2px solid #0F6E56' : '2px solid transparent',
-          }}
-        >
-          Fetch and review
-        </button>
-        <button
           onClick={() => setTab('imported')}
           className="pb-2 text-sm font-medium"
           style={{
@@ -256,7 +246,17 @@ export function PermitsIndex() {
             borderBottom: tab === 'imported' ? '2px solid #0F6E56' : '2px solid transparent',
           }}
         >
-          Imported ({importedPermits.length})
+          Permits ({importedPermits.length})
+        </button>
+        <button
+          onClick={() => setTab('fetch')}
+          className="pb-2 text-sm font-medium"
+          style={{
+            color: tab === 'fetch' ? '#0F6E56' : '#71717a',
+            borderBottom: tab === 'fetch' ? '2px solid #0F6E56' : '2px solid transparent',
+          }}
+        >
+          Fetch new
         </button>
       </div>
 
