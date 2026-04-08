@@ -99,14 +99,29 @@ async function findDocumentUrls(meetingUrl: string): Promise<Array<{ title: stri
   return docs
 }
 
-// Extract text from a PDF URL (fetch first ~100KB for AI analysis)
-async function fetchDocumentText(pdfUrl: string): Promise<string> {
-  // For PDFs, we'll send the URL to Claude which can fetch and read it
-  // For now, try to get HTML version or use the URL directly
-  return `[PDF Document at: ${pdfUrl}]`
+// Fetch PDF and convert to base64 for Claude document input
+async function fetchPdfAsBase64(pdfUrl: string): Promise<string | null> {
+  try {
+    const res = await fetch(pdfUrl, { headers: BROWSER_HEADERS })
+    if (!res.ok) return null
+    const contentType = res.headers.get('content-type') || ''
+    if (!contentType.includes('pdf')) return null
+    const buffer = await res.arrayBuffer()
+    // Only process PDFs under 5MB
+    if (buffer.byteLength > 5 * 1024 * 1024) return null
+    const bytes = new Uint8Array(buffer)
+    let binary = ''
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i])
+    }
+    return btoa(binary)
+  } catch (e) {
+    console.error('PDF fetch error:', e)
+    return null
+  }
 }
 
-// Use Claude to extract structured data from board minutes text
+// Use Claude to extract structured data from board documents (PDF or text)
 async function extractBoardItems(
   anthropic: Anthropic,
   documentText: string,
@@ -118,6 +133,7 @@ async function extractBoardItems(
   project_address: string
   applicant_name: string
   architect_name: string
+  attorney_name: string
   engineer_name: string
   project_type: string
   project_description: string
@@ -126,22 +142,16 @@ async function extractBoardItems(
   estimated_scope: string
 }>> {
   try {
-    // Use Claude to analyze the document URL
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4000,
-      system: `You are a construction intelligence analyst. You extract structured project data from municipal board meeting minutes and agendas. Always output valid JSON arrays. If you cannot access the document or find no projects, return an empty array [].`,
-      messages: [{
-        role: 'user',
-        content: `Analyze this ${BOARD_TYPE_LABELS[boardType] || boardType} document from ${townName}, NY.
+    const systemPrompt = `You are a construction intelligence analyst. You extract structured project data from municipal board meeting minutes, agendas, and architectural plans. Always output valid JSON arrays. If you find no projects, return an empty array [].`
 
-Document URL: ${pdfUrl}
-Meeting date: ${meetingDate}
+    const userPrompt = `Analyze this ${BOARD_TYPE_LABELS[boardType] || boardType} document from ${townName}, NY.
+Meeting date: ${meetingDate || 'unknown'}
 
 Extract EVERY project/application discussed. For each, provide:
 - project_address: street address of the project
 - applicant_name: who is applying
 - architect_name: the architect (if mentioned)
+- attorney_name: the land use attorney representing the applicant (if mentioned)
 - engineer_name: the engineer (if mentioned)
 - project_type: one of "site_plan", "subdivision", "variance", "special_permit", "design_review", "amendment", "other"
 - project_description: brief description of what's being built/changed
@@ -149,11 +159,42 @@ Extract EVERY project/application discussed. For each, provide:
 - conditions: any conditions of approval
 - estimated_scope: brief scope estimate (e.g., "4-lot subdivision", "2,400 SF addition", "new single family home")
 
-Return ONLY a JSON array. No markdown, no explanation. Example:
-[{"project_address":"123 Main St","applicant_name":"John Doe","architect_name":"Jane Smith Architects","engineer_name":"ABC Engineering","project_type":"site_plan","project_description":"New single family residence with attached garage","decision":"approved","conditions":"Subject to county health department approval","estimated_scope":"3,200 SF new construction"}]
+For architectural plan PDFs, extract what you can see: the address from the title block, architect from the stamp, project type from the drawings.
 
-If you cannot access the PDF or find no projects, return: []`
-      }],
+Return ONLY a JSON array. No markdown. If you find no projects, return: []`
+
+    // Try to fetch PDF and send as document to Claude
+    const pdfBase64 = pdfUrl ? await fetchPdfAsBase64(pdfUrl) : null
+
+    let messageContent: any[]
+    if (pdfBase64) {
+      messageContent = [
+        {
+          type: 'document',
+          source: {
+            type: 'base64',
+            media_type: 'application/pdf',
+            data: pdfBase64,
+          },
+        },
+        { type: 'text', text: userPrompt },
+      ]
+    } else if (documentText && documentText.length > 50) {
+      // Fall back to text content
+      messageContent = [
+        { type: 'text', text: `${userPrompt}\n\nDocument text:\n${documentText}` },
+      ]
+    } else {
+      // No content available
+      console.log(`Skipping ${pdfUrl}: no PDF or text content available`)
+      return []
+    }
+
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 4000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: messageContent }],
     })
 
     const text = message.content
@@ -161,7 +202,6 @@ If you cannot access the PDF or find no projects, return: []`
       .map((b: any) => b.text)
       .join('')
 
-    // Parse the JSON response
     const cleaned = text.trim().replace(/^```json?\n?/i, '').replace(/\n?```$/i, '')
     return JSON.parse(cleaned)
   } catch (e) {
@@ -387,6 +427,7 @@ Deno.serve(async (req) => {
           applicant_name: item.applicant_name || null,
           architect_name: item.architect_name || null,
           architect_id: architectId,
+          attorney_name: item.attorney_name || null,
           engineer_name: item.engineer_name || null,
           project_type: item.project_type || null,
           project_description: item.project_description || null,

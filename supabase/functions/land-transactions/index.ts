@@ -96,25 +96,25 @@ Deno.serve(async (req) => {
       const cutoffDate = new Date()
       cutoffDate.setMonth(cutoffDate.getMonth() - monthsBack)
 
-      // Pull recent pages (data is not sorted, so we sample from recent offsets)
+      // Data is sorted by address NOT date, so we must sample broadly
       const response = await fetchSalesData(countyCode, 0, 1)
       if (!response) throw new Error('Failed to fetch from Sales Web')
       const totalRecords = response.fullLength || 0
 
-      // Sample from the most recent records (high offsets tend to have newer data mixed in)
+      // Sample 10 batches of 500 records spread across the dataset
       const allSales: any[] = []
-      const pagesToFetch = Math.min(5, Math.ceil(totalRecords / 1000))
+      const batchSize = 500
+      const numBatches = 10
+      const step = Math.floor(totalRecords / numBatches)
 
-      for (let i = 0; i < pagesToFetch; i++) {
-        const offset = Math.max(0, totalRecords - (1000 * (i + 1)))
-        const resp = await fetchSalesData(countyCode, offset, 200)
+      for (let i = 0; i < numBatches; i++) {
+        const offset = i * step
+        const resp = await fetchSalesData(countyCode, offset, batchSize)
         if (resp?.salesWebList) {
           for (const sale of resp.salesWebList) {
-            // Filter by date and price
             const saleDate = sale.saleDt ? new Date(sale.saleDt) : null
             if (!saleDate || saleDate < cutoffDate) continue
             if (sale.salePriceAmt < minPrice) continue
-
             allSales.push(sale)
           }
         }

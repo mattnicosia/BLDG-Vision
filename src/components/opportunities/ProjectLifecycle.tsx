@@ -19,6 +19,7 @@ interface LifecycleProject {
   architect_name?: string
   architect_id?: string
   applicant_name?: string
+  attorney_name?: string
   engineer_name?: string
   contractor_name?: string
   town?: string
@@ -128,6 +129,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           architect_name: item.architect_name,
           architect_id: item.architect_id,
           applicant_name: item.applicant_name,
+          attorney_name: item.attorney_name,
           engineer_name: item.engineer_name,
           town: item.town_name,
           source: 'board',
@@ -496,7 +498,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
               </div>
 
               {/* People involved */}
-              {(selectedProject.architect_name || selectedProject.applicant_name || selectedProject.engineer_name || selectedProject.contractor_name) && (
+              {(selectedProject.architect_name || selectedProject.applicant_name || selectedProject.attorney_name || selectedProject.engineer_name || selectedProject.contractor_name) && (
                 <div>
                   <p className="mb-2 text-xs text-muted-foreground">People involved</p>
                   <div className="flex flex-col gap-1.5">
@@ -521,6 +523,15 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                         <div>
                           <p className="text-[10px] text-muted-foreground">Applicant</p>
                           <p className="text-sm">{selectedProject.applicant_name}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedProject.attorney_name && (
+                      <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-2">
+                        <FileText className="h-3.5 w-3.5" style={{ color: '#3C3489' }} />
+                        <div>
+                          <p className="text-[10px] text-muted-foreground">Land Use Attorney</p>
+                          <p className="text-sm">{selectedProject.attorney_name}</p>
                         </div>
                       </div>
                     )}
