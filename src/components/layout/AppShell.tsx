@@ -4,7 +4,7 @@ import { Header } from './Header'
 
 export function AppShell() {
   return (
-    <div className="flex h-screen" style={{ backgroundColor: '#0A0A0F' }}>
+    <div className="flex h-screen" style={{ backgroundColor: '#000000' }}>
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
