@@ -19,17 +19,20 @@ async function getSearchCriteria(): Promise<any> {
   return data.Result
 }
 
-async function searchPermits(criteria: any, keyword: string, pageNum: number, pageSize: number) {
+async function searchPermits(criteria: any, keyword: string, pageNum: number, pageSize: number, module: number = 1) {
   criteria.Keyword = keyword
   criteria.ExactMatch = false
-  criteria.SearchModule = 1
-  criteria.FilterModule = 1
+  criteria.SearchModule = module
+  criteria.FilterModule = module
   criteria.PageNumber = pageNum
   criteria.PageSize = pageSize
   for (const key of Object.keys(criteria)) {
     if (key.endsWith('Criteria') && criteria[key] && typeof criteria[key] === 'object' && 'PageSize' in criteria[key]) {
-      criteria[key].PageNumber = key === 'PermitCriteria' ? pageNum : 1
-      criteria[key].PageSize = key === 'PermitCriteria' ? pageSize : 1
+      const isActiveCriteria =
+        (module === 1 && key === 'PermitCriteria') ||
+        (module === 3 && key === 'PlanCriteria')
+      criteria[key].PageNumber = isActiveCriteria ? pageNum : 1
+      criteria[key].PageSize = isActiveCriteria ? pageSize : 1
     }
   }
   const res = await fetch(`${ENERGOV_BASE}/energov/search/search`, {
@@ -37,7 +40,7 @@ async function searchPermits(criteria: any, keyword: string, pageNum: number, pa
   })
   const data = await res.json()
   if (!data.Result) return { results: [], total: 0 }
-  return { results: data.Result.EntityResults || [], total: data.Result.PermitsFound || data.Result.TotalFound || 0 }
+  return { results: data.Result.EntityResults || [], total: data.Result.PermitsFound || data.Result.PlansFound || data.Result.TotalFound || 0 }
 }
 
 async function getPermitDetail(permitId: string) {
@@ -228,26 +231,33 @@ Deno.serve(async (req) => {
 
     // SYNC: Auto-fetch and import permits (used by Scan All Sources)
     if (action === 'sync') {
-      const criteria = await getSearchCriteria()
-      const keywords = body.keywords || ['construction', 'building', 'alteration', 'new home', 'residential', 'commercial', 'demolition']
+      // Module 1 (Permits): address assignments = new construction signals
+      // Module 3 (Plans): GML referrals = planning/zoning board activity
+      const permitKeywords = body.keywords || ['new dwelling', 'new construction', 'single family', 'two family', 'residential', 'addition', 'renovation']
       const keyword = body.keyword || null
-      const searchTerms = keyword ? [keyword] : keywords
       const maxPages = body.maxPages || 2
       const pageSize = 20
       const allPreviews: any[] = []
       const seenCaseIds = new Set<string>()
 
-      for (const term of searchTerms) {
-        for (let page = 1; page <= maxPages; page++) {
-          const freshCriteria = await getSearchCriteria()
-          const { results } = await searchPermits(freshCriteria, term, page, pageSize)
-          if (results.length === 0) break
+      // Search both Permits (module 1) and Plans (module 3)
+      const searches = [
+        ...(keyword ? [{ terms: [keyword], module: 1 }] : [
+          { terms: permitKeywords, module: 1 },
+          { terms: ['GML', 'subdivision', 'site plan'], module: 3 },
+        ]),
+      ]
 
-          for (const permit of results) {
-            const mod = String(permit.ModuleName).toLowerCase()
-            if (mod !== 'permit' && mod !== '1' && mod !== '2') continue
-            if (seenCaseIds.has(permit.CaseId)) continue
-            seenCaseIds.add(permit.CaseId)
+      for (const search of searches) {
+        for (const term of search.terms) {
+          for (let page = 1; page <= maxPages; page++) {
+            const freshCriteria = await getSearchCriteria()
+            const { results } = await searchPermits(freshCriteria, term, page, pageSize, search.module)
+            if (results.length === 0) break
+
+            for (const permit of results) {
+              if (seenCaseIds.has(permit.CaseId)) continue
+              seenCaseIds.add(permit.CaseId)
 
             try {
               const detail = await getPermitDetail(permit.CaseId)
@@ -292,6 +302,7 @@ Deno.serve(async (req) => {
             }
           }
           if (results.length < pageSize) break
+          }
         }
       }
 
@@ -353,7 +364,7 @@ Deno.serve(async (req) => {
 
       return new Response(
         JSON.stringify({
-          searched: searchTerms.length,
+          searched: searches.reduce((s, x) => s + x.terms.length, 0),
           found: allPreviews.length,
           permitsImported,
           newCompetitorsCreated,

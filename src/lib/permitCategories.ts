@@ -20,6 +20,7 @@ interface CategoryResult {
 const TYPE_PATTERNS: Array<{ pattern: RegExp; type: ConstructionType }> = [
   { pattern: /new (home|house|dwelling|construction|building|residence|single.?family|multi.?family|townhome|condo)/i, type: 'New Construction' },
   { pattern: /ground.?up|new.?build|new.?struct/i, type: 'New Construction' },
+  { pattern: /9.?1.?1 address|address assign/i, type: 'New Construction' }, // County-level proxy for new structures
   { pattern: /renovati|remodel|alterat|rehab|gut|interior.?fit|tenant.?improve|moderniz/i, type: 'Renovation' },
   { pattern: /addition|expan|extend|enlarg|add.?(room|floor|story|wing|garage|deck|porch)/i, type: 'Addition' },
   { pattern: /demoli|tear.?down|raze|remov.*(struct|build)/i, type: 'Demolition' },
@@ -29,7 +30,7 @@ const TYPE_PATTERNS: Array<{ pattern: RegExp; type: ConstructionType }> = [
 
 // Low relevance keywords (things a premium residential GC wouldn't bid on)
 const LOW_RELEVANCE_PATTERNS = [
-  /sewer/i, /septic/i, /9.?1.?1/i, /address.?assign/i, /fire.?alarm/i,
+  /fire.?alarm/i,
   /sign\b/i, /billboard/i, /tent\b/i, /temporary/i, /certificate.?of/i,
   /inspection.?only/i, /re.?inspection/i, /violation/i, /code.?enforce/i,
   /annual.?permit/i, /operating.?permit/i, /food/i, /restaurant/i,
@@ -46,6 +47,8 @@ const HIGH_RELEVANCE_PATTERNS = [
   /gut.?renov/i, /full.?renov/i, /major.?renov/i,
   /luxury/i, /custom.?home/i, /estate/i,
   /architect/i, /design.?build/i,
+  /9.?1.?1.*new/i, /address assign.*new/i, // County address assignments for new builds
+  /gml.*planning/i, /subdivision/i, /site.?plan/i, // County planning referrals
 ]
 
 export function categorizePermit(

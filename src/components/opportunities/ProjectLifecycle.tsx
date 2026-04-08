@@ -47,15 +47,27 @@ const STAGES = [
   { key: 'permit_approved', label: 'Permit Approved', color: '#0F6E56', text: '#ffffff' },
 ]
 
-// Junk permit types to auto-hide
+// Low-value permit types to auto-hide (not relevant to GC opportunities)
 const JUNK_PERMIT_TYPES = [
-  '9-1-1', 'address assignment', 'rental registry', 'multiple dwelling',
-  'road work', 'sewer', 'wastewater', 'void', 'test permit',
+  'road work', 'road usage', 'road closure', 'void', 'test permit',
+  'mosquito', 'weights', 'rental registry', 'multiple dwelling',
+  'esa waiver', 'legacy',
+]
+
+// Permit types that signal new construction (county-level proxies)
+const NEW_CONSTRUCTION_SIGNALS = [
+  '9-1-1', 'address assignment', // New addresses = new structures
+  'sewer district construction', // New sewer hookups = new builds
 ]
 
 function isJunkPermit(permitType: string): boolean {
   const lower = permitType.toLowerCase()
   return JUNK_PERMIT_TYPES.some(junk => lower.includes(junk))
+}
+
+function isNewConstructionSignal(permitType: string): boolean {
+  const lower = permitType.toLowerCase()
+  return NEW_CONSTRUCTION_SIGNALS.some(sig => lower.includes(sig))
 }
 
 function mapToStage(source: string, sourceType: string, decision?: string): string {
@@ -65,8 +77,14 @@ function mapToStage(source: string, sourceType: string, decision?: string): stri
     if (sourceType === 'architectural_review') return 'arb'
     return 'planning'
   }
+  // GML referrals from county go to their respective board stage
+  const typeLower = (sourceType || '').toLowerCase()
+  if (typeLower.includes('gml') && typeLower.includes('planning')) return 'planning'
+  if (typeLower.includes('gml') && typeLower.includes('zoning')) return 'zoning'
+  if (typeLower.includes('subdivision')) return 'planning'
+
   const status = (decision || '').toLowerCase()
-  if (status.includes('approved') || status.includes('issued') || status.includes('final')) return 'permit_approved'
+  if (status.includes('approved') || status.includes('issued') || status.includes('final') || status.includes('complete')) return 'permit_approved'
   return 'permit_filed'
 }
 
@@ -130,8 +148,12 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
     if (permitRes.data) {
       for (const permit of permitRes.data) {
         const type = permit.permit_type || ''
-        // Auto-dismiss junk permits but still include them (user can show dismissed)
+        // Auto-dismiss junk permits; reclassify address assignments as construction signals
         const autoJunk = isJunkPermit(type)
+        const isConstruction = isNewConstructionSignal(type)
+        const label = isConstruction
+          ? `New Construction - ${(permit.scope_description || type).slice(0, 40)}`
+          : type || 'Permit'
         all.push({
           id: permit.id,
           address: permit.project_address || '',
@@ -143,8 +165,8 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           source: 'permit',
           source_table: 'permits',
           source_type: type,
-          source_label: type || 'Permit',
-          stage: mapToStage('permit', '', permit.status),
+          source_label: label,
+          stage: mapToStage('permit', type, permit.status),
           date: permit.filed_date,
           decision: permit.status,
           permit_number: permit.permit_number,
