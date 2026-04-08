@@ -171,6 +171,25 @@ export interface ArchitectTouchpoint {
   contacted_at: string
 }
 
+// ─── CONTACTS ────────────────────────────────────────────────────────────────
+
+export interface ArchitectContact {
+  id: string
+  org_id: string
+  architect_id: string
+  name: string
+  title?: string
+  email?: string
+  phone?: string
+  linkedin_url?: string
+  is_decision_maker: boolean
+  source: 'website' | 'google_search' | 'permit' | 'board' | 'manual'
+  source_url?: string
+  confidence: 'high' | 'medium' | 'low'
+  created_at: string
+  updated_at: string
+}
+
 // ─── INTELLIGENCE ──────────────────────────────────────────────────────────────
 
 export interface Permit {

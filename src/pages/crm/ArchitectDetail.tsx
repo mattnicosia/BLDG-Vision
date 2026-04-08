@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useArchitectDetail } from '@/hooks/useArchitects'
 import { StageBadge } from '@/components/crm/StageBadge'
@@ -25,8 +25,13 @@ import {
   MapPin,
   Trash2,
   Instagram,
+  Users,
+  Star,
+  RefreshCw,
+  Linkedin,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
+import type { ArchitectContact } from '@/types'
 
 export function ArchitectDetail() {
   const { id } = useParams<{ id: string }>()
@@ -40,6 +45,45 @@ export function ArchitectDetail() {
   const [showAI, setShowAI] = useState(false)
   const [showEmailSeries, setShowEmailSeries] = useState(false)
   const [editing, setEditing] = useState(false)
+
+  // People/contacts at this firm
+  const [contacts, setContacts] = useState<ArchitectContact[]>([])
+  const [contactsLoading, setContactsLoading] = useState(false)
+  const [enriching, setEnriching] = useState(false)
+
+  // Fetch contacts when architect loads
+  useEffect(() => {
+    if (!id) return
+    supabase
+      .from('architect_contacts')
+      .select('*')
+      .eq('architect_id', id)
+      .order('is_decision_maker', { ascending: false })
+      .then(({ data }) => { if (data) setContacts(data) })
+  }, [id])
+
+  async function enrichPeople() {
+    if (!id) return
+    setEnriching(true)
+    try {
+      const { data, error } = await supabase.functions.invoke('enrich-people', {
+        body: { architect_id: id },
+      })
+      if (error) throw error
+      // Refetch contacts
+      const { data: updated } = await supabase
+        .from('architect_contacts')
+        .select('*')
+        .eq('architect_id', id)
+        .order('is_decision_maker', { ascending: false })
+      if (updated) setContacts(updated)
+      // Refetch architect in case email was updated
+      refetch()
+    } catch (err) {
+      console.error('Enrich people error:', err)
+    }
+    setEnriching(false)
+  }
 
   // Edit form state
   const [editName, setEditName] = useState('')
@@ -416,6 +460,67 @@ export function ArchitectDetail() {
 
           {/* Pipeline */}
           <OpportunityPanel architectId={architect.id} architectName={architect.name} />
+
+          {/* People at this firm */}
+          <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+            <div className="mb-2 flex items-center justify-between">
+              <h3 className="flex items-center gap-1.5 text-sm font-medium">
+                <Users className="h-3.5 w-3.5 text-muted-foreground" />
+                People at this firm
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 gap-1 text-[10px]"
+                onClick={enrichPeople}
+                disabled={enriching || !architect.website}
+              >
+                <RefreshCw className={`h-3 w-3 ${enriching ? 'animate-spin' : ''}`} />
+                {enriching ? 'Finding...' : contacts.length > 0 ? 'Refresh' : 'Find people'}
+              </Button>
+            </div>
+
+            {contacts.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                {architect.website
+                  ? 'Click "Find people" to discover team members from their website'
+                  : 'Add a website to discover team members'}
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {contacts.map((contact) => (
+                  <div key={contact.id} className="rounded-lg bg-muted/50 p-2">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs font-medium">{contact.name}</p>
+                      {contact.is_decision_maker && (
+                        <Star className="h-2.5 w-2.5 text-amber-500 fill-amber-500" />
+                      )}
+                    </div>
+                    {contact.title && (
+                      <p className="text-[10px] text-muted-foreground">{contact.title}</p>
+                    )}
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      {contact.email && (
+                        <a href={`mailto:${contact.email}`} className="flex items-center gap-0.5 text-[10px] text-primary hover:underline">
+                          <Mail className="h-2.5 w-2.5" />{contact.email}
+                        </a>
+                      )}
+                      {contact.phone && (
+                        <a href={`tel:${contact.phone}`} className="flex items-center gap-0.5 text-[10px] text-muted-foreground hover:text-foreground">
+                          <Phone className="h-2.5 w-2.5" />{contact.phone}
+                        </a>
+                      )}
+                      {contact.linkedin_url && (
+                        <a href={contact.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-[10px] text-muted-foreground hover:text-foreground">
+                          <Linkedin className="h-2.5 w-2.5" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           {architect.style && (
             <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>

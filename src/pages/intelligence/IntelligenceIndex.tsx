@@ -106,6 +106,18 @@ export function IntelligenceIndex() {
         parts.push(`${valueResult.estimated} values estimated`)
       }
 
+      // Step 6: Enrich people/contacts at architect firms
+      toast('Finding decision makers at firms...')
+      const peopleResult = await fetch(`${supabaseUrl}/functions/v1/enrich-people`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.json()).catch(() => null)
+
+      if (peopleResult?.enriched > 0) {
+        const totalContacts = peopleResult.results?.reduce((s: number, r: any) => s + (r.contacts?.length || 0), 0) || 0
+        parts.push(`${totalContacts} contacts found at ${peopleResult.enriched} firms`)
+      }
+
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
     } catch {
       toast.error('Scan failed')
