@@ -7,6 +7,7 @@ import { EmailSignatureSettings } from '@/components/settings/EmailSignatureSett
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { Pencil, Check, MapPin, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -21,6 +22,12 @@ export function SettingsIndex() {
   const [enriching, setEnriching] = useState(false)
   const [enrichingSocial, setEnrichingSocial] = useState(false)
   const [enrichingEmails, setEnrichingEmails] = useState(false)
+  const [editingOrg, setEditingOrg] = useState(false)
+  const [orgName, setOrgName] = useState(org?.name ?? '')
+  const [orgRegion, setOrgRegion] = useState(org?.region ?? '')
+  const [orgBudgetMin, setOrgBudgetMin] = useState(org?.budget_min?.toString() ?? '')
+  const [orgBudgetMax, setOrgBudgetMax] = useState(org?.budget_max?.toString() ?? '')
+  const [savingOrg, setSavingOrg] = useState(false)
 
   async function saveTerritory() {
     if (!org) return
@@ -93,24 +100,87 @@ export function SettingsIndex() {
       <div className="flex flex-col gap-4">
         {/* Organization */}
         <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
-          <h2 className="mb-3 text-base font-medium">Organization</h2>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <p className="text-xs text-muted-foreground">Name</p>
-              <p className="text-sm">{org?.name ?? 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Plan</p>
-              <p className="text-sm capitalize">{org?.plan ?? 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground">Budget range</p>
-              <p className="text-sm">
-                ${((org?.budget_min ?? 0) / 1000000).toFixed(1)}M -
-                ${((org?.budget_max ?? 0) / 1000000).toFixed(1)}M
-              </p>
-            </div>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-base font-medium">Organization</h2>
+            {!editingOrg ? (
+              <Button variant="outline" size="sm" onClick={() => {
+                setOrgName(org?.name ?? '')
+                setOrgRegion(org?.region ?? '')
+                setOrgBudgetMin(org?.budget_min?.toString() ?? '')
+                setOrgBudgetMax(org?.budget_max?.toString() ?? '')
+                setEditingOrg(true)
+              }} className="gap-1.5">
+                <Pencil className="h-3.5 w-3.5" /> Edit
+              </Button>
+            ) : (
+              <div className="flex gap-2">
+                <Button variant="ghost" size="sm" onClick={() => setEditingOrg(false)}>Cancel</Button>
+                <Button size="sm" disabled={savingOrg} className="gap-1.5" onClick={async () => {
+                  if (!org) return
+                  setSavingOrg(true)
+                  const { error } = await supabase.from('organizations').update({
+                    name: orgName || org.name,
+                    region: orgRegion || undefined,
+                    budget_min: parseInt(orgBudgetMin) || org.budget_min,
+                    budget_max: parseInt(orgBudgetMax) || org.budget_max,
+                  }).eq('id', org.id)
+                  setSavingOrg(false)
+                  if (error) toast.error(error.message)
+                  else { toast.success('Organization updated'); setEditingOrg(false); refetch() }
+                }}>
+                  <Check className="h-3.5 w-3.5" /> {savingOrg ? 'Saving...' : 'Save'}
+                </Button>
+              </div>
+            )}
           </div>
+          {editingOrg ? (
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground">Company name</label>
+                <Input value={orgName} onChange={(e) => setOrgName(e.target.value)} />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs text-muted-foreground">Region</label>
+                <Input value={orgRegion} onChange={(e) => setOrgRegion(e.target.value)} placeholder="e.g., NY, NJ" />
+              </div>
+              <div className="flex gap-3">
+                <div className="flex flex-1 flex-col gap-1">
+                  <label className="text-xs text-muted-foreground">Min budget ($)</label>
+                  <Input type="number" value={orgBudgetMin} onChange={(e) => setOrgBudgetMin(e.target.value)} />
+                </div>
+                <div className="flex flex-1 flex-col gap-1">
+                  <label className="text-xs text-muted-foreground">Max budget ($)</label>
+                  <Input type="number" value={orgBudgetMax} onChange={(e) => setOrgBudgetMax(e.target.value)} />
+                </div>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="text-sm capitalize">{org?.plan ?? 'N/A'}</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <p className="text-xs text-muted-foreground">Name</p>
+                <p className="text-sm">{org?.name ?? 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="text-sm capitalize">{org?.plan ?? 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Region</p>
+                <p className="text-sm">{org?.region ?? 'Not set'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground">Budget range</p>
+                <p className="text-sm">
+                  ${((org?.budget_min ?? 0) / 1000000).toFixed(1)}M -
+                  ${((org?.budget_max ?? 0) / 1000000).toFixed(1)}M
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Service Territory */}
