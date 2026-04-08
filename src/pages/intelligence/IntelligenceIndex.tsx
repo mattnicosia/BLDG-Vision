@@ -67,7 +67,21 @@ export function IntelligenceIndex() {
         parts.push(`${boardParse.signalsGenerated} signals created`)
       }
 
-      // Step 3: Fetch and auto-import permits
+      // Step 3: Fetch land transactions
+      toast('Scanning land transactions...')
+      const landResult = await fetch(`${supabaseUrl}/functions/v1/land-transactions`, {
+        method: 'POST', headers,
+        body: JSON.stringify({ action: 'fetch', county: 'Rockland', minPrice: 300000, monthsBack: 6 }),
+      }).then(r => r.json()).catch(() => null)
+
+      if (landResult?.inserted > 0) {
+        parts.push(`${landResult.inserted} land transactions`)
+      }
+      if (landResult?.signalsCreated > 0) {
+        parts.push(`${landResult.signalsCreated} land signals`)
+      }
+
+      // Step 4: Fetch and auto-import permits
       toast('Fetching permits...')
       const permitSync = await fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
         method: 'POST', headers,
@@ -79,6 +93,17 @@ export function IntelligenceIndex() {
       }
       if (permitSync?.newCompetitorsCreated > 0) {
         parts.push(`${permitSync.newCompetitorsCreated} new contractors found`)
+      }
+
+      // Step 5: AI value estimation
+      toast('Estimating project values...')
+      const valueResult = await fetch(`${supabaseUrl}/functions/v1/estimate-values`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.json()).catch(() => null)
+
+      if (valueResult?.estimated > 0) {
+        parts.push(`${valueResult.estimated} values estimated`)
       }
 
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')

@@ -35,6 +35,7 @@ interface LifecycleProject {
 }
 
 const STAGES = [
+  { key: 'land_sale', label: 'Land Sale', color: '#FEE2E2', text: '#A32D2D' },
   { key: 'planning', label: 'Planning Board', color: '#EEEDFE', text: '#3C3489' },
   { key: 'zoning', label: 'Zoning Board', color: '#FAEEDA', text: '#854F0B' },
   { key: 'arb', label: 'Architectural Review', color: '#E1F5EE', text: '#085041' },
@@ -74,9 +75,10 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
     if (!org) return
     setLoading(true)
 
-    const [boardRes, permitRes] = await Promise.all([
+    const [boardRes, permitRes, landRes] = await Promise.all([
       supabase.from('board_items').select('*').eq('org_id', org.id).order('meeting_date', { ascending: false }).limit(50),
       supabase.from('permits').select('*').eq('org_id', org.id).order('filed_date', { ascending: false }).limit(50),
+      supabase.from('land_transactions').select('*').eq('org_id', org.id).order('sale_date', { ascending: false }).limit(50),
     ])
 
     const all: LifecycleProject[] = []
@@ -130,6 +132,27 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
       }
     }
 
+    // Land transactions
+    if (landRes.data) {
+      for (const land of landRes.data) {
+        if (land.sale_price < 300000) continue
+        all.push({
+          id: land.id,
+          address: land.address || '',
+          description: `${land.property_class_desc || 'Property'} sold for $${(land.sale_price / 1000000).toFixed(1)}M. Buyer: ${land.buyer_name || 'Unknown'}`,
+          applicant_name: land.buyer_name,
+          town: land.county,
+          value: land.sale_price,
+          source: 'permit' as const,
+          source_type: 'Land Transaction',
+          source_label: `Land Sale - ${land.property_class_desc || 'Property'}`,
+          stage: 'land_sale',
+          date: land.sale_date,
+          decision: land.new_construction ? 'New construction' : 'Transfer',
+        })
+      }
+    }
+
     setProjects(all)
     setLoading(false)
   }, [org])
@@ -158,7 +181,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
       </button>
 
       {!collapsed && (
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {STAGES.map((stage) => {
             const stageProjects = byStage[stage.key] || []
             return (
