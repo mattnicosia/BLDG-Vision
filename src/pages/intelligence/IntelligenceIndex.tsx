@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase'
 import { PermitsIndex } from '@/pages/permits/PermitsIndex'
 import { BoardsIndex } from '@/pages/boards/BoardsIndex'
 import { SignalsIndex } from '@/pages/signals/SignalsIndex'
+import { ProjectLifecycle } from '@/components/opportunities/ProjectLifecycle'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
@@ -110,9 +111,12 @@ export function IntelligenceIndex() {
           className="gap-2"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${scanning ? 'animate-spin' : ''}`} />
-          {scanning ? 'Scanning...' : 'Rescan all sources'}
+          {scanning ? 'Scanning...' : 'Scan all sources'}
         </Button>
       </div>
+
+      {/* Project lifecycle Kanban */}
+      <ProjectLifecycle />
 
       {/* View filter */}
       <div className="mb-4 flex items-center gap-2">
