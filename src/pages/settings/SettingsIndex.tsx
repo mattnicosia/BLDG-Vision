@@ -20,6 +20,7 @@ export function SettingsIndex() {
   const [saving, setSaving] = useState(false)
   const [enriching, setEnriching] = useState(false)
   const [enrichingSocial, setEnrichingSocial] = useState(false)
+  const [enrichingEmails, setEnrichingEmails] = useState(false)
 
   async function saveTerritory() {
     if (!org) return
@@ -297,6 +298,45 @@ export function SettingsIndex() {
             >
               <RefreshCw className={`h-4 w-4 ${enrichingSocial ? 'animate-spin' : ''}`} />
               {enrichingSocial ? 'Scanning...' : 'Scan for social media'}
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={enrichingEmails}
+              className="gap-2"
+              onClick={async () => {
+                setEnrichingEmails(true)
+                try {
+                  const session = await supabase.auth.getSession()
+                  const token = session.data.session?.access_token
+                  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+                  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+                  const res = await fetch(`${supabaseUrl}/functions/v1/enrich-emails`, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`,
+                      'apikey': anonKey,
+                    },
+                    body: JSON.stringify({}),
+                  })
+                  const data = await res.json()
+                  if (data.error) {
+                    toast.error(data.error)
+                  } else if (data.results?.length > 0) {
+                    const found = data.results.map((r: any) => `${r.name}: ${r.email}`).join(', ')
+                    toast.success(`Found emails for ${data.enriched} contacts: ${found}`)
+                  } else {
+                    toast.success(`Scanned ${data.total} websites. No new emails found.`)
+                  }
+                } catch {
+                  toast.error('Email enrichment failed')
+                }
+                setEnrichingEmails(false)
+              }}
+            >
+              <RefreshCw className={`h-4 w-4 ${enrichingEmails ? 'animate-spin' : ''}`} />
+              {enrichingEmails ? 'Finding...' : 'Find email addresses'}
             </Button>
           </div>
         </div>
