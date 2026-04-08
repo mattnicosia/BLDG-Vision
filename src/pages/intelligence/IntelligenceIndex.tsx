@@ -81,11 +81,11 @@ export function IntelligenceIndex() {
         parts.push(`${landResult.signalsCreated} land signals`)
       }
 
-      // Step 4: Fetch and auto-import permits
+      // Step 4: Fetch and auto-import permits (searches multiple keywords)
       toast('Fetching permits...')
       const permitSync = await fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
         method: 'POST', headers,
-        body: JSON.stringify({ action: 'sync', keyword: 'building permit', maxPages: 2 }),
+        body: JSON.stringify({ action: 'sync', maxPages: 2 }),
       }).then(r => r.json()).catch(() => null)
 
       if (permitSync?.permitsImported > 0) {

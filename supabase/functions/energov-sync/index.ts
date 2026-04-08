@@ -226,6 +226,142 @@ Deno.serve(async (req) => {
       )
     }
 
+    // SYNC: Auto-fetch and import permits (used by Scan All Sources)
+    if (action === 'sync') {
+      const criteria = await getSearchCriteria()
+      const keywords = body.keywords || ['construction', 'building', 'alteration', 'new home', 'residential', 'commercial', 'demolition']
+      const keyword = body.keyword || null
+      const searchTerms = keyword ? [keyword] : keywords
+      const maxPages = body.maxPages || 2
+      const pageSize = 20
+      const allPreviews: any[] = []
+      const seenCaseIds = new Set<string>()
+
+      for (const term of searchTerms) {
+        for (let page = 1; page <= maxPages; page++) {
+          const freshCriteria = await getSearchCriteria()
+          const { results } = await searchPermits(freshCriteria, term, page, pageSize)
+          if (results.length === 0) break
+
+          for (const permit of results) {
+            const mod = String(permit.ModuleName).toLowerCase()
+            if (mod !== 'permit' && mod !== '1' && mod !== '2') continue
+            if (seenCaseIds.has(permit.CaseId)) continue
+            seenCaseIds.add(permit.CaseId)
+
+            try {
+              const detail = await getPermitDetail(permit.CaseId)
+              if (!detail) continue
+
+              const addr = detail.Addresses?.[0]
+              const fullAddr = addr
+                ? `${addr.AddressLine1 || ''} ${addr.AddressLine2 || ''}, ${addr.City || ''}, ${addr.State || ''} ${addr.PostalCode || ''}`.replace(/\s+/g, ' ').trim()
+                : permit.Address?.FullAddress || ''
+
+              const contacts = (detail.Contacts || []).map((c: any) => ({
+                type: c.ContactTypeName || 'Unknown',
+                company: c.GlobalEntityName || '',
+                firstName: c.FirstName || '',
+                lastName: c.LastName || '',
+                email: c.EmailTo || '',
+                phone: c.Phone || '',
+                address: c.MainAddress || '',
+              }))
+
+              // Find contractor and architect from contacts
+              const contractor = contacts.find((c: any) => c.type.toLowerCase().includes('contractor'))
+              const architect = contacts.find((c: any) => c.type.toLowerCase().includes('architect'))
+
+              allPreviews.push({
+                permitNumber: detail.PermitNumber || permit.CaseNumber,
+                permitType: permit.CaseType || '',
+                status: permit.CaseStatus || '',
+                applyDate: permit.ApplyDate || null,
+                address: fullAddr,
+                town: addr?.City || '',
+                county: 'Rockland',
+                value: detail.ValuationValue || 0,
+                description: detail.Description || permit.Description || '',
+                contractorName: contractor ? `${contractor.firstName} ${contractor.lastName}`.trim() || contractor.company : null,
+                architectName: architect ? `${architect.firstName} ${architect.lastName}`.trim() || architect.company : null,
+                sourceUrl: `https://rocklandcountyny-energovpub.tylerhost.net/apps/selfservice#/permit/${permit.CaseId}`,
+                contacts,
+              })
+            } catch (e) {
+              console.error('Permit detail error:', e)
+            }
+          }
+          if (results.length < pageSize) break
+        }
+      }
+
+      // Import permits that don't already exist
+      let permitsImported = 0
+      let newCompetitorsCreated = 0
+      const { data: existingPermits } = await supabase.from('permits').select('permit_number').eq('org_id', orgId)
+      const existingNumbers = new Set((existingPermits || []).map((p: any) => p.permit_number))
+
+      const newPermits = allPreviews.filter(p => p.permitNumber && !existingNumbers.has(p.permitNumber))
+
+      if (newPermits.length > 0) {
+        const rows = newPermits.map((p: any) => ({
+          org_id: orgId,
+          permit_number: p.permitNumber,
+          project_address: p.address,
+          county: p.county || 'Rockland',
+          town: p.town || '',
+          permit_type: p.permitType,
+          status: p.status,
+          filed_date: p.applyDate || null,
+          estimated_value: p.value || null,
+          scope_description: p.description || '',
+          contractor_name: p.contractorName || null,
+          architect_name: p.architectName || null,
+          source_system: 'energov',
+          source_url: p.sourceUrl || '',
+          our_project: false,
+          opportunity: !p.contractorName,
+        }))
+
+        for (let i = 0; i < rows.length; i += 50) {
+          const { data } = await supabase
+            .from('permits')
+            .upsert(rows.slice(i, i + 50), { onConflict: 'org_id,permit_number,county' })
+            .select()
+          if (data) permitsImported += data.length
+        }
+      }
+
+      // Auto-discover contractors
+      const { data: existingComps } = await supabase.from('discovered_contractors').select('name').eq('org_id', orgId)
+      const existingCompNames = new Set((existingComps || []).map((c: any) => c.name.toLowerCase()))
+
+      for (const preview of newPermits) {
+        if (preview.contractorName && !existingCompNames.has(preview.contractorName.toLowerCase())) {
+          const contractor = preview.contacts?.find((c: any) => c.type.toLowerCase().includes('contractor'))
+          await supabase.from('discovered_contractors').insert({
+            org_id: orgId,
+            name: preview.contractorName,
+            phone: contractor?.phone || null,
+            email: contractor?.email || null,
+            address: contractor?.address || null,
+            source: 'energov',
+          }).then(() => { newCompetitorsCreated++ })
+          existingCompNames.add(preview.contractorName.toLowerCase())
+        }
+      }
+
+      return new Response(
+        JSON.stringify({
+          searched: searchTerms.length,
+          found: allPreviews.length,
+          permitsImported,
+          newCompetitorsCreated,
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // DETAIL: Get single permit
     if (action === 'detail') {
       const detail = await getPermitDetail(body.permitId)

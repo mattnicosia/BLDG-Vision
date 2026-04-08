@@ -9,7 +9,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { MapPin, User, DollarSign, Plus, ChevronDown, ChevronRight, Calendar, FileText, ExternalLink, Building2 } from 'lucide-react'
+import { MapPin, User, DollarSign, Plus, ChevronDown, ChevronRight, Calendar, FileText, ExternalLink, Building2, X, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface LifecycleProject {
   id: string
@@ -22,7 +23,8 @@ interface LifecycleProject {
   contractor_name?: string
   town?: string
   value?: number
-  source: 'board' | 'permit'
+  source: 'board' | 'permit' | 'land'
+  source_table: string // actual DB table name for updates
   source_type: string
   source_label: string
   stage: string
@@ -32,6 +34,8 @@ interface LifecycleProject {
   scope?: string
   source_url?: string
   permit_number?: string
+  dismissed: boolean
+  opportunity_id?: string
 }
 
 const STAGES = [
@@ -42,6 +46,17 @@ const STAGES = [
   { key: 'permit_filed', label: 'Permit Filed', color: '#F1EFE8', text: '#5F5E5A' },
   { key: 'permit_approved', label: 'Permit Approved', color: '#0F6E56', text: '#ffffff' },
 ]
+
+// Junk permit types to auto-hide
+const JUNK_PERMIT_TYPES = [
+  '9-1-1', 'address assignment', 'rental registry', 'multiple dwelling',
+  'road work', 'sewer', 'wastewater', 'void', 'test permit',
+]
+
+function isJunkPermit(permitType: string): boolean {
+  const lower = permitType.toLowerCase()
+  return JUNK_PERMIT_TYPES.some(junk => lower.includes(junk))
+}
 
 function mapToStage(source: string, sourceType: string, decision?: string): string {
   if (source === 'board') {
@@ -69,6 +84,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
   const [projects, setProjects] = useState<LifecycleProject[]>([])
   const [loading, setLoading] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
+  const [showDismissed, setShowDismissed] = useState(false)
   const [selectedProject, setSelectedProject] = useState<LifecycleProject | null>(null)
 
   const fetchProjects = useCallback(async () => {
@@ -77,7 +93,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
 
     const [boardRes, permitRes, landRes] = await Promise.all([
       supabase.from('board_items').select('*').eq('org_id', org.id).order('meeting_date', { ascending: false }).limit(50),
-      supabase.from('permits').select('*').eq('org_id', org.id).order('filed_date', { ascending: false }).limit(50),
+      supabase.from('permits').select('*').eq('org_id', org.id).order('filed_date', { ascending: false }).limit(100),
       supabase.from('land_transactions').select('*').eq('org_id', org.id).order('sale_date', { ascending: false }).limit(50),
     ])
 
@@ -97,6 +113,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           engineer_name: item.engineer_name,
           town: item.town_name,
           source: 'board',
+          source_table: 'board_items',
           source_type: item.board_type,
           source_label: boardLabels[item.board_type] || item.board_type,
           stage: mapToStage('board', item.board_type),
@@ -104,14 +121,17 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           decision: item.decision,
           conditions: item.conditions,
           scope: item.estimated_scope,
+          dismissed: !!item.dismissed_at,
+          opportunity_id: item.opportunity_id,
         })
       }
     }
 
     if (permitRes.data) {
       for (const permit of permitRes.data) {
-        const type = (permit.permit_type || '').toLowerCase()
-        if (type.includes('address') || type.includes('9-1-1') || type.includes('rental')) continue
+        const type = permit.permit_type || ''
+        // Auto-dismiss junk permits but still include them (user can show dismissed)
+        const autoJunk = isJunkPermit(type)
         all.push({
           id: permit.id,
           address: permit.project_address || '',
@@ -121,13 +141,16 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           town: permit.town,
           value: permit.estimated_value,
           source: 'permit',
-          source_type: permit.permit_type || '',
-          source_label: permit.permit_type || 'Permit',
+          source_table: 'permits',
+          source_type: type,
+          source_label: type || 'Permit',
           stage: mapToStage('permit', '', permit.status),
           date: permit.filed_date,
           decision: permit.status,
           permit_number: permit.permit_number,
           source_url: permit.source_url,
+          dismissed: !!permit.dismissed_at || autoJunk,
+          opportunity_id: permit.opportunity_id,
         })
       }
     }
@@ -143,12 +166,15 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
           applicant_name: land.buyer_name,
           town: land.county,
           value: land.sale_price,
-          source: 'permit' as const,
+          source: 'land',
+          source_table: 'land_transactions',
           source_type: 'Land Transaction',
           source_label: `Land Sale - ${land.property_class_desc || 'Property'}`,
           stage: 'land_sale',
           date: land.sale_date,
           decision: land.new_construction ? 'New construction' : 'Transfer',
+          dismissed: !!land.dismissed_at,
+          opportunity_id: land.opportunity_id,
         })
       }
     }
@@ -161,9 +187,71 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
     fetchProjects()
   }, [fetchProjects])
 
+  async function dismissProject(project: LifecycleProject) {
+    await supabase
+      .from(project.source_table)
+      .update({ dismissed_at: new Date().toISOString() })
+      .eq('id', project.id)
+    setProjects(prev => prev.map(p => p.id === project.id ? { ...p, dismissed: true } : p))
+    setSelectedProject(null)
+    toast('Dismissed')
+  }
+
+  async function undismissProject(project: LifecycleProject) {
+    await supabase
+      .from(project.source_table)
+      .update({ dismissed_at: null })
+      .eq('id', project.id)
+    setProjects(prev => prev.map(p => p.id === project.id ? { ...p, dismissed: false } : p))
+    toast('Restored')
+  }
+
+  async function pursueProject(project: LifecycleProject) {
+    if (!org) return
+    // Create an opportunity in the pipeline
+    const { data, error } = await supabase
+      .from('opportunities')
+      .insert({
+        org_id: org.id,
+        project_name: project.address || project.description?.slice(0, 60) || 'New opportunity',
+        location: project.address,
+        architect_name: project.architect_name,
+        architect_id: project.architect_id,
+        estimated_value: project.value,
+        stage: 'lead',
+        probability: 10,
+        source: project.source_label,
+        permit_id: project.source === 'permit' ? project.id : undefined,
+        notes: [project.description, project.conditions].filter(Boolean).join('\n'),
+      })
+      .select()
+      .single()
+
+    if (error) {
+      toast.error('Failed to create opportunity')
+      return
+    }
+
+    // Link the source item to the opportunity
+    if (data) {
+      await supabase
+        .from(project.source_table)
+        .update({ opportunity_id: data.id })
+        .eq('id', project.id)
+      setProjects(prev => prev.map(p => p.id === project.id ? { ...p, opportunity_id: data.id } : p))
+    }
+
+    setSelectedProject(null)
+    toast.success('Added to pipeline as Lead')
+  }
+
+  // Filter projects
+  const visibleProjects = projects.filter(p => showDismissed || !p.dismissed)
+  const dismissedCount = projects.filter(p => p.dismissed).length
+
   const byStage: Record<string, LifecycleProject[]> = {}
   for (const stage of STAGES) byStage[stage.key] = []
-  for (const p of projects) {
+  for (const p of visibleProjects) {
     if (byStage[p.stage]) byStage[p.stage].push(p)
   }
 
@@ -171,14 +259,25 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
 
   return (
     <div className="mb-6">
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary"
-      >
-        {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        Project lifecycle
-        <span className="text-xs text-muted-foreground font-normal">({projects.length} projects)</span>
-      </button>
+      <div className="mb-3 flex items-center gap-3">
+        <button
+          onClick={() => setCollapsed(!collapsed)}
+          className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary"
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          Project lifecycle
+          <span className="text-xs text-muted-foreground font-normal">({visibleProjects.length} projects)</span>
+        </button>
+        {dismissedCount > 0 && !collapsed && (
+          <button
+            onClick={() => setShowDismissed(!showDismissed)}
+            className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground"
+          >
+            {showDismissed ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
+            {showDismissed ? 'Hide' : 'Show'} {dismissedCount} dismissed
+          </button>
+        )}
+      </div>
 
       {!collapsed && (
         <div className="grid grid-cols-6 gap-2">
@@ -200,41 +299,81 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                     <p className="py-2 text-center text-[9px] text-muted-foreground">None</p>
                   ) : (
                     stageProjects.map((project) => (
-                      <button
+                      <div
                         key={project.id}
-                        onClick={() => setSelectedProject(project)}
-                        className="w-full rounded-md border border-border bg-white p-2 text-left transition-colors hover:bg-muted/50"
+                        className={`group relative w-full rounded-md border bg-white p-2 text-left transition-colors hover:bg-muted/50 ${project.dismissed ? 'opacity-40' : ''} ${project.opportunity_id ? 'border-primary/30' : 'border-border'}`}
                         style={{ borderWidth: '0.5px' }}
                       >
-                        {project.address && (
-                          <p className="text-[10px] font-medium leading-tight">
-                            <MapPin className="mr-0.5 inline h-2.5 w-2.5 text-muted-foreground" />
-                            {project.address.length > 28 ? project.address.slice(0, 28) + '...' : project.address}
+                        {/* Quick action buttons - visible on hover */}
+                        <div className="absolute -right-0.5 -top-0.5 hidden gap-0.5 group-hover:flex">
+                          {!project.dismissed ? (
+                            <>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); pursueProject(project) }}
+                                className="rounded-full bg-primary p-0.5 text-white shadow-sm hover:bg-primary/90"
+                                title="Add to pipeline"
+                              >
+                                <ArrowRight className="h-2.5 w-2.5" />
+                              </button>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); dismissProject(project) }}
+                                className="rounded-full bg-muted-foreground/80 p-0.5 text-white shadow-sm hover:bg-destructive"
+                                title="Dismiss"
+                              >
+                                <X className="h-2.5 w-2.5" />
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={(e) => { e.stopPropagation(); undismissProject(project) }}
+                              className="rounded-full bg-muted-foreground/80 p-0.5 text-white shadow-sm hover:bg-primary"
+                              title="Restore"
+                            >
+                              <Plus className="h-2.5 w-2.5" />
+                            </button>
+                          )}
+                        </div>
+
+                        <button
+                          className="w-full text-left"
+                          onClick={() => setSelectedProject(project)}
+                        >
+                          {/* Pipeline badge */}
+                          {project.opportunity_id && (
+                            <span className="mb-0.5 inline-block rounded-full px-1.5 py-0 text-[8px] font-medium" style={{ backgroundColor: '#E1F5EE', color: '#085041' }}>
+                              In pipeline
+                            </span>
+                          )}
+                          {project.address && (
+                            <p className="text-[10px] font-medium leading-tight">
+                              <MapPin className="mr-0.5 inline h-2.5 w-2.5 text-muted-foreground" />
+                              {project.address.length > 28 ? project.address.slice(0, 28) + '...' : project.address}
+                            </p>
+                          )}
+                          <p className="mt-0.5 text-[9px] text-muted-foreground truncate">
+                            {project.source_label}
                           </p>
-                        )}
-                        <p className="mt-0.5 text-[9px] text-muted-foreground truncate">
-                          {project.source_label}
-                        </p>
-                        {project.description && (
-                          <p className="mt-0.5 text-[9px] text-muted-foreground line-clamp-1">
-                            {project.description}
-                          </p>
-                        )}
-                        {(project.architect_name || project.value) && (
-                          <div className="mt-0.5 flex items-center gap-2">
-                            {project.architect_name && (
-                              <span className="text-[9px] text-primary truncate">
-                                <User className="mr-0.5 inline h-2 w-2" />{project.architect_name}
-                              </span>
-                            )}
-                            {project.value ? (
-                              <span className="text-[9px] font-medium" style={{ color: '#0F6E56' }}>
-                                ${(project.value / 1000000).toFixed(1)}M
-                              </span>
-                            ) : null}
-                          </div>
-                        )}
-                      </button>
+                          {project.description && (
+                            <p className="mt-0.5 text-[9px] text-muted-foreground line-clamp-1">
+                              {project.description}
+                            </p>
+                          )}
+                          {(project.architect_name || project.value) && (
+                            <div className="mt-0.5 flex items-center gap-2">
+                              {project.architect_name && (
+                                <span className="text-[9px] text-primary truncate">
+                                  <User className="mr-0.5 inline h-2 w-2" />{project.architect_name}
+                                </span>
+                              )}
+                              {project.value ? (
+                                <span className="text-[9px] font-medium" style={{ color: '#0F6E56' }}>
+                                  ${(project.value / 1000000).toFixed(1)}M
+                                </span>
+                              ) : null}
+                            </div>
+                          )}
+                        </button>
+                      </div>
                     ))
                   )}
                 </div>
@@ -266,6 +405,16 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                 {selectedProject.decision && (
                   <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground capitalize">
                     {selectedProject.decision}
+                  </span>
+                )}
+                {selectedProject.opportunity_id && (
+                  <span className="rounded-full px-2.5 py-1 text-xs font-medium" style={{ backgroundColor: '#E1F5EE', color: '#085041' }}>
+                    In pipeline
+                  </span>
+                )}
+                {selectedProject.dismissed && (
+                  <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+                    Dismissed
                   </span>
                 )}
               </div>
@@ -384,29 +533,51 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
               )}
 
               {/* Actions */}
-              <div className="flex justify-between pt-2">
-                {selectedProject.source_url && (
-                  <a
-                    href={selectedProject.source_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1 text-xs text-primary hover:underline"
-                  >
-                    <ExternalLink className="h-3 w-3" /> View source
-                  </a>
-                )}
-                {onAddToPipeline && (
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      onAddToPipeline(selectedProject)
-                      setSelectedProject(null)
-                    }}
-                    className="gap-1.5"
-                  >
-                    <Plus className="h-3.5 w-3.5" /> Add to pipeline
-                  </Button>
-                )}
+              <div className="flex items-center justify-between border-t pt-3">
+                <div className="flex gap-2">
+                  {selectedProject.source_url && (
+                    <a
+                      href={selectedProject.source_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-xs text-primary hover:underline"
+                    >
+                      <ExternalLink className="h-3 w-3" /> View source
+                    </a>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {selectedProject.dismissed ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => { undismissProject(selectedProject); setSelectedProject(null) }}
+                      className="gap-1.5"
+                    >
+                      <Plus className="h-3.5 w-3.5" /> Restore
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => dismissProject(selectedProject)}
+                        className="gap-1.5 text-muted-foreground"
+                      >
+                        <X className="h-3.5 w-3.5" /> Not relevant
+                      </Button>
+                      {!selectedProject.opportunity_id && (
+                        <Button
+                          size="sm"
+                          onClick={() => pursueProject(selectedProject)}
+                          className="gap-1.5"
+                        >
+                          <ArrowRight className="h-3.5 w-3.5" /> Pursue
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </DialogContent>
