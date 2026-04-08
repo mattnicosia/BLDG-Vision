@@ -8,7 +8,8 @@ import { CampaignManager } from '@/components/outreach/CampaignManager'
 import { SentEmails } from '@/components/outreach/SentEmails'
 import { EmailTemplates } from '@/components/outreach/EmailTemplates'
 import { Button } from '@/components/ui/button'
-import { Pencil, Sparkles, Send, Mail, FileText } from 'lucide-react'
+import { EmailSeriesModal } from '@/components/ai/EmailSeriesModal'
+import { Pencil, Sparkles, Send, Mail, FileText, Plus } from 'lucide-react'
 import type { Architect, AIDraft, Signal, EmailCampaign, CampaignEmail, EmailTemplate } from '@/types'
 
 export function OutreachIndex() {
@@ -23,6 +24,10 @@ export function OutreachIndex() {
   const [campaigns, setCampaigns] = useState<EmailCampaign[]>([])
   const [campaignEmails, setCampaignEmails] = useState<CampaignEmail[]>([])
   const [templates, setTemplates] = useState<EmailTemplate[]>([])
+
+  // Campaign creation state
+  const [showCampaignModal, setShowCampaignModal] = useState(false)
+  const [campaignArchitect, setCampaignArchitect] = useState<Architect | undefined>()
 
   // Compose state
   const [composeOpen, setComposeOpen] = useState(false)
@@ -68,6 +73,17 @@ export function OutreachIndex() {
     openCompose(architect)
   }
 
+  function handleCreateCampaign(architect?: Architect) {
+    if (architect) {
+      setCampaignArchitect(architect)
+      setShowCampaignModal(true)
+    } else {
+      // No architect pre-selected, open with first available
+      setCampaignArchitect(undefined)
+      setShowCampaignModal(true)
+    }
+  }
+
   function handleUseTemplate(template: EmailTemplate) {
     openCompose(undefined, template.subject_template ?? '', template.body_template)
   }
@@ -94,9 +110,14 @@ export function OutreachIndex() {
             {sentDrafts.length} sent, {pendingDrafts.length} drafts, {campaigns.length} campaigns
           </p>
         </div>
-        <Button onClick={() => openCompose()} className="gap-2">
-          <Pencil className="h-4 w-4" /> Compose
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => handleCreateCampaign()} className="gap-2">
+            <Plus className="h-4 w-4" /> New campaign
+          </Button>
+          <Button onClick={() => openCompose()} className="gap-2">
+            <Pencil className="h-4 w-4" /> Compose
+          </Button>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -128,6 +149,7 @@ export function OutreachIndex() {
               sentDrafts={sentDrafts}
               signals={signals}
               onGenerateDraft={handleSuggestionDraft}
+              onCreateCampaign={handleCreateCampaign}
             />
           )}
 
@@ -200,6 +222,21 @@ export function OutreachIndex() {
         initialBody={composeBody}
         resumeDraftId={composeDraftId}
       />
+
+      {/* Campaign creation modal */}
+      {showCampaignModal && (
+        <EmailSeriesModal
+          architectId={campaignArchitect?.id ?? architects[0]?.id ?? ''}
+          architectName={campaignArchitect?.name}
+          architectEmail={campaignArchitect?.email}
+          open={showCampaignModal}
+          onClose={() => setShowCampaignModal(false)}
+          onScheduled={() => {
+            setShowCampaignModal(false)
+            fetchData()
+          }}
+        />
+      )}
     </div>
   )
 }
