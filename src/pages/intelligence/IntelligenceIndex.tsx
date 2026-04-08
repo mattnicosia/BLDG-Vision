@@ -130,6 +130,20 @@ export function IntelligenceIndex() {
         parts.push(`${alertResult.alertsGenerated} alerts`)
       }
 
+      // Step 8: Entity resolution — link records across data sources
+      toast('Linking intelligence across sources...')
+      const entityResult = await fetch(`${supabaseUrl}/functions/v1/entity-resolution`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.json()).catch(() => null)
+
+      if (entityResult?.entitiesCreated > 0) {
+        parts.push(`${entityResult.entitiesCreated} project entities linked`)
+      }
+      if (entityResult?.connectionsCreated > 0) {
+        parts.push(`${entityResult.connectionsCreated} person connections`)
+      }
+
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
     } catch {
       toast.error('Scan failed')
