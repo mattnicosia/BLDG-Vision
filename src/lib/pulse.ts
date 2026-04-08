@@ -38,9 +38,9 @@ export function calculatePulse(architect: Pick<
 }
 
 export function getPulseColor(score: number): string {
-  if (score >= 80) return '#0F6E56'
-  if (score >= 50) return '#BA7517'
-  return '#A32D2D'
+  if (score >= 80) return '#06B6D4'
+  if (score >= 50) return '#F59E0B'
+  return '#EF4444'
 }
 
 export function getPulseLabel(score: number): string {

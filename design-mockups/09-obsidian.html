@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440">
+<title>09 Obsidian - BLDG Vision / Corvo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ========================================================================
+     09 OBSIDIAN — Dark Premium
+     Luxury watch brand meets hedge fund terminal
+     ======================================================================== */
+
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --sidebar-bg: #0A0A0F;
+    --canvas-bg: #111118;
+    --card-bg: #1A1A24;
+    --card-border: #2A2A3A;
+    --card-hover-border: #3D3D5C;
+    --accent-indigo: #6366F1;
+    --accent-indigo-light: #818CF8;
+    --accent-cyan: #06B6D4;
+    --accent-amber: #F59E0B;
+    --accent-red: #EF4444;
+    --text-primary: #E8E8F0;
+    --text-secondary: #7C7C96;
+    --text-tertiary: #4A4A64;
+    --divider: #1E1E2E;
+    --glow-indigo: 0 0 20px rgba(99, 102, 241, 0.08);
+    --glow-indigo-hover: 0 0 30px rgba(99, 102, 241, 0.14);
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--canvas-bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    overflow-x: hidden;
+    min-width: 1440px;
+    min-height: 900px;
+  }
+
+  /* ── Subtle depth background ─────────────────────────────────────────── */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 240px;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at 50% 30%, #151520 0%, var(--canvas-bg) 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── Layout shell ────────────────────────────────────────────────────── */
+  .app-shell {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Sidebar ─────────────────────────────────────────────────────────── */
+  .sidebar {
+    width: 240px;
+    min-height: 100vh;
+    background: var(--sidebar-bg);
+    border-right: 1px solid var(--divider);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+
+  .sidebar-brand {
+    padding: 28px 24px 20px;
+  }
+
+  .sidebar-brand .wordmark {
+    font-family: 'Manrope', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    color: var(--accent-indigo);
+    line-height: 1;
+  }
+
+  .sidebar-divider {
+    height: 1px;
+    background: var(--divider);
+    margin: 0 16px;
+  }
+
+  .sidebar-nav {
+    padding: 16px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 200ms ease;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .nav-item:hover {
+    color: #A0A0B8;
+  }
+
+  .nav-item.active {
+    background: var(--card-bg);
+    color: var(--text-primary);
+  }
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent-indigo);
+  }
+
+  .nav-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    opacity: 0.6;
+  }
+
+  .nav-item.active svg {
+    opacity: 1;
+  }
+
+  .sidebar-user {
+    padding: 20px 24px;
+    border-top: 1px solid var(--divider);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--accent-indigo);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .user-meta .user-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .user-meta .user-org {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  /* ── Main content ────────────────────────────────────────────────────── */
+  .main-content {
+    margin-left: 240px;
+    flex: 1;
+    padding: 36px 48px 48px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Theme badge ─────────────────────────────────────────────────────── */
+  .theme-badge {
+    position: fixed;
+    top: 16px;
+    right: 20px;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-family: 'DM Mono', monospace;
+    z-index: 200;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Top bar ─────────────────────────────────────────────────────────── */
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+    animation: fadeSlideIn 500ms ease both;
+  }
+
+  .greeting h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .greeting .date {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 6px;
+  }
+
+  .notification-bell {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 200ms ease;
+  }
+
+  .notification-bell:hover {
+    background: var(--card-bg);
+  }
+
+  .notification-bell svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+  }
+
+  .notification-bell .badge {
+    position: absolute;
+    top: 6px;
+    right: 7px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent-indigo);
+    border: 2px solid var(--canvas-bg);
+  }
+
+  /* ── Metric cards ────────────────────────────────────────────────────── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .metric-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    cursor: default;
+  }
+
+  .metric-card:hover {
+    border-color: var(--card-hover-border);
+    box-shadow: var(--glow-indigo);
+  }
+
+  .metric-card .metric-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+  }
+
+  .metric-card .metric-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .metric-card .metric-trend {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .metric-trend.up { color: var(--accent-cyan); }
+  .metric-trend.neutral { color: var(--text-secondary); }
+  .metric-trend.down { color: var(--accent-red); }
+
+  .metric-trend svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .value-cyan { color: var(--accent-cyan); }
+  .value-white { color: var(--text-primary); }
+  .value-indigo { color: var(--accent-indigo-light); }
+
+  /* ── Staggered card animations ───────────────────────────────────────── */
+  .metric-card:nth-child(1) { animation: fadeSlideIn 400ms ease 100ms both; }
+  .metric-card:nth-child(2) { animation: fadeSlideIn 400ms ease 180ms both; }
+  .metric-card:nth-child(3) { animation: fadeSlideIn 400ms ease 260ms both; }
+  .metric-card:nth-child(4) { animation: fadeSlideIn 400ms ease 340ms both; }
+
+  /* ── Section titles ──────────────────────────────────────────────────── */
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding-left: 14px;
+    border-left: 3px solid var(--accent-indigo);
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .section-title.amber { border-left-color: var(--accent-amber); }
+  .section-title.cyan { border-left-color: var(--accent-cyan); }
+
+  /* ── Lifecycle kanban strip ──────────────────────────────────────────── */
+  .lifecycle-strip {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    animation: fadeSlideIn 400ms ease 400ms both;
+  }
+
+  .lifecycle-strip .section-title {
+    margin-bottom: 20px;
+  }
+
+  .lifecycle-columns {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+  }
+
+  .lifecycle-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .lifecycle-col .stage-name {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+
+  .lifecycle-col .stage-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1;
+  }
+
+  .lifecycle-col .stage-bar {
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+
+  .lifecycle-col .stage-mini-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+  }
+
+  .mini-card {
+    background: var(--canvas-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    text-align: left;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Bottom grid: relationships + signals ─────────────────────────── */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    animation: fadeSlideIn 400ms ease 550ms both;
+  }
+
+  .bottom-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Cooling relationships ───────────────────────────────────────────── */
+  .relationship-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .relationship-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: border-color 200ms ease, box-shadow 200ms ease;
+    position: relative;
+    cursor: default;
+  }
+
+  .relationship-card:hover {
+    border-color: var(--card-hover-border);
+    box-shadow: var(--glow-indigo);
+  }
+
+  .relationship-card:hover .draft-btn {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .rel-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-indigo-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .rel-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .rel-info .rel-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+
+  .rel-info .rel-firm {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+  }
+
+  .rel-pulse {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .pulse-track {
+    flex: 1;
+    height: 6px;
+    background: var(--card-border);
+    border-radius: 3px;
+    overflow: hidden;
+    max-width: 120px;
+  }
+
+  .pulse-fill {
+    height: 100%;
+    border-radius: 3px;
+    width: 0;
+    transition: width 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pulse-fill.cyan { background: var(--accent-cyan); }
+  .pulse-fill.amber { background: var(--accent-amber); }
+  .pulse-fill.red { background: var(--accent-red); }
+
+  .pulse-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .pulse-number.cyan { color: var(--accent-cyan); }
+  .pulse-number.amber { color: var(--accent-amber); }
+  .pulse-number.red { color: var(--accent-red); }
+
+  .rel-last-contact {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  .draft-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--accent-indigo-light);
+    border: 1px solid var(--accent-indigo);
+    background: transparent;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: all 200ms ease;
+  }
+
+  .draft-btn:hover {
+    background: rgba(99, 102, 241, 0.1);
+  }
+
+  /* ── Recent signals ──────────────────────────────────────────────────── */
+  .signals-list {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .signal-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid #1E1E2A;
+    transition: background 200ms ease;
+    cursor: default;
+  }
+
+  .signal-item:last-child {
+    border-bottom: none;
+  }
+
+  .signal-item:hover {
+    background: rgba(99, 102, 241, 0.03);
+  }
+
+  .signal-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .signal-dot.indigo { background: var(--accent-indigo-light); }
+  .signal-dot.amber { background: var(--accent-amber); }
+  .signal-dot.cyan { background: var(--accent-cyan); }
+  .signal-dot.red { background: var(--accent-red); }
+
+  .signal-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .signal-content .signal-headline {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.4;
+  }
+
+  .signal-content .signal-detail {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-top: 2px;
+  }
+
+  .signal-time {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+
+  /* ── Animations ──────────────────────────────────────────────────────── */
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes pulseFadeIn {
+    from { width: 0; }
+  }
+
+  /* ── Sparkline (pure CSS) ────────────────────────────────────────────── */
+  .sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 20px;
+    margin-top: 2px;
+  }
+
+  .sparkline .bar {
+    width: 3px;
+    border-radius: 1px;
+    transition: height 400ms ease;
+  }
+
+  /* ── Responsive overflow guard ───────────────────────────────────────── */
+  .main-content {
+    max-width: 1200px;
+  }
+
+  /* ── Scrollbar styling ───────────────────────────────────────────────── */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--sidebar-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--card-border);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-tertiary);
+  }
+</style>
+</head>
+<body>
+
+<div class="theme-badge">09 Obsidian &mdash; Dark Premium</div>
+
+<div class="app-shell">
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       SIDEBAR
+       ══════════════════════════════════════════════════════════════════════ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="wordmark">CORVO</div>
+    </div>
+    <div class="sidebar-divider"></div>
+
+    <nav class="sidebar-nav">
+      <!-- Dashboard (active) -->
+      <a class="nav-item active" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+        Dashboard
+      </a>
+      <!-- Opportunities -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        Opportunities
+      </a>
+      <!-- Pipeline -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Pipeline
+      </a>
+      <!-- Relationships -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Relationships
+      </a>
+      <!-- Outreach -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        Outreach
+      </a>
+      <!-- Recon -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        Recon
+      </a>
+      <!-- Settings -->
+      <a class="nav-item" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        Settings
+      </a>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar">MN</div>
+      <div class="user-meta">
+        <div class="user-name">Matt Nicosia</div>
+        <div class="user-org">Montana Home Builders</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       MAIN CONTENT
+       ══════════════════════════════════════════════════════════════════════ -->
+  <main class="main-content">
+
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="greeting">
+        <h1>Good morning, Matt</h1>
+        <div class="date">Tuesday, April 7</div>
+      </div>
+      <div class="top-actions">
+        <div class="notification-bell">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <div class="badge"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Metric cards ──────────────────────────────────────────────── -->
+    <div class="metrics-row">
+
+      <div class="metric-card">
+        <div class="metric-label">Pipeline</div>
+        <div class="metric-value value-cyan">$12.4M</div>
+        <div class="metric-trend up">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V3m0 0l-3 3m3-3l3 3"/></svg>
+          +8.2% this month
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Active Deals</div>
+        <div class="metric-value value-white">8</div>
+        <div class="metric-trend neutral">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 7h10"/></svg>
+          No change
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Win Rate</div>
+        <div class="metric-value value-indigo">34%</div>
+        <div class="metric-trend up" style="color: var(--accent-indigo-light);">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V3m0 0l-3 3m3-3l3 3"/></svg>
+          +3% from Q4
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-label">Avg Deal</div>
+        <div class="metric-value value-cyan">$1.6M</div>
+        <div class="metric-trend up">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 11V3m0 0l-3 3m3-3l3 3"/></svg>
+          +$120K vs last year
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Project Lifecycle ─────────────────────────────────────────── -->
+    <div class="lifecycle-strip">
+      <div class="section-title" style="border-left-color: var(--accent-indigo);">Project Lifecycle</div>
+      <div class="lifecycle-columns">
+
+        <div class="lifecycle-col">
+          <div class="stage-name">Land Sale</div>
+          <div class="stage-count">3</div>
+          <div class="stage-bar" style="background: var(--accent-red);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">42 Oak Ln, Orangetown</div>
+            <div class="mini-card">15 River Rd, Catskill</div>
+          </div>
+        </div>
+
+        <div class="lifecycle-col">
+          <div class="stage-name">Planning</div>
+          <div class="stage-count">5</div>
+          <div class="stage-bar" style="background: var(--accent-indigo-light);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">Chen - Lakehouse</div>
+            <div class="mini-card">Webb - Modern Barn</div>
+          </div>
+        </div>
+
+        <div class="lifecycle-col">
+          <div class="stage-name">Zoning</div>
+          <div class="stage-count">2</div>
+          <div class="stage-bar" style="background: var(--accent-amber);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">Okafor - Hillside Res.</div>
+          </div>
+        </div>
+
+        <div class="lifecycle-col">
+          <div class="stage-name">ARB</div>
+          <div class="stage-count">1</div>
+          <div class="stage-bar" style="background: var(--accent-indigo);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">Novak - Stone Ridge</div>
+          </div>
+        </div>
+
+        <div class="lifecycle-col">
+          <div class="stage-name">Permit Filed</div>
+          <div class="stage-count">19</div>
+          <div class="stage-bar" style="background: var(--text-secondary);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">8 residential, 11 other</div>
+          </div>
+        </div>
+
+        <div class="lifecycle-col">
+          <div class="stage-name">Approved</div>
+          <div class="stage-count">4</div>
+          <div class="stage-bar" style="background: var(--accent-cyan);"></div>
+          <div class="stage-mini-cards">
+            <div class="mini-card">Flores - Woodstock</div>
+            <div class="mini-card">Chen - Hudson Estate</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Bottom grid ───────────────────────────────────────────────── -->
+    <div class="bottom-grid">
+
+      <!-- Cooling Relationships -->
+      <div class="bottom-section">
+        <div class="section-title amber">Cooling Relationships</div>
+        <div class="relationship-cards">
+
+          <div class="relationship-card">
+            <div class="rel-avatar">SC</div>
+            <div class="rel-info">
+              <div class="rel-name">Sarah Chen</div>
+              <div class="rel-firm">Chen Architecture</div>
+              <div class="rel-pulse">
+                <div class="pulse-track">
+                  <div class="pulse-fill amber" data-width="42"></div>
+                </div>
+                <span class="pulse-number amber">42</span>
+              </div>
+              <div class="rel-last-contact">Last contact: 18 days ago</div>
+            </div>
+            <button class="draft-btn">Draft outreach</button>
+          </div>
+
+          <div class="relationship-card">
+            <div class="rel-avatar">JO</div>
+            <div class="rel-info">
+              <div class="rel-name">James Okafor</div>
+              <div class="rel-firm">Okafor Studio</div>
+              <div class="rel-pulse">
+                <div class="pulse-track">
+                  <div class="pulse-fill amber" data-width="35"></div>
+                </div>
+                <span class="pulse-number amber">35</span>
+              </div>
+              <div class="rel-last-contact">Last contact: 24 days ago</div>
+            </div>
+            <button class="draft-btn">Draft outreach</button>
+          </div>
+
+          <div class="relationship-card">
+            <div class="rel-avatar">MW</div>
+            <div class="rel-info">
+              <div class="rel-name">Marcus Webb</div>
+              <div class="rel-firm">Webb Design</div>
+              <div class="rel-pulse">
+                <div class="pulse-track">
+                  <div class="pulse-fill red" data-width="28"></div>
+                </div>
+                <span class="pulse-number red">28</span>
+              </div>
+              <div class="rel-last-contact">Last contact: 31 days ago</div>
+            </div>
+            <button class="draft-btn">Draft outreach</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Recent Signals -->
+      <div class="bottom-section">
+        <div class="section-title cyan">Recent Signals</div>
+        <div class="signals-list">
+
+          <div class="signal-item">
+            <div class="signal-dot indigo"></div>
+            <div class="signal-content">
+              <div class="signal-headline">New GML planning referral -- 42 Oak Lane, Orangetown</div>
+              <div class="signal-detail">Residential new construction, estimated $2.1M project value</div>
+            </div>
+            <div class="signal-time">2h ago</div>
+          </div>
+
+          <div class="signal-item">
+            <div class="signal-dot amber"></div>
+            <div class="signal-content">
+              <div class="signal-headline">Pulse dropping -- Marcus Webb hasn't been contacted in 31 days</div>
+              <div class="signal-detail">Relationship at risk. 2 active projects with Webb Design.</div>
+            </div>
+            <div class="signal-time">4h ago</div>
+          </div>
+
+          <div class="signal-item">
+            <div class="signal-dot cyan"></div>
+            <div class="signal-content">
+              <div class="signal-headline">Land sale -- $1.2M vacant parcel, New City</div>
+              <div class="signal-detail">3.4 acres, R-1 zoning. Potential custom home site.</div>
+            </div>
+            <div class="signal-time">6h ago</div>
+          </div>
+
+          <div class="signal-item">
+            <div class="signal-dot red"></div>
+            <div class="signal-content">
+              <div class="signal-headline">Competitor alert -- Hudson Builders won Chen Architecture project</div>
+              <div class="signal-detail">$3.8M lakefront renovation. Chen previously exclusive to MHB.</div>
+            </div>
+            <div class="signal-time">1d ago</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     ANIMATION SCRIPT
+     ══════════════════════════════════════════════════════════════════════ -->
+<script>
+  // Animate pulse bar widths on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const pulseFills = document.querySelectorAll('.pulse-fill[data-width]');
+    // Small delay so CSS transition catches the change
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        pulseFills.forEach(fill => {
+          fill.style.width = fill.dataset.width + '%';
+        });
+      });
+    });
+  });
+</script>
+
+</body>
+</html>

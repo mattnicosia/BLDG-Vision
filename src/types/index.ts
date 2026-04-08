@@ -399,12 +399,12 @@ export const OPPORTUNITY_STAGE_LABELS: Record<OpportunityStage, string> = {
 }
 
 export const OPPORTUNITY_STAGE_STYLES: Record<OpportunityStage, { bg: string; text: string }> = {
-  lead: { bg: '#F1EFE8', text: '#5F5E5A' },
-  interview: { bg: '#FAEEDA', text: '#854F0B' },
-  proposal: { bg: '#EEEDFE', text: '#3C3489' },
-  negotiation: { bg: '#E1F5EE', text: '#085041' },
-  won: { bg: '#0F6E56', text: '#ffffff' },
-  lost: { bg: '#FEE2E2', text: '#A32D2D' },
+  lead: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C96' },
+  interview: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' },
+  proposal: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8' },
+  negotiation: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4' },
+  won: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
+  lost: { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444' },
 }
 
 // ─── EMAIL TEMPLATES ─────────────────────────────────────────────────────────
@@ -482,18 +482,18 @@ export interface StageStyle {
 }
 
 export const STAGE_STYLES: Record<ArchitectStage, StageStyle> = {
-  Active: { bg: '#E1F5EE', text: '#085041', border: '#9FE1CB' },
-  Warm: { bg: '#FAEEDA', text: '#854F0B', border: '#FAC775' },
-  Cooling: { bg: '#EEEDFE', text: '#3C3489', border: '#AFA9EC' },
-  Cold: { bg: '#F1EFE8', text: '#5F5E5A', border: '#D3D1C7' },
+  Active: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4', border: 'rgba(6, 182, 212, 0.3)' },
+  Warm: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B', border: 'rgba(245, 158, 11, 0.3)' },
+  Cooling: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8', border: 'rgba(129, 140, 248, 0.3)' },
+  Cold: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C96', border: 'rgba(124, 124, 150, 0.3)' },
 }
 
 export const AVATAR_COLORS = [
-  { bg: '#E1F5EE', text: '#0F6E56' },
-  { bg: '#FAEEDA', text: '#854F0B' },
-  { bg: '#FAECE7', text: '#993C1D' },
-  { bg: '#EEEDFE', text: '#3C3489' },
-  { bg: '#F1EFE8', text: '#5F5E5A' },
+  { bg: 'rgba(99, 102, 241, 0.2)', text: '#818CF8' },
+  { bg: 'rgba(6, 182, 212, 0.2)', text: '#06B6D4' },
+  { bg: 'rgba(245, 158, 11, 0.2)', text: '#F59E0B' },
+  { bg: 'rgba(129, 140, 248, 0.2)', text: '#A5B4FC' },
+  { bg: 'rgba(124, 124, 150, 0.2)', text: '#9CA3AF' },
 ]
 
 // Generate consistent avatar color from a string

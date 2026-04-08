@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1440">
+    <title>06 Quarry — BLDG Vision</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Darker+Grotesque:wght@400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           06 QUARRY — Raw Material Luxury
+           Stone, steel, glass. Construction materials
+           as design language. Heavy. Tactile. Carved.
+           ============================================ */
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #F3F2EF;
+            color: #1F2937;
+            width: 1440px;
+            height: 900px;
+            overflow: hidden;
+            display: flex;
+            position: relative;
+        }
+
+        /* ============================================
+           SIDEBAR — Slate steel with noise texture
+           ============================================ */
+
+        .sidebar {
+            width: 220px;
+            min-width: 220px;
+            height: 100%;
+            background-color: #374151;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255,255,255,0.008) 2px,
+                    rgba(255,255,255,0.008) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 3px,
+                    rgba(0,0,0,0.015) 3px,
+                    rgba(0,0,0,0.015) 6px
+                ),
+                repeating-linear-gradient(
+                    45deg,
+                    transparent,
+                    transparent 5px,
+                    rgba(255,255,255,0.005) 5px,
+                    rgba(255,255,255,0.005) 7px
+                );
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Subtle steel edge highlight on the right */
+        .sidebar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                rgba(255,255,255,0.08) 0%,
+                rgba(255,255,255,0.03) 50%,
+                rgba(255,255,255,0.08) 100%
+            );
+        }
+
+        .sidebar-brand {
+            padding: 28px 24px 32px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .sidebar-brand-text {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: #F3F2EF;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        /* Copper underline beneath brand */
+        .sidebar-brand-accent {
+            display: block;
+            width: 32px;
+            height: 2px;
+            background: #A0522D;
+            margin-top: 10px;
+            border-radius: 1px;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            flex: 1;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 11px 24px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #9CA3AF;
+            text-decoration: none;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.15s ease;
+            letter-spacing: 0.2px;
+        }
+
+        .sidebar-nav-item:hover {
+            color: #D1D5DB;
+        }
+
+        .sidebar-nav-item.active {
+            color: #F3F2EF;
+            font-weight: 500;
+        }
+
+        /* Copper left border on active item */
+        .sidebar-nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: #A0522D;
+            border-radius: 0 2px 2px 0;
+        }
+
+        .sidebar-nav-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 12px;
+            opacity: 0.5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar-nav-item.active .sidebar-nav-icon {
+            opacity: 0.85;
+        }
+
+        /* Sidebar footer — version info */
+        .sidebar-footer {
+            padding: 18px 24px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .sidebar-footer-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            color: rgba(156,163,175,0.5);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* ============================================
+           MAIN CONTENT — Warm gray canvas
+           ============================================ */
+
+        .main {
+            flex: 1;
+            height: 100%;
+            overflow-y: auto;
+            padding: 36px 40px 40px 40px;
+            position: relative;
+        }
+
+        /* Stone texture overlay on main area */
+        .main::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(
+                    180deg,
+                    transparent,
+                    transparent 120px,
+                    rgba(0,0,0,0.008) 120px,
+                    rgba(0,0,0,0.008) 121px
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .main > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================
+           HEADER ROW
+           ============================================ */
+
+        .header-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+
+        .greeting {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 28px;
+            font-weight: 600;
+            color: #1F2937;
+            line-height: 1.1;
+        }
+
+        .greeting-sub {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #9CA3AF;
+            margin-top: 4px;
+            letter-spacing: 0.1px;
+        }
+
+        .theme-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 400;
+            color: #9CA3AF;
+            letter-spacing: 0.5px;
+            text-align: right;
+            line-height: 1.4;
+        }
+
+        /* ============================================
+           METRIC CARDS — Carved/recessed feel
+           ============================================ */
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 32px;
+        }
+
+        .metric-card {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 22px;
+            border-top: 3px solid #A0522D;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.04),
+                0 1px 2px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle diagonal hatch to evoke cut stone */
+        .metric-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 60px;
+            background:
+                repeating-linear-gradient(
+                    -45deg,
+                    transparent,
+                    transparent 4px,
+                    rgba(160,82,45,0.02) 4px,
+                    rgba(160,82,45,0.02) 5px
+                );
+            pointer-events: none;
+        }
+
+        .metric-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            margin-bottom: 10px;
+        }
+
+        .metric-value {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 38px;
+            font-weight: 800;
+            color: #1F2937;
+            line-height: 1;
+        }
+
+        .metric-value.copper {
+            color: #A0522D;
+        }
+
+        .metric-delta {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 400;
+            color: #6B7280;
+            margin-top: 6px;
+        }
+
+        .metric-delta .up {
+            color: #065F46;
+        }
+
+        .metric-delta .down {
+            color: #A32D2D;
+        }
+
+        /* ============================================
+           LIFECYCLE KANBAN — Stage columns
+           ============================================ */
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1F2937;
+            letter-spacing: 0.1px;
+        }
+
+        .section-action {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            color: #A0522D;
+            text-decoration: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .kanban-row {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .kanban-col {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 18px 16px;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.04),
+                0 1px 2px rgba(0,0,0,0.02);
+            position: relative;
+            overflow: hidden;
+            min-height: 100px;
+        }
+
+        /* Color tint strip at top of each kanban column */
+        .kanban-col::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .kanban-col.land-sale::before { background: #A0522D; }
+        .kanban-col.planning::before { background: #6B21A8; }
+        .kanban-col.zoning::before { background: #92400E; }
+        .kanban-col.arb::before { background: #065F46; }
+        .kanban-col.permit-filed::before { background: #6B7280; }
+        .kanban-col.permit-approved::before { background: #065F46; }
+
+        /* Subtle background tint per column */
+        .kanban-col.land-sale { background: linear-gradient(180deg, rgba(160,82,45,0.03) 0%, #FFFFFF 40%); }
+        .kanban-col.planning { background: linear-gradient(180deg, rgba(107,33,168,0.03) 0%, #FFFFFF 40%); }
+        .kanban-col.zoning { background: linear-gradient(180deg, rgba(146,64,14,0.03) 0%, #FFFFFF 40%); }
+        .kanban-col.arb { background: linear-gradient(180deg, rgba(6,95,70,0.03) 0%, #FFFFFF 40%); }
+        .kanban-col.permit-filed { background: linear-gradient(180deg, rgba(107,114,128,0.03) 0%, #FFFFFF 40%); }
+        .kanban-col.permit-approved { background: linear-gradient(180deg, rgba(6,95,70,0.03) 0%, #FFFFFF 40%); }
+
+        .kanban-stage-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .kanban-count {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: #1F2937;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        /* Mini deal chips inside kanban columns */
+        .kanban-chip {
+            display: inline-block;
+            padding: 3px 8px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            color: #6B7280;
+            background: rgba(0,0,0,0.03);
+            border-radius: 4px;
+            margin-right: 4px;
+            margin-bottom: 4px;
+            letter-spacing: 0.2px;
+        }
+
+        .kanban-chip.highlighted {
+            color: #A0522D;
+            background: rgba(160,82,45,0.06);
+        }
+
+        /* ============================================
+           BOTTOM ROW — Cooling + Recent Activity
+           ============================================ */
+
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* ============================================
+           COOLING RELATIONSHIPS CARDS
+           ============================================ */
+
+        .cooling-section {
+            min-width: 0;
+        }
+
+        .cooling-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .cooling-card {
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 18px 20px;
+            border-top: 3px solid #A0522D;
+            box-shadow:
+                inset 0 2px 4px rgba(0,0,0,0.04),
+                0 1px 2px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Etched corner detail */
+        .cooling-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 40px;
+            height: 40px;
+            background:
+                linear-gradient(
+                    -45deg,
+                    transparent 50%,
+                    rgba(160,82,45,0.015) 50%
+                );
+            pointer-events: none;
+        }
+
+        .cooling-avatar {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: #FFFFFF;
+            background: #6B7280;
+            position: relative;
+        }
+
+        /* Stone-cut beveled edge on avatars */
+        .cooling-avatar::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 8px;
+            box-shadow:
+                inset 1px 1px 2px rgba(255,255,255,0.15),
+                inset -1px -1px 2px rgba(0,0,0,0.1);
+            pointer-events: none;
+        }
+
+        .cooling-avatar.sc { background: #7C3AED; }
+        .cooling-avatar.jo { background: #2563EB; }
+        .cooling-avatar.mw { background: #059669; }
+
+        .cooling-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cooling-name {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1F2937;
+            line-height: 1.2;
+        }
+
+        .cooling-firm {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #6B7280;
+            line-height: 1.3;
+        }
+
+        .cooling-days {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 500;
+            color: #9CA3AF;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+        }
+
+        .cooling-pulse-area {
+            width: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+        }
+
+        .cooling-pulse-score {
+            font-family: 'Darker Grotesque', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .cooling-pulse-score.danger { color: #A32D2D; }
+        .cooling-pulse-score.warning { color: #BA7517; }
+
+        .pulse-bar-track {
+            width: 100%;
+            height: 8px;
+            background: rgba(0,0,0,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            /* Carved inset feel */
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .pulse-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .pulse-bar-fill.danger {
+            background: linear-gradient(90deg, #A32D2D 0%, #C04040 100%);
+        }
+
+        .pulse-bar-fill.warning {
+            background: linear-gradient(90deg, #BA7517 0%, #D4921E 100%);
+        }
+
+        /* Steel highlight on pulse bar */
+        .pulse-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* ============================================
+           RECENT SIGNALS / ACTIVITY
+           ============================================ */
+
+        .activity-section {
+            min-width: 0;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .activity-item:first-child {
+            padding-top: 0;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            position: relative;
+        }
+
+        /* Stone/steel icon backgrounds */
+        .activity-icon.permit {
+            background: rgba(6,95,70,0.08);
+            color: #065F46;
+        }
+
+        .activity-icon.competitor {
+            background: rgba(163,45,45,0.08);
+            color: #A32D2D;
+        }
+
+        .activity-icon.board {
+            background: rgba(107,33,168,0.08);
+            color: #6B21A8;
+        }
+
+        .activity-icon.review {
+            background: rgba(186,117,23,0.08);
+            color: #BA7517;
+        }
+
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .activity-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+            color: #374151;
+            line-height: 1.5;
+        }
+
+        .activity-text strong {
+            font-weight: 600;
+            color: #1F2937;
+        }
+
+        .activity-time {
+            font-family: 'Outfit', sans-serif;
+            font-size: 10px;
+            font-weight: 400;
+            color: #9CA3AF;
+            margin-top: 3px;
+            letter-spacing: 0.2px;
+        }
+
+        .activity-badge {
+            display: inline-block;
+            padding: 2px 7px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 9px;
+            font-weight: 600;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+            vertical-align: middle;
+            margin-left: 6px;
+        }
+
+        .activity-badge.new {
+            background: rgba(160,82,45,0.1);
+            color: #A0522D;
+        }
+
+        .activity-badge.alert {
+            background: rgba(163,45,45,0.1);
+            color: #A32D2D;
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING — Minimal steel
+           ============================================ */
+
+        .main::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .main::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .main::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.12);
+            border-radius: 3px;
+        }
+
+        .main::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* ============================================
+           SVG ICONS — Inline minimal strokes
+           ============================================ */
+
+        .icon-svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ============================================
+           DECORATIVE — Quarry texture details
+           ============================================ */
+
+        /* Faint horizontal rule with chisel marks */
+        .chisel-rule {
+            height: 1px;
+            background:
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(0,0,0,0.06) 0px,
+                    rgba(0,0,0,0.06) 8px,
+                    transparent 8px,
+                    transparent 12px
+                );
+            margin: 0 0 16px 0;
+        }
+
+        /* Copper accent dot */
+        .copper-dot {
+            display: inline-block;
+            width: 4px;
+            height: 4px;
+            background: #A0522D;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        /* Steel separator between sidebar sections */
+        .steel-sep {
+            height: 1px;
+            margin: 8px 24px;
+            background: linear-gradient(
+                90deg,
+                rgba(255,255,255,0.06) 0%,
+                rgba(255,255,255,0.02) 100%
+            );
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+         SIDEBAR
+         ============================================ -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-text">BLDG</div>
+            <span class="sidebar-brand-accent"></span>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a class="sidebar-nav-item active" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg>
+                </span>
+                Dashboard
+            </a>
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/><line x1="11.5" y1="11.5" x2="14" y2="14"/></svg>
+                </span>
+                Opportunities
+            </a>
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><polyline points="2 12 5 6 9 9 14 3"/></svg>
+                </span>
+                Pipeline
+            </a>
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><circle cx="6" cy="6" r="3"/><circle cx="11" cy="10" r="3"/></svg>
+                </span>
+                Relationships
+            </a>
+
+            <div class="steel-sep"></div>
+
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><path d="M2 4l6-2 6 2v6l-6 4-6-4V4z"/></svg>
+                </span>
+                Outreach
+            </a>
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><path d="M2 8h3l2-5 2 10 2-5h3"/></svg>
+                </span>
+                Recon
+            </a>
+
+            <div class="steel-sep"></div>
+
+            <a class="sidebar-nav-item" href="#">
+                <span class="sidebar-nav-icon">
+                    <svg class="icon-svg" viewBox="0 0 16 16"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 2"/></svg>
+                </span>
+                Settings
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-footer-text">Montana Home Builders</div>
+        </div>
+    </aside>
+
+    <!-- ============================================
+         MAIN CONTENT
+         ============================================ -->
+    <main class="main">
+
+        <!-- Header Row -->
+        <div class="header-row">
+            <div>
+                <div class="greeting">Good morning, Matt</div>
+                <div class="greeting-sub">Monday, April 7, 2026 &mdash; Hudson Valley</div>
+            </div>
+            <div class="theme-label">06 Quarry &mdash; Raw Material Luxury</div>
+        </div>
+
+        <!-- Metric Cards -->
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Pipeline</div>
+                <div class="metric-value copper">$12.4M</div>
+                <div class="metric-delta"><span class="up">+$1.2M</span> from last month</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Active Deals</div>
+                <div class="metric-value">8</div>
+                <div class="metric-delta"><span class="up">+2</span> this quarter</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value">34%</div>
+                <div class="metric-delta"><span class="up">+4%</span> vs last quarter</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Avg Deal</div>
+                <div class="metric-value copper">$1.6M</div>
+                <div class="metric-delta"><span class="down">-$80K</span> vs target</div>
+            </div>
+        </div>
+
+        <!-- Lifecycle Kanban -->
+        <div class="section-header">
+            <div class="section-title"><span class="copper-dot"></span>Project Lifecycle</div>
+            <a class="section-action" href="#">View All</a>
+        </div>
+
+        <div class="kanban-row">
+            <div class="kanban-col land-sale">
+                <div class="kanban-stage-name">Land Sale</div>
+                <div class="kanban-count">3</div>
+                <span class="kanban-chip highlighted">Rhinebeck</span>
+                <span class="kanban-chip">Woodstock</span>
+                <span class="kanban-chip">Hudson</span>
+            </div>
+            <div class="kanban-col planning">
+                <div class="kanban-stage-name">Planning</div>
+                <div class="kanban-count">5</div>
+                <span class="kanban-chip">Catskill</span>
+                <span class="kanban-chip highlighted">Kinderhook</span>
+                <span class="kanban-chip">Ancram</span>
+            </div>
+            <div class="kanban-col zoning">
+                <div class="kanban-stage-name">Zoning</div>
+                <div class="kanban-count">2</div>
+                <span class="kanban-chip">Claverack</span>
+                <span class="kanban-chip">Hillsdale</span>
+            </div>
+            <div class="kanban-col arb">
+                <div class="kanban-stage-name">ARB</div>
+                <div class="kanban-count">1</div>
+                <span class="kanban-chip highlighted">Ghent</span>
+            </div>
+            <div class="kanban-col permit-filed">
+                <div class="kanban-stage-name">Permit Filed</div>
+                <div class="kanban-count">19</div>
+                <span class="kanban-chip">Chatham</span>
+                <span class="kanban-chip">Copake</span>
+                <span class="kanban-chip">+17 more</span>
+            </div>
+            <div class="kanban-col permit-approved">
+                <div class="kanban-stage-name">Permit Approved</div>
+                <div class="kanban-count">4</div>
+                <span class="kanban-chip highlighted">Germantown</span>
+                <span class="kanban-chip">Livingston</span>
+            </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="bottom-row">
+
+            <!-- Cooling Relationships -->
+            <div class="cooling-section">
+                <div class="section-header">
+                    <div class="section-title"><span class="copper-dot"></span>Cooling Relationships</div>
+                    <a class="section-action" href="#">Outreach Queue</a>
+                </div>
+
+                <div class="cooling-cards">
+                    <!-- Sarah Chen -->
+                    <div class="cooling-card">
+                        <div class="cooling-avatar sc">SC</div>
+                        <div class="cooling-info">
+                            <div class="cooling-name">Sarah Chen</div>
+                            <div class="cooling-firm">Chen Architecture</div>
+                            <div class="cooling-days">18 days since contact</div>
+                        </div>
+                        <div class="cooling-pulse-area">
+                            <div class="cooling-pulse-score warning">42</div>
+                            <div class="pulse-bar-track">
+                                <div class="pulse-bar-fill warning" style="width: 42%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- James Okafor -->
+                    <div class="cooling-card">
+                        <div class="cooling-avatar jo">JO</div>
+                        <div class="cooling-info">
+                            <div class="cooling-name">James Okafor</div>
+                            <div class="cooling-firm">Okafor Studio</div>
+                            <div class="cooling-days">24 days since contact</div>
+                        </div>
+                        <div class="cooling-pulse-area">
+                            <div class="cooling-pulse-score danger">35</div>
+                            <div class="pulse-bar-track">
+                                <div class="pulse-bar-fill danger" style="width: 35%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Marcus Webb -->
+                    <div class="cooling-card">
+                        <div class="cooling-avatar mw">MW</div>
+                        <div class="cooling-info">
+                            <div class="cooling-name">Marcus Webb</div>
+                            <div class="cooling-firm">Webb Design</div>
+                            <div class="cooling-days">31 days since contact</div>
+                        </div>
+                        <div class="cooling-pulse-area">
+                            <div class="cooling-pulse-score danger">28</div>
+                            <div class="pulse-bar-track">
+                                <div class="pulse-bar-fill danger" style="width: 28%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Signals -->
+            <div class="activity-section">
+                <div class="section-header">
+                    <div class="section-title"><span class="copper-dot"></span>Recent Signals</div>
+                    <a class="section-action" href="#">Signal Feed</a>
+                </div>
+
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon permit">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2h8a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V4a2 2 0 012-2z"/><path d="M6 6h4M6 9h2"/></svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>New permit filed</strong> in Rhinebeck for $2.8M residential<span class="activity-badge new">New</span></div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon competitor">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l1.5 4H14l-3.5 3 1.5 5L8 11l-4 3 1.5-5L2 6h4.5z"/></svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Hallmark Builders</strong> review dropped to 3.2 stars<span class="activity-badge alert">Alert</span></div>
+                            <div class="activity-time">6 hours ago</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon board">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1"/><path d="M2 7h12"/></svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Columbia County</strong> planning board approved Chen project</div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </div>
+
+                    <div class="activity-item">
+                        <div class="activity-icon review">
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-text"><strong>Okafor Studio</strong> posted new project on website<span class="activity-badge new">New</span></div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- end bottom-row -->
+
+    </main>
+
+</body>
+</html>

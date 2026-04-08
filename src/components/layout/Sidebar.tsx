@@ -7,10 +7,8 @@ import {
   Send,
   Radar,
   Settings,
-  Building2,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
-import { cn } from '@/lib/utils'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -27,19 +25,33 @@ export function Sidebar() {
   const location = useLocation()
 
   return (
-    <aside className="flex w-56 flex-col border-r border-border bg-white">
-      <div className="flex items-center gap-2 px-5 py-5">
-        <div
-          className="flex h-8 w-8 items-center justify-center rounded-lg"
-          style={{ backgroundColor: '#0F6E56' }}
-        >
-          <Building2 className="h-4 w-4 text-white" />
+    <aside
+      className="flex w-60 flex-col"
+      style={{ backgroundColor: '#0A0A0F' }}
+    >
+      {/* Logo */}
+      <div className="px-5 pt-6 pb-4">
+        <div className="flex flex-col">
+          <span
+            className="text-[28px] font-[800] leading-none tracking-tight"
+            style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif', letterSpacing: '-1px' }}
+          >
+            bldg
+          </span>
+          <span
+            className="mt-0.5 text-[11px] font-semibold uppercase"
+            style={{ color: '#6366F1', letterSpacing: '4px', fontFamily: 'Manrope, sans-serif' }}
+          >
+            vision
+          </span>
         </div>
-        <span className="text-sm font-medium text-foreground truncate">
-          {org?.name ?? 'BLDG Vision'}
-        </span>
       </div>
-      <nav className="flex flex-1 flex-col gap-1 px-3 py-2">
+
+      {/* Separator */}
+      <div className="mx-5 mb-4" style={{ height: '1px', backgroundColor: '#1E1E2E' }} />
+
+      {/* Navigation */}
+      <nav className="flex flex-1 flex-col gap-0.5 px-3">
         {navItems.map((item) => {
           const isActive =
             location.pathname === item.to ||
@@ -48,19 +60,59 @@ export function Sidebar() {
             <NavLink
               key={item.to}
               to={item.to}
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-              )}
+              className="nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium"
+              style={{
+                backgroundColor: isActive ? '#1A1A24' : 'transparent',
+                color: isActive ? '#E8E8F0' : '#7C7C96',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = '#A0A0B8'
+                  e.currentTarget.style.backgroundColor = '#12121C'
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.color = '#7C7C96'
+                  e.currentTarget.style.backgroundColor = 'transparent'
+                }
+              }}
             >
-              <item.icon className="h-4 w-4" />
+              {isActive && (
+                <span
+                  className="absolute left-0 h-5 w-[3px] rounded-r"
+                  style={{ backgroundColor: '#6366F1' }}
+                />
+              )}
+              <item.icon className="h-[18px] w-[18px]" style={{ opacity: isActive ? 1 : 0.6 }} />
               {item.label}
             </NavLink>
           )
         })}
       </nav>
+
+      {/* Org footer */}
+      <div className="mx-3 mb-4 mt-auto rounded-lg px-3 py-3" style={{ backgroundColor: '#111118' }}>
+        <div className="flex items-center gap-2.5">
+          <div
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-[11px] font-bold"
+            style={{
+              background: 'linear-gradient(135deg, #6366F1, #818CF8)',
+              color: '#ffffff',
+            }}
+          >
+            {org?.name ? org.name.split(' ').map(w => w[0]).join('').slice(0, 2) : 'BV'}
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[12px] font-medium" style={{ color: '#E8E8F0' }}>
+              {org?.name ?? 'BLDG Vision'}
+            </span>
+            <span className="text-[10px]" style={{ color: '#4A4A64' }}>
+              {org?.region ?? 'Pro plan'}
+            </span>
+          </div>
+        </div>
+      </div>
     </aside>
   )
 }
