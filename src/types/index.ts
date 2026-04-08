@@ -84,6 +84,12 @@ export interface KBProject {
   photos: Array<{ url: string; caption?: string; procore_id?: string }>
   procore_project_id?: string
   is_showcase: boolean
+  client_name?: string
+  engineer_name?: string
+  owners_rep_name?: string
+  status?: string
+  start_date?: string
+  end_date?: string
   created_at: string
   updated_at: string
 }
