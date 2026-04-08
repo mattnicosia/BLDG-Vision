@@ -55,6 +55,26 @@ export function useOpportunities(architectId?: string) {
       .single()
     if (!error && data) {
       setOpportunities((prev) => prev.map((o) => (o.id === id ? data : o)))
+
+      // Auto-trigger win attribution when deal is won
+      if (updates.stage === 'won') {
+        const session = await supabase.auth.getSession()
+        const token = session.data.session?.access_token
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+        // Fire attribution + Procore handoff notification in background
+        fetch(`${supabaseUrl}/functions/v1/win-attribution`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
+          body: JSON.stringify({}),
+        }).catch(() => {})
+        // Generate Procore handoff notification
+        fetch(`${supabaseUrl}/functions/v1/generate-alerts`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
+          body: JSON.stringify({}),
+        }).catch(() => {})
+      }
     }
   }
 
