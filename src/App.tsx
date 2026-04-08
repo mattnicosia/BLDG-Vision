@@ -19,6 +19,7 @@ import { AddVECase } from '@/pages/kb/AddVECase'
 import { CompetitorDetail } from '@/pages/competitors/CompetitorDetail'
 import { SettingsIndex } from '@/pages/settings/SettingsIndex'
 import { ProcoreCallback } from '@/pages/settings/ProcoreCallback'
+import { RootRedirect } from '@/pages/settings/RootRedirect'
 import { Toaster } from '@/components/ui/sonner'
 
 export default function App() {
@@ -74,8 +75,10 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Root redirect -> Dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Root: Procore callback (if ?code=) or redirect to Dashboard */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<RootRedirect />} />
+          </Route>
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
         <Toaster />
