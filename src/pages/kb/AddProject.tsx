@@ -73,7 +73,7 @@ export function AddProject() {
     <div className="mx-auto max-w-lg">
       <Link
         to="/kb"
-        className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-[#E8E8F0]"
       >
         <ArrowLeft className="h-4 w-4" /> Knowledge Base
       </Link>
@@ -108,7 +108,7 @@ export function AddProject() {
           <select
             value={architectId}
             onChange={(e) => handleArchitectChange(e.target.value)}
-            className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+            className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
           >
             <option value="">Select architect (optional)</option>
             {architects.map((a) => (
@@ -126,7 +126,7 @@ export function AddProject() {
             <select
               value={permitId}
               onChange={(e) => handlePermitChange(e.target.value)}
-              className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+              className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
             >
               <option value="">No linked permit</option>
               {permits.map((p) => (
@@ -143,7 +143,7 @@ export function AddProject() {
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value as 'residential' | 'commercial' | 'hospitality')}
-            className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+            className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
           >
             <option value="residential">Residential</option>
             <option value="commercial">Commercial</option>

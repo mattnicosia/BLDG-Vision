@@ -51,7 +51,7 @@ export function CompanyTab() {
         )}
       </div>
 
-      <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+      <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
         <label className="text-xs text-muted-foreground">Company story</label>
         {editing ? (
           <Textarea
@@ -68,7 +68,7 @@ export function CompanyTab() {
         )}
       </div>
 
-      <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+      <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
         <label className="text-xs text-muted-foreground">Differentiators</label>
         {editing ? (
           <div className="mt-2 flex flex-col gap-2">

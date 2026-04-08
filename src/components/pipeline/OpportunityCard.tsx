@@ -25,7 +25,7 @@ export function OpportunityCard({ opportunity, onClick }: OpportunityCardProps) 
   return (
     <button
       onClick={onClick}
-      className="w-full rounded-lg border border-border bg-white p-3 text-left transition-colors hover:bg-muted/30"
+      className="w-full rounded-lg border border-border bg-[#1A1A24] p-3 text-left transition-colors hover:bg-[#0F0F17]"
       style={{ borderWidth: '0.5px' }}
     >
       <div className="flex items-start justify-between">

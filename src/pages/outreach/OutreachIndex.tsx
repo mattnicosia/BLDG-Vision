@@ -170,7 +170,7 @@ export function OutreachIndex() {
                   return (
                     <div
                       key={draft.id}
-                      className="flex items-center justify-between rounded-xl border border-border bg-white p-3"
+                      className="flex items-center justify-between rounded-xl border border-border bg-[#1A1A24] p-3"
                       style={{ borderWidth: '0.5px' }}
                     >
                       <div className="min-w-0 flex-1">

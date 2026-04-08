@@ -243,11 +243,11 @@ export function CompetitorsIndex() {
             filteredDiscovered.map((dc) => (
               <div
                 key={dc.id}
-                className="flex items-center gap-4 rounded-xl border border-border bg-white p-4"
+                className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4"
                 style={{ borderWidth: '0.5px' }}
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                  <span className="text-sm font-medium text-foreground">{dc.name}</span>
+                  <span className="text-sm font-medium text-[#E8E8F0]">{dc.name}</span>
                   {dc.address && (
                     <span className="truncate text-xs text-muted-foreground">{dc.address}</span>
                   )}

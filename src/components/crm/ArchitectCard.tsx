@@ -21,7 +21,7 @@ export function ArchitectCard({ architect, onDelete, onBlock }: ArchitectCardPro
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl border border-border bg-white p-4 transition-colors hover:bg-muted/30"
+      className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4 transition-colors hover:bg-[#0F0F17]"
       style={{ borderWidth: '0.5px' }}
     >
       <Link
@@ -37,7 +37,7 @@ export function ArchitectCard({ architect, onDelete, onBlock }: ArchitectCardPro
 
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium text-foreground">
+            <span className="truncate text-sm font-medium text-[#E8E8F0]">
               {architect.name}
             </span>
             <StageBadge stage={architect.stage} />
@@ -122,7 +122,7 @@ export function ArchitectCard({ architect, onDelete, onBlock }: ArchitectCardPro
                 e.stopPropagation()
                 onBlock(architect)
               }}
-              className="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              className="rounded p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
               title="Block (hide from Radar)"
             >
               <Ban className="h-3.5 w-3.5" />

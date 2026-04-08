@@ -158,7 +158,7 @@ export function ComposeEmail({
                   <p className="text-sm font-medium truncate">{recipient.name}</p>
                   <p className="text-[10px] text-muted-foreground truncate">{recipient.email}</p>
                 </div>
-                <button onClick={() => setRecipient(null)} className="text-muted-foreground hover:text-foreground">
+                <button onClick={() => setRecipient(null)} className="text-muted-foreground hover:text-[#E8E8F0]">
                   <X className="h-3.5 w-3.5" />
                 </button>
               </div>
@@ -176,7 +176,7 @@ export function ComposeEmail({
                   className="pl-9"
                 />
                 {showRecipientDropdown && filteredArchitects.length > 0 && (
-                  <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-border bg-white shadow-lg">
+                  <div className="absolute left-0 right-0 top-full z-10 mt-1 max-h-48 overflow-y-auto rounded-lg border border-border bg-[#1A1A24] shadow-lg">
                     {filteredArchitects.map((a) => (
                       <button
                         key={a.id}
@@ -237,7 +237,7 @@ export function ComposeEmail({
             <div className="flex flex-col gap-1">
               <label className="text-[10px] text-muted-foreground">Signature</label>
               <div
-                className="rounded-lg border border-border bg-muted/30 p-2 text-xs"
+                className="rounded-lg border border-border bg-[#0F0F17] p-2 text-xs"
                 dangerouslySetInnerHTML={{ __html: emailSettings.signature_html }}
               />
             </div>

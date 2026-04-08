@@ -173,7 +173,7 @@ export function EmailSignatureSettings() {
   if (loading) return null
 
   return (
-    <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+    <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-base font-medium">Email settings</h2>
         {!editing ? (
@@ -235,10 +235,10 @@ export function EmailSignatureSettings() {
                   <div key={item.id} className="flex items-start gap-2 rounded-lg border border-border p-2" style={{ borderWidth: '0.5px' }}>
                     {/* Reorder controls */}
                     <div className="flex flex-col gap-0.5 pt-1">
-                      <button onClick={() => moveItem(index, 'up')} disabled={index === 0} className="text-muted-foreground hover:text-foreground disabled:opacity-20">
+                      <button onClick={() => moveItem(index, 'up')} disabled={index === 0} className="text-muted-foreground hover:text-[#E8E8F0] disabled:opacity-20">
                         <ArrowUp className="h-3 w-3" />
                       </button>
-                      <button onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} className="text-muted-foreground hover:text-foreground disabled:opacity-20">
+                      <button onClick={() => moveItem(index, 'down')} disabled={index === items.length - 1} className="text-muted-foreground hover:text-[#E8E8F0] disabled:opacity-20">
                         <ArrowDown className="h-3 w-3" />
                       </button>
                     </div>
@@ -282,7 +282,7 @@ export function EmailSignatureSettings() {
                   <button
                     key={t.type}
                     onClick={() => addItem(t.type)}
-                    className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                    className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                   >
                     + {t.label}
                   </button>
@@ -295,7 +295,7 @@ export function EmailSignatureSettings() {
           {currentSignatureHtml && (
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Preview</label>
-              <div className="rounded-lg border border-border bg-white p-3" dangerouslySetInnerHTML={{ __html: currentSignatureHtml }} />
+              <div className="rounded-lg border border-border bg-[#1A1A24] p-3" dangerouslySetInnerHTML={{ __html: currentSignatureHtml }} />
             </div>
           )}
         </div>
@@ -307,7 +307,7 @@ export function EmailSignatureSettings() {
               {settings.signature_html && (
                 <div className="mt-2 flex flex-col gap-1">
                   <label className="text-xs text-muted-foreground">Signature</label>
-                  <div className="rounded-lg border border-border bg-white p-3" dangerouslySetInnerHTML={{ __html: settings.signature_html }} />
+                  <div className="rounded-lg border border-border bg-[#1A1A24] p-3" dangerouslySetInnerHTML={{ __html: settings.signature_html }} />
                 </div>
               )}
             </div>

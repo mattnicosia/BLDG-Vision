@@ -228,7 +228,7 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white">
+    <div className="flex min-h-screen items-center justify-center bg-[#1A1A24]">
       <div className="w-full max-w-lg px-6 py-12">
         <div className="mb-8 flex flex-col items-center gap-3">
           <div
@@ -341,7 +341,7 @@ export function OnboardingWizard() {
                   {projects.length > 1 && (
                     <button
                       onClick={() => removeProject(i)}
-                      className="text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-[#E8E8F0]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -413,7 +413,7 @@ export function OnboardingWizard() {
                   {architects.length > 1 && (
                     <button
                       onClick={() => removeArchitect(i)}
-                      className="text-muted-foreground hover:text-foreground"
+                      className="text-muted-foreground hover:text-[#E8E8F0]"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

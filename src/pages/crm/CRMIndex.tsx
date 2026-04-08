@@ -94,7 +94,7 @@ export function CRMIndex() {
           <select
             value={stageFilter}
             onChange={(e) => setStageFilter(e.target.value as ArchitectStage | 'all')}
-            className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+            className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
           >
             <option value="all">All stages</option>
             {STAGES.map((s) => (
@@ -106,7 +106,7 @@ export function CRMIndex() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'pulse' | 'name' | 'contact')}
-            className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+            className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
           >
             <option value="pulse">Sort by Pulse</option>
             <option value="name">Sort by Name</option>

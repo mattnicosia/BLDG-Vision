@@ -185,7 +185,7 @@ export function IntelligenceIndex() {
             <div key={section.key}>
               <button
                 onClick={() => toggleSection(section.key)}
-                className="mb-2 flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary"
+                className="mb-2 flex items-center gap-2 text-sm font-medium text-[#E8E8F0] hover:text-primary"
               >
                 {expandedSections.has(section.key) ? (
                   <ChevronDown className="h-4 w-4" />

@@ -30,21 +30,12 @@ export function Sidebar() {
       style={{ backgroundColor: '#0A0A0F' }}
     >
       {/* Logo */}
-      <div className="px-5 pt-6 pb-4">
-        <div className="flex flex-col">
-          <span
-            className="text-[28px] font-[800] leading-none tracking-tight"
-            style={{ color: '#ffffff', fontFamily: 'Manrope, sans-serif', letterSpacing: '-1px' }}
-          >
-            bldg
-          </span>
-          <span
-            className="mt-0.5 text-[11px] font-semibold uppercase"
-            style={{ color: '#6366F1', letterSpacing: '4px', fontFamily: 'Manrope, sans-serif' }}
-          >
-            vision
-          </span>
-        </div>
+      <div className="px-4 pt-5 pb-3">
+        <img
+          src="/logo.png"
+          alt="bldg vision"
+          className="h-12 w-auto object-contain object-left"
+        />
       </div>
 
       {/* Separator */}

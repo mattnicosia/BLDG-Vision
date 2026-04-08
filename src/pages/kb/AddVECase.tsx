@@ -42,7 +42,7 @@ export function AddVECase() {
     <div className="mx-auto max-w-lg">
       <Link
         to="/kb"
-        className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-[#E8E8F0]"
       >
         <ArrowLeft className="h-4 w-4" /> Knowledge Base
       </Link>

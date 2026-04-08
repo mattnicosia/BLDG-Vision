@@ -264,7 +264,7 @@ export function PermitsIndex() {
       {tab === 'fetch' && (
         <div className="flex flex-col gap-4">
           {/* Search controls */}
-          <div className="flex flex-col gap-3 rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+          <div className="flex flex-col gap-3 rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
             <div className="flex items-end gap-3">
               <div className="flex flex-1 flex-col gap-1.5">
                 <label className="text-xs text-muted-foreground">Search keyword</label>
@@ -322,7 +322,7 @@ export function PermitsIndex() {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as ConstructionType | 'all')}
-                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+                className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
               >
                 <option value="all">All types</option>
                 <option value="New Construction">New Construction</option>
@@ -336,7 +336,7 @@ export function PermitsIndex() {
               <select
                 value={relevanceFilter}
                 onChange={(e) => setRelevanceFilter(e.target.value as PermitRelevance | 'all')}
-                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+                className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
               >
                 <option value="all">All relevance</option>
                 <option value="high">High relevance</option>
@@ -352,9 +352,9 @@ export function PermitsIndex() {
           {fetched && previews.length > 0 && (
             <>
               {/* Action bar */}
-              <div className="flex items-center justify-between rounded-lg bg-muted/50 px-4 py-2">
+              <div className="flex items-center justify-between rounded-lg bg-[#111118] px-4 py-2">
                 <div className="flex items-center gap-3">
-                  <button onClick={selectedCount === filteredPreviews.length ? selectNone : selectAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+                  <button onClick={selectedCount === filteredPreviews.length ? selectNone : selectAll} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[#E8E8F0]">
                     {selectedCount === filteredPreviews.length ? <CheckSquare className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
                     {selectedCount === filteredPreviews.length ? 'Deselect all' : 'Select all'}
                   </button>
@@ -415,7 +415,7 @@ export function PermitsIndex() {
               <select
                 value={importedTypeFilter}
                 onChange={(e) => setImportedTypeFilter(e.target.value as ConstructionType | 'all')}
-                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+                className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
               >
                 <option value="all">All types</option>
                 <option value="New Construction">New Construction</option>
@@ -429,7 +429,7 @@ export function PermitsIndex() {
               <select
                 value={importedRelevanceFilter}
                 onChange={(e) => setImportedRelevanceFilter(e.target.value as PermitRelevance | 'all')}
-                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+                className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
               >
                 <option value="all">All relevance</option>
                 <option value="high">High relevance</option>
@@ -439,7 +439,7 @@ export function PermitsIndex() {
               <select
                 value={importedSort}
                 onChange={(e) => setImportedSort(e.target.value as 'date' | 'value' | 'relevance')}
-                className="rounded-md border border-border bg-white px-2 py-1.5 text-sm"
+                className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
               >
                 <option value="date">Sort by date</option>
                 <option value="value">Sort by value</option>
@@ -468,7 +468,7 @@ export function PermitsIndex() {
               return (
                 <div
                   key={permit.id}
-                  className="rounded-xl border border-border bg-white p-4"
+                  className="rounded-xl border border-border bg-[#1A1A24] p-4"
                   style={{ borderWidth: '0.5px' }}
                 >
                   <div className="flex items-start justify-between">

@@ -183,7 +183,7 @@ export function AIModal({ architectId, architectName, architectEmail, open, onCl
         )}
 
         {/* Draft body */}
-        <div className="min-h-[160px] rounded-lg bg-muted/50 p-4">
+        <div className="min-h-[160px] rounded-lg bg-[#111118] p-4">
           {loading ? (
             <div className="flex h-full items-center justify-center">
               <p className="text-sm text-muted-foreground">Generating...</p>
@@ -199,7 +199,7 @@ export function AIModal({ architectId, architectName, architectEmail, open, onCl
                 className="border-0 bg-transparent p-0 text-sm leading-relaxed focus-visible:ring-0"
               />
             ) : (
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#E8E8F0]">
                 {result}
               </p>
             )
@@ -215,7 +215,7 @@ export function AIModal({ architectId, architectName, architectEmail, open, onCl
           <div className="flex flex-col gap-1">
             <label className="text-xs text-muted-foreground">Signature</label>
             <div
-              className="rounded-lg border border-border bg-white p-3 text-xs"
+              className="rounded-lg border border-border bg-[#1A1A24] p-3 text-xs"
               dangerouslySetInnerHTML={{ __html: emailSettings.signature_html }}
             />
           </div>

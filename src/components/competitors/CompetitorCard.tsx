@@ -20,7 +20,7 @@ export function CompetitorCard({ competitor, onDelete }: CompetitorCardProps) {
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl border border-border bg-white p-4 transition-colors hover:bg-muted/30"
+      className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4 transition-colors hover:bg-[#0F0F17]"
       style={{ borderWidth: '0.5px' }}
     >
       <Link
@@ -35,7 +35,7 @@ export function CompetitorCard({ competitor, onDelete }: CompetitorCardProps) {
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="truncate text-sm font-medium text-foreground">
+          <span className="truncate text-sm font-medium text-[#E8E8F0]">
             {competitor.name}
           </span>
           <div className="flex items-center gap-2">

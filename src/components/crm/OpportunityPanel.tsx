@@ -69,7 +69,7 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
   if (loading) return null
 
   return (
-    <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+    <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium">
           Pipeline {opportunities.length > 0 && `(${opportunities.length})`}
@@ -82,13 +82,13 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
       {/* Metrics */}
       {opportunities.length > 0 && (
         <div className="mb-3 grid grid-cols-2 gap-2">
-          <div className="rounded-lg bg-muted/50 p-2">
+          <div className="rounded-lg bg-[#111118] p-2">
             <p className="text-[10px] text-muted-foreground">Pipeline</p>
             <p className="text-xs font-medium">
               ${(metrics.pipelineValue / 1000000).toFixed(1)}M
             </p>
           </div>
-          <div className="rounded-lg bg-muted/50 p-2">
+          <div className="rounded-lg bg-[#111118] p-2">
             <p className="text-[10px] text-muted-foreground">Win rate</p>
             <p className="text-xs font-medium">{metrics.winRate}%</p>
           </div>
@@ -103,7 +103,7 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
         {opportunities.map((opp) => {
           const style = OPPORTUNITY_STAGE_STYLES[opp.stage]
           return (
-            <div key={opp.id} className="rounded-lg bg-muted/50 p-2">
+            <div key={opp.id} className="rounded-lg bg-[#111118] p-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium">{opp.project_name}</span>
                 <button

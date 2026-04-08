@@ -128,7 +128,7 @@ export function PipelineIndex() {
                       </span>
                     )}
                   </div>
-                  <div className="flex flex-col gap-1.5 rounded-lg bg-muted/30 p-2" style={{ minHeight: 200 }}>
+                  <div className="flex flex-col gap-1.5 rounded-lg bg-[#0F0F17] p-2" style={{ minHeight: 200 }}>
                     {stageOpps.length === 0 ? (
                       <p className="py-4 text-center text-[10px] text-muted-foreground">
                         No deals
@@ -153,7 +153,7 @@ export function PipelineIndex() {
             <div className="mt-4">
               <button
                 onClick={() => setShowClosed(!showClosed)}
-                className="text-xs text-muted-foreground hover:text-foreground"
+                className="text-xs text-muted-foreground hover:text-[#E8E8F0]"
               >
                 {showClosed ? 'Hide' : 'Show'} closed deals ({byStage.won.length} won, {byStage.lost.length} lost)
               </button>
@@ -239,7 +239,7 @@ export function PipelineIndex() {
                 <select
                   value={newArchitectId}
                   onChange={(e) => setNewArchitectId(e.target.value)}
-                  className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+                  className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
                 >
                   <option value="">Select architect (optional)</option>
                   {architects.map((a) => (

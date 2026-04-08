@@ -102,13 +102,13 @@ export function CompetitorDetail() {
     <div className="mx-auto max-w-3xl">
       <Link
         to="/competitors"
-        className="mb-6 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-6 flex items-center gap-1 text-sm text-muted-foreground hover:text-[#E8E8F0]"
       >
         <ArrowLeft className="h-4 w-4" /> Competitors
       </Link>
 
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+      <div className="mb-6 flex items-start justify-between rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
         <div className="flex items-center gap-4">
           <div
             className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-medium"
@@ -165,7 +165,7 @@ export function CompetitorDetail() {
         {/* Main panel */}
         <div className="col-span-2 flex flex-col gap-4">
           {editing ? (
-            <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
               <div className="flex gap-3">
                 <div className="flex flex-1 flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground">Name</label>
@@ -209,7 +209,7 @@ export function CompetitorDetail() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
               {/* Links */}
               {(competitor.website || competitor.instagram_handle) && (
                 <div className="flex flex-wrap gap-2">
@@ -218,7 +218,7 @@ export function CompetitorDetail() {
                       href={competitor.website.startsWith('http') ? competitor.website : `https://${competitor.website}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#111118] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                     >
                       <Globe className="h-3.5 w-3.5" />
                       {competitor.website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
@@ -229,7 +229,7 @@ export function CompetitorDetail() {
                       href={`https://instagram.com/${competitor.instagram_handle.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#111118] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                     >
                       <Instagram className="h-3.5 w-3.5" />
                       @{competitor.instagram_handle.replace('@', '')}
@@ -279,7 +279,7 @@ export function CompetitorDetail() {
 
         {/* Sidebar: Linked architects */}
         <div className="flex flex-col gap-4">
-          <div className="rounded-xl border border-border bg-white p-4" style={{ borderWidth: '0.5px' }}>
+          <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-medium">Linked architects</h3>
               <Button variant="ghost" size="sm" onClick={() => setShowLinkDialog(true)}>
@@ -295,7 +295,7 @@ export function CompetitorDetail() {
                 {links.map((link) => (
                   <div
                     key={link.id}
-                    className="flex items-center justify-between rounded-lg bg-muted/50 p-2"
+                    className="flex items-center justify-between rounded-lg bg-[#111118] p-2"
                   >
                     <div className="flex items-center gap-2">
                       <Users className="h-3 w-3 text-muted-foreground" />
@@ -312,7 +312,7 @@ export function CompetitorDetail() {
                       </span>
                       <button
                         onClick={() => removeLink(link.id)}
-                        className="text-muted-foreground hover:text-foreground"
+                        className="text-muted-foreground hover:text-[#E8E8F0]"
                       >
                         <X className="h-3 w-3" />
                       </button>

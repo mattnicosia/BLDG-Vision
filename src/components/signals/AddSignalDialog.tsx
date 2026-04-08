@@ -76,7 +76,7 @@ export function AddSignalDialog({ onClose, onCreate }: Props) {
             <select
               value={type}
               onChange={(e) => setType(e.target.value as SignalType)}
-              className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+              className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
             >
               {SIGNAL_TYPES.map((t) => (
                 <option key={t.value} value={t.value}>

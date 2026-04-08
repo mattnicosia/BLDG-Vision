@@ -36,7 +36,7 @@ export function PermitPreviewCard({ permit, selected, onToggle }: PermitPreviewC
 
   return (
     <div
-      className="rounded-xl border bg-white p-4 transition-colors"
+      className="rounded-xl border bg-[#1A1A24] p-4 transition-colors"
       style={{
         borderWidth: '0.5px',
         borderColor: selected ? '#0F6E56' : '#e4e4e7',

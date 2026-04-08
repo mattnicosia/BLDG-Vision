@@ -238,11 +238,11 @@ export function PermitCSVUpload({ open, onClose }: Props) {
         {step === 'review' && (
           <div className="flex flex-col gap-4">
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg bg-muted/50 p-3">
+              <div className="rounded-lg bg-[#111118] p-3">
                 <p className="text-xs text-muted-foreground">Permits to import</p>
                 <p className="text-lg font-medium">{permitRows.length}</p>
               </div>
-              <div className="rounded-lg bg-muted/50 p-3">
+              <div className="rounded-lg bg-[#111118] p-3">
                 <p className="text-xs text-muted-foreground">Matched to architects</p>
                 <p className="text-lg font-medium">{matchedCount}</p>
               </div>

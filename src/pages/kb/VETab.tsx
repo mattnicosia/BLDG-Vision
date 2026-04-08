@@ -31,7 +31,7 @@ export function VETab() {
         cases.map((c) => (
           <div
             key={c.id}
-            className="rounded-xl border border-border bg-white p-4"
+            className="rounded-xl border border-border bg-[#1A1A24] p-4"
             style={{ borderWidth: '0.5px' }}
           >
             <div className="flex items-start justify-between">

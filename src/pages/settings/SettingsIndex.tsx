@@ -99,7 +99,7 @@ export function SettingsIndex() {
       ) : (
       <div className="flex flex-col gap-4">
         {/* Organization */}
-        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+        <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-medium">Organization</h2>
             {!editingOrg ? (
@@ -184,7 +184,7 @@ export function SettingsIndex() {
         </div>
 
         {/* Service Territory */}
-        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+        <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-base font-medium">Service territory</h2>
             {!editingTerritory ? (
@@ -247,7 +247,7 @@ export function SettingsIndex() {
         </div>
 
         {/* Scan schedule */}
-        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+        <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
           <h2 className="mb-1 text-base font-medium">Automated scanning</h2>
           <p className="mb-3 text-sm text-muted-foreground">
             Automatically check board meetings, permits, and other data sources for new activity.
@@ -268,7 +268,7 @@ export function SettingsIndex() {
                   refetch()
                 }
               }}
-              className="rounded-md border border-border bg-white px-3 py-2 text-sm"
+              className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
             >
               <option value="6am">Daily at 6:00 AM</option>
               <option value="7am">Daily at 7:00 AM</option>
@@ -288,7 +288,7 @@ export function SettingsIndex() {
         <EmailSignatureSettings />
 
         {/* Data enrichment */}
-        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+        <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
           <h2 className="mb-1 text-base font-medium">Data enrichment</h2>
           <p className="mb-3 text-sm text-muted-foreground">
             Fetch missing website and phone data from Google Places for all your architects, discovered places, and contractors.
@@ -412,7 +412,7 @@ export function SettingsIndex() {
         </div>
 
         {/* Account */}
-        <div className="rounded-xl border border-border bg-white p-5" style={{ borderWidth: '0.5px' }}>
+        <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
           <h2 className="mb-3 text-base font-medium">Account</h2>
           <div>
             <p className="text-xs text-muted-foreground">Email</p>

@@ -45,7 +45,7 @@ export function SignalCard({ signal, onAction, onDismiss }: SignalCardProps) {
 
   return (
     <div
-      className="flex items-start gap-3 rounded-xl border border-border bg-white p-4"
+      className="flex items-start gap-3 rounded-xl border border-border bg-[#1A1A24] p-4"
       style={{
         borderWidth: '0.5px',
         opacity: isDismissed ? 0.5 : 1,
@@ -72,7 +72,7 @@ export function SignalCard({ signal, onAction, onDismiss }: SignalCardProps) {
           >
             {TYPE_LABELS[signal.type] ?? signal.type}
           </span>
-          <span className="truncate text-sm font-medium text-foreground">
+          <span className="truncate text-sm font-medium text-[#E8E8F0]">
             {signal.headline}
           </span>
         </div>

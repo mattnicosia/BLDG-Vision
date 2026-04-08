@@ -106,12 +106,12 @@ export function TouchpointLog({ architectId, touchpoints, onAdd }: TouchpointLog
           return (
             <div
               key={tp.id}
-              className="flex items-start gap-3 rounded-lg bg-muted/50 p-3"
+              className="flex items-start gap-3 rounded-lg bg-[#111118] p-3"
             >
               <TypeIcon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
               <div className="flex flex-1 flex-col gap-0.5">
                 {tp.notes && (
-                  <p className="text-sm text-foreground">{tp.notes}</p>
+                  <p className="text-sm text-[#E8E8F0]">{tp.notes}</p>
                 )}
                 <span className="text-xs text-muted-foreground">
                   {new Date(tp.contacted_at).toLocaleDateString('en-US', {

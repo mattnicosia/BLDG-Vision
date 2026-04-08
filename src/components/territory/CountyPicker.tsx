@@ -64,7 +64,7 @@ export function CountyPicker({ selected, onChange }: CountyPickerProps) {
             </span>
             <button
               onClick={() => onChange([])}
-              className="text-xs text-muted-foreground hover:text-foreground"
+              className="text-xs text-muted-foreground hover:text-[#E8E8F0]"
             >
               Clear all
             </button>
@@ -167,7 +167,7 @@ export function CountyPicker({ selected, onChange }: CountyPickerProps) {
                         </svg>
                       )}
                     </div>
-                    <span className={isSelected ? 'font-medium text-foreground' : 'text-muted-foreground'}>
+                    <span className={isSelected ? 'font-medium text-[#E8E8F0]' : 'text-muted-foreground'}>
                       {county.name}
                     </span>
                     <span className="ml-auto text-[10px] text-muted-foreground">
