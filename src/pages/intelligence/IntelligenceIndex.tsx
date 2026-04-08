@@ -7,10 +7,11 @@ import { ProjectLifecycle } from '@/components/opportunities/ProjectLifecycle'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, ChevronDown, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
+import { usePersistedState } from '@/hooks/usePersistedState'
 
 export function IntelligenceIndex() {
   const [scanning, setScanning] = useState(false)
-  const [view, setView] = useState<'all' | 'permits' | 'boards' | 'signals'>('all')
+  const [view, setView] = usePersistedState<'all' | 'permits' | 'boards' | 'signals'>('opportunities-view', 'all')
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['permits', 'boards', 'signals'])
   )

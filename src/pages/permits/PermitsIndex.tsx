@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '@/lib/supabase'
 import { usePermits } from '@/hooks/usePermits'
+import { usePersistedState } from '@/hooks/usePersistedState'
 import { PermitPreviewCard } from '@/components/permits/PermitPreviewCard'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -23,7 +24,7 @@ import { categorizePermit, CONSTRUCTION_TYPE_STYLES, RELEVANCE_STYLES, type Cons
 
 export function PermitsIndex() {
   const { permits: importedPermits, loading: loadingImported, refetch } = usePermits()
-  const [tab, setTab] = useState<'fetch' | 'imported'>('imported')
+  const [tab, setTab] = usePersistedState<'fetch' | 'imported'>('permits-tab', 'imported')
   const [keyword, setKeyword] = useState('building permit')
   const [fetching, setFetching] = useState(false)
   const [importing, setImporting] = useState(false)

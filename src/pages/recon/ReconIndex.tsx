@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { MapIndex } from '@/pages/map/MapIndex'
 import { CompetitorsIndex } from '@/pages/competitors/CompetitorsIndex'
+import { usePersistedState } from '@/hooks/usePersistedState'
 
 export function ReconIndex() {
-  const [tab, setTab] = useState<'map' | 'competitors'>('map')
+  const [tab, setTab] = usePersistedState<'map' | 'competitors'>('recon-tab', 'map')
 
   return (
     <div>

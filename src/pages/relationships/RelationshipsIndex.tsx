@@ -1,9 +1,9 @@
-import { useState } from 'react'
 import { CRMIndex } from '@/pages/crm/CRMIndex'
 import { RadarIndex } from '@/pages/radar/RadarIndex'
+import { usePersistedState } from '@/hooks/usePersistedState'
 
 export function RelationshipsIndex() {
-  const [tab, setTab] = useState<'contacts' | 'discover'>('contacts')
+  const [tab, setTab] = usePersistedState<'contacts' | 'discover'>('relationships-tab', 'contacts')
 
   return (
     <div>

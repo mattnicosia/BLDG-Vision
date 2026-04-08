@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { usePersistedState } from '@/hooks/usePersistedState'
 import { useOrg } from '@/hooks/useOrg'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -63,7 +64,7 @@ export function SettingsIndex() {
 
   const counties = (org?.service_counties as CountyData[]) ?? []
 
-  const [settingsTab, setSettingsTab] = useState<'general' | 'playbook'>('general')
+  const [settingsTab, setSettingsTab] = usePersistedState<'general' | 'playbook'>('settings-tab', 'general')
 
   return (
     <div className="mx-auto max-w-4xl">

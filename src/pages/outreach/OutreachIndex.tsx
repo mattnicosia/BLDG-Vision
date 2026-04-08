@@ -10,12 +10,13 @@ import { EmailTemplates } from '@/components/outreach/EmailTemplates'
 import { Button } from '@/components/ui/button'
 import { EmailSeriesModal } from '@/components/ai/EmailSeriesModal'
 import { Pencil, Sparkles, Send, Mail, FileText, Plus } from 'lucide-react'
+import { usePersistedState } from '@/hooks/usePersistedState'
 import type { Architect, AIDraft, Signal, EmailCampaign, CampaignEmail, EmailTemplate } from '@/types'
 
 export function OutreachIndex() {
   const { org } = useOrg()
   const { architects } = useArchitects()
-  const [tab, setTab] = useState<'suggestions' | 'sent' | 'drafts' | 'campaigns' | 'templates'>('suggestions')
+  const [tab, setTab] = usePersistedState<'suggestions' | 'sent' | 'drafts' | 'campaigns' | 'templates'>('outreach-tab', 'suggestions')
   const [loading, setLoading] = useState(true)
 
   // Data
