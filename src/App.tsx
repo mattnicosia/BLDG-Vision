@@ -18,6 +18,7 @@ import { AddProject } from '@/pages/kb/AddProject'
 import { AddVECase } from '@/pages/kb/AddVECase'
 import { CompetitorDetail } from '@/pages/competitors/CompetitorDetail'
 import { SettingsIndex } from '@/pages/settings/SettingsIndex'
+import { ProcoreCallback } from '@/pages/settings/ProcoreCallback'
 import { Toaster } from '@/components/ui/sonner'
 
 export default function App() {
@@ -48,6 +49,7 @@ export default function App() {
 
               {/* Settings (includes company profile / playbook) */}
               <Route path="/settings" element={<SettingsIndex />} />
+              <Route path="/settings/procore/callback" element={<ProcoreCallback />} />
               <Route path="/settings/projects/new" element={<AddProject />} />
               <Route path="/settings/ve/new" element={<AddVECase />} />
 

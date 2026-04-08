@@ -28,6 +28,8 @@ export interface Organization {
   budget_max: number
   project_types: string[]
   procore_company_id?: string
+  procore_connected_at?: string
+  procore_last_sync_at?: string
   stripe_customer_id?: string
   plan: 'trial' | 'solo' | 'studio' | 'firm'
   trial_ends_at: string

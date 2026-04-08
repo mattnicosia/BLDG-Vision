@@ -288,6 +288,111 @@ export function SettingsIndex() {
         {/* Email settings */}
         <EmailSignatureSettings />
 
+        {/* Procore integration */}
+        <div className="rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
+          <h2 className="mb-1 text-base font-medium">Procore</h2>
+          <p className="mb-3 text-sm text-muted-foreground">
+            Connect your Procore account to sync projects, architects, and contacts automatically.
+          </p>
+          {org?.procore_connected_at ? (
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 rounded-lg p-2.5" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}>
+                <div className="h-2 w-2 rounded-full" style={{ backgroundColor: '#22C55E' }} />
+                <span className="text-[13px] font-medium" style={{ color: '#22C55E' }}>Connected</span>
+                <span className="text-[11px]" style={{ color: '#7C7C7C' }}>
+                  since {new Date(org.procore_connected_at).toLocaleDateString()}
+                </span>
+                {org.procore_last_sync_at && (
+                  <span className="ml-auto text-[11px]" style={{ color: '#7C7C7C' }}>
+                    Last sync: {new Date(org.procore_last_sync_at).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2"
+                  onClick={async () => {
+                    toast('Syncing projects from Procore...')
+                    try {
+                      const session = await supabase.auth.getSession()
+                      const token = session.data.session?.access_token
+                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+                      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+                      const res = await fetch(`${supabaseUrl}/functions/v1/procore-sync`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
+                        body: JSON.stringify({ action: 'sync' }),
+                      })
+                      const data = await res.json()
+                      if (data.error) throw new Error(data.error)
+                      toast.success(`Synced ${data.projectsSynced} projects, found ${data.architectsFound} architects`)
+                      refetch()
+                    } catch (err: any) {
+                      toast.error(err.message || 'Sync failed')
+                    }
+                  }}
+                >
+                  <RefreshCw className="h-4 w-4" /> Sync now
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  style={{ color: '#EF4444' }}
+                  onClick={async () => {
+                    if (!confirm('Disconnect Procore? This will not delete synced data.')) return
+                    try {
+                      const session = await supabase.auth.getSession()
+                      const token = session.data.session?.access_token
+                      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+                      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+                      await fetch(`${supabaseUrl}/functions/v1/procore-connect`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
+                        body: JSON.stringify({ action: 'disconnect' }),
+                      })
+                      toast.success('Procore disconnected')
+                      refetch()
+                    } catch {
+                      toast.error('Disconnect failed')
+                    }
+                  }}
+                >
+                  Disconnect
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              size="sm"
+              className="gap-2"
+              onClick={async () => {
+                try {
+                  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+                  const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+                  const res = await fetch(`${supabaseUrl}/functions/v1/procore-connect`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'apikey': anonKey },
+                    body: JSON.stringify({ action: 'get_auth_url' }),
+                  })
+                  const data = await res.json()
+                  if (data.url) {
+                    window.location.href = data.url
+                  } else {
+                    toast.error('Failed to get authorization URL')
+                  }
+                } catch {
+                  toast.error('Connection failed')
+                }
+              }}
+              style={{ backgroundColor: '#F47E3E', color: '#ffffff', border: 'none' }}
+            >
+              Connect Procore
+            </Button>
+          )}
+        </div>
+
         {/* Data enrichment */}
         <div className="rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
           <h2 className="mb-1 text-base font-medium">Data enrichment</h2>
