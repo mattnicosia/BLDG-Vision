@@ -106,7 +106,7 @@ export function OpportunityDetail({ opportunity, open, onClose, onUpdate, onDele
         {opportunity.architect_id && (
           <Link
             to={`/crm/${opportunity.architect_id}`}
-            className="flex items-center gap-2 rounded-lg bg-[#111118] p-2 text-sm text-primary hover:underline"
+            className="flex items-center gap-2 rounded-lg bg-[#141414] p-2 text-sm text-primary hover:underline"
             onClick={onClose}
           >
             <User className="h-3.5 w-3.5" />
@@ -140,7 +140,7 @@ export function OpportunityDetail({ opportunity, open, onClose, onUpdate, onDele
             <select
               value={architectId}
               onChange={(e) => setArchitectId(e.target.value)}
-              className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
+              className="rounded-md border border-border bg-[#1C1C1C] px-3 py-2 text-sm"
             >
               <option value="">No architect linked</option>
               {architects.map((a) => (

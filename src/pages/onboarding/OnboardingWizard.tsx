@@ -228,7 +228,7 @@ export function OnboardingWizard() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#1A1A24]">
+    <div className="flex min-h-screen items-center justify-center bg-[#1C1C1C]">
       <div className="w-full max-w-lg px-6 py-12">
         <div className="mb-8 flex flex-col items-center gap-3">
           <div

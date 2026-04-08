@@ -243,7 +243,7 @@ export function CompetitorsIndex() {
             filteredDiscovered.map((dc) => (
               <div
                 key={dc.id}
-                className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4"
+                className="flex items-center gap-4 rounded-xl border border-border bg-[#1C1C1C] p-4"
                 style={{ borderWidth: '0.5px' }}
               >
                 <div className="flex min-w-0 flex-1 flex-col gap-0.5">

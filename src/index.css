@@ -36,24 +36,24 @@
 @theme {
   --font-sans: "Manrope", "Geist Sans", system-ui, -apple-system, sans-serif;
   --font-mono: "DM Mono", "Geist Mono", ui-monospace, monospace;
-  --color-background: #111118;
+  --color-background: #141414;
   --color-foreground: #E8E8F0;
-  --color-muted: #1A1A24;
-  --color-muted-foreground: #7C7C96;
-  --color-border: #2A2A3A;
-  --color-input: #2A2A3A;
+  --color-muted: #1C1C1C;
+  --color-muted-foreground: #7C7C7C;
+  --color-border: #2A2A2A;
+  --color-input: #2A2A2A;
   --color-ring: #6366F1;
   --color-primary: #6366F1;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1A1A24;
+  --color-secondary: #1C1C1C;
   --color-secondary-foreground: #E8E8F0;
   --color-destructive: #EF4444;
   --color-destructive-foreground: #ffffff;
-  --color-accent: #1A1A24;
+  --color-accent: #1C1C1C;
   --color-accent-foreground: #E8E8F0;
-  --color-card: #1A1A24;
+  --color-card: #1C1C1C;
   --color-card-foreground: #E8E8F0;
-  --color-popover: #1A1A24;
+  --color-popover: #1C1C1C;
   --color-popover-foreground: #E8E8F0;
   --radius-sm: 4px;
   --radius-md: 8px;
@@ -97,11 +97,11 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2A2A3A;
+    background: #2A2A2A;
     border-radius: 3px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3D3D5C;
+    background: #3D3D3D;
   }
 }
 
@@ -150,23 +150,23 @@
 }
 
 :root {
-  --background: #111118;
+  --background: #141414;
   --foreground: #E8E8F0;
-  --card: #1A1A24;
+  --card: #1C1C1C;
   --card-foreground: #E8E8F0;
-  --popover: #1A1A24;
+  --popover: #1C1C1C;
   --popover-foreground: #E8E8F0;
   --primary: #6366F1;
   --primary-foreground: #ffffff;
-  --secondary: #1A1A24;
+  --secondary: #1C1C1C;
   --secondary-foreground: #E8E8F0;
-  --muted: #1A1A24;
-  --muted-foreground: #7C7C96;
-  --accent: #1E1E2E;
+  --muted: #1C1C1C;
+  --muted-foreground: #7C7C7C;
+  --accent: #1E1E1E;
   --accent-foreground: #E8E8F0;
   --destructive: #EF4444;
-  --border: #2A2A3A;
-  --input: #2A2A3A;
+  --border: #2A2A2A;
+  --input: #2A2A2A;
   --ring: #6366F1;
   --chart-1: #6366F1;
   --chart-2: #818CF8;
@@ -175,12 +175,12 @@
   --chart-5: #EF4444;
   --radius: 0.625rem;
   --sidebar: #000000;
-  --sidebar-foreground: #7C7C96;
+  --sidebar-foreground: #7C7C7C;
   --sidebar-primary: #6366F1;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1A1A24;
+  --sidebar-accent: #1C1C1C;
   --sidebar-accent-foreground: #E8E8F0;
-  --sidebar-border: #1E1E2E;
+  --sidebar-border: #1E1E1E;
   --sidebar-ring: #6366F1;
 }
 
@@ -245,7 +245,7 @@
   transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 .card-hover:hover {
-  border-color: #3D3D5C;
+  border-color: #3D3D3D;
   box-shadow: 0 0 20px rgba(99, 102, 241, 0.06);
   transform: translateY(-1px);
 }
@@ -284,23 +284,23 @@
 }
 
 [data-slot="dialog-content"] {
-  background-color: #1A1A24 !important;
-  border-color: #2A2A3A !important;
+  background-color: #1C1C1C !important;
+  border-color: #2A2A2A !important;
 }
 
 [data-slot="sheet-content"] {
-  background-color: #1A1A24 !important;
-  border-color: #2A2A3A !important;
+  background-color: #1C1C1C !important;
+  border-color: #2A2A2A !important;
 }
 
 /* Input fields dark */
 input, textarea, select {
-  background-color: #111118 !important;
-  border-color: #2A2A3A !important;
+  background-color: #141414 !important;
+  border-color: #2A2A2A !important;
   color: #E8E8F0 !important;
 }
 input::placeholder, textarea::placeholder {
-  color: #4A4A64 !important;
+  color: #4A4A4A !important;
 }
 input:focus, textarea:focus, select:focus {
   border-color: #6366F1 !important;

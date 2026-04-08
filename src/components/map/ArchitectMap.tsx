@@ -74,7 +74,7 @@ export function ArchitectMap({
               className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white shadow-md"
               style={{ backgroundColor: '#6366f1' }}
             >
-              <div className="h-2 w-2 rounded-full bg-[#1A1A24]" />
+              <div className="h-2 w-2 rounded-full bg-[#1C1C1C]" />
             </div>
           </AdvancedMarker>
         ))}

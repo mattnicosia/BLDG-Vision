@@ -163,7 +163,7 @@ export function ArchitectDetail() {
       </div>
 
       {/* Header */}
-      <div className="mb-6 flex items-start justify-between rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
+      <div className="mb-6 flex items-start justify-between rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
         <div className="flex items-center gap-4">
           <div
             className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-medium"
@@ -218,7 +218,7 @@ export function ArchitectDetail() {
         {/* Detail panel */}
         <div className="col-span-2 flex flex-col gap-4">
           {editing ? (
-            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
               <div className="flex gap-3">
                 <div className="flex flex-1 flex-col gap-1.5">
                   <label className="text-xs text-muted-foreground">Name</label>
@@ -305,7 +305,7 @@ export function ArchitectDetail() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
               <div className="grid grid-cols-2 gap-4">
                 {architect.email && (
                   <div className="flex items-center gap-2 text-sm">
@@ -348,7 +348,7 @@ export function ArchitectDetail() {
                       href={`https://instagram.com/${architect.instagram_handle.replace('@', '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-[#111118] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#141414] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                     >
                       <Instagram className="h-3.5 w-3.5" />
                       @{architect.instagram_handle.replace('@', '')}
@@ -359,7 +359,7 @@ export function ArchitectDetail() {
                       href={architect.linkedin_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-[#111118] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#141414] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                     >
                       <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                       LinkedIn
@@ -370,7 +370,7 @@ export function ArchitectDetail() {
                       href={architect.houzz_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 rounded-lg bg-[#111118] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
+                      className="flex items-center gap-1.5 rounded-lg bg-[#141414] px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:bg-muted hover:text-[#E8E8F0]"
                     >
                       Houzz
                     </a>
@@ -380,17 +380,17 @@ export function ArchitectDetail() {
 
               {/* Metrics */}
               <div className="grid grid-cols-3 gap-3">
-                <div className="rounded-lg bg-[#111118] p-3">
+                <div className="rounded-lg bg-[#141414] p-3">
                   <p className="text-xs text-muted-foreground">Projects together</p>
                   <p className="text-lg font-medium">{architect.projects_together}</p>
                 </div>
-                <div className="rounded-lg bg-[#111118] p-3">
+                <div className="rounded-lg bg-[#141414] p-3">
                   <p className="text-xs text-muted-foreground">Referral value</p>
                   <p className="text-lg font-medium">
                     ${(architect.referral_value / 1000000).toFixed(1)}M
                   </p>
                 </div>
-                <div className="rounded-lg bg-[#111118] p-3">
+                <div className="rounded-lg bg-[#141414] p-3">
                   <p className="text-xs text-muted-foreground">Tier</p>
                   <p className="text-lg font-medium">{architect.tier}</p>
                 </div>
@@ -413,7 +413,7 @@ export function ArchitectDetail() {
           )}
 
           {/* Touchpoint log */}
-          <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
+          <div className="rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
             <TouchpointLog
               architectId={architect.id}
               touchpoints={touchpoints}
@@ -424,7 +424,7 @@ export function ArchitectDetail() {
 
         {/* Sidebar quick info */}
         <div className="flex flex-col gap-4">
-          <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
+          <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
             <h3 className="mb-3 text-sm font-medium">Quick actions</h3>
             <div className="flex flex-col gap-2">
               <Button
@@ -462,7 +462,7 @@ export function ArchitectDetail() {
           <OpportunityPanel architectId={architect.id} architectName={architect.name} />
 
           {/* People at this firm */}
-          <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
+          <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
             <div className="mb-2 flex items-center justify-between">
               <h3 className="flex items-center gap-1.5 text-sm font-medium">
                 <Users className="h-3.5 w-3.5 text-muted-foreground" />
@@ -489,7 +489,7 @@ export function ArchitectDetail() {
             ) : (
               <div className="flex flex-col gap-1.5">
                 {contacts.map((contact) => (
-                  <div key={contact.id} className="rounded-lg bg-[#111118] p-2">
+                  <div key={contact.id} className="rounded-lg bg-[#141414] p-2">
                     <div className="flex items-center gap-1.5">
                       <p className="text-xs font-medium">{contact.name}</p>
                       {contact.is_decision_maker && (
@@ -523,21 +523,21 @@ export function ArchitectDetail() {
           </div>
 
           {architect.style && (
-            <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
+            <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
               <p className="text-xs text-muted-foreground">Design style</p>
               <p className="mt-1 text-sm">{architect.style}</p>
             </div>
           )}
 
           {architect.awards && (
-            <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
+            <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
               <p className="text-xs text-muted-foreground">Awards</p>
               <p className="mt-1 text-sm">{architect.awards}</p>
             </div>
           )}
 
           {/* Linked projects */}
-          <div className="rounded-xl border border-border bg-[#1A1A24] p-4" style={{ borderWidth: '0.5px' }}>
+          <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
             <h3 className="mb-2 text-sm font-medium">
               Projects {linkedProjects.length > 0 && `(${linkedProjects.length})`}
             </h3>
@@ -546,7 +546,7 @@ export function ArchitectDetail() {
             ) : (
               <div className="flex flex-col gap-2">
                 {linkedProjects.map((p) => (
-                  <div key={p.id} className="rounded-lg bg-[#111118] p-2">
+                  <div key={p.id} className="rounded-lg bg-[#141414] p-2">
                     <p className="text-xs font-medium">{p.name}</p>
                     {p.location && (
                       <p className="text-[10px] text-muted-foreground">{p.location}</p>

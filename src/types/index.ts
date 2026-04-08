@@ -399,7 +399,7 @@ export const OPPORTUNITY_STAGE_LABELS: Record<OpportunityStage, string> = {
 }
 
 export const OPPORTUNITY_STAGE_STYLES: Record<OpportunityStage, { bg: string; text: string }> = {
-  lead: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C96' },
+  lead: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C7C' },
   interview: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' },
   proposal: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8' },
   negotiation: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4' },
@@ -485,7 +485,7 @@ export const STAGE_STYLES: Record<ArchitectStage, StageStyle> = {
   Active: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4', border: 'rgba(6, 182, 212, 0.3)' },
   Warm: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B', border: 'rgba(245, 158, 11, 0.3)' },
   Cooling: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8', border: 'rgba(129, 140, 248, 0.3)' },
-  Cold: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C96', border: 'rgba(124, 124, 150, 0.3)' },
+  Cold: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C7C', border: 'rgba(124, 124, 150, 0.3)' },
 }
 
 export const AVATAR_COLORS = [

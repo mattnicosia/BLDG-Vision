@@ -14,19 +14,19 @@ export function Header() {
     <header
       className="flex h-14 items-center justify-between px-6"
       style={{
-        backgroundColor: '#111118',
-        borderBottom: '1px solid #1E1E2E',
+        backgroundColor: '#141414',
+        borderBottom: '1px solid #1E1E1E',
       }}
     >
-      <div className="text-[13px] font-medium" style={{ color: '#7C7C96' }}>
+      <div className="text-[13px] font-medium" style={{ color: '#7C7C7C' }}>
         {org?.region ?? ''}
       </div>
       <div className="flex items-center gap-4">
         <button
           className="relative nav-item rounded-lg p-2"
-          style={{ color: '#7C7C96' }}
-          onMouseEnter={(e) => { e.currentTarget.style.color = '#E8E8F0'; e.currentTarget.style.backgroundColor = '#1A1A24' }}
-          onMouseLeave={(e) => { e.currentTarget.style.color = '#7C7C96'; e.currentTarget.style.backgroundColor = 'transparent' }}
+          style={{ color: '#7C7C7C' }}
+          onMouseEnter={(e) => { e.currentTarget.style.color = '#E8E8F0'; e.currentTarget.style.backgroundColor = '#1C1C1C' }}
+          onMouseLeave={(e) => { e.currentTarget.style.color = '#7C7C7C'; e.currentTarget.style.backgroundColor = 'transparent' }}
         >
           <Bell className="h-4 w-4" />
           <span
@@ -53,7 +53,7 @@ export function Header() {
           size="sm"
           onClick={signOut}
           className="nav-item"
-          style={{ color: '#4A4A64' }}
+          style={{ color: '#4A4A4A' }}
         >
           <LogOut className="h-4 w-4" />
         </Button>

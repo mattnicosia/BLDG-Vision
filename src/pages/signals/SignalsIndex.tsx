@@ -50,7 +50,7 @@ export function SignalsIndex() {
           onChange={(e) =>
             setPriorityFilter(e.target.value as 'all' | 'high' | 'medium' | 'low')
           }
-          className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
+          className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1.5 text-sm"
         >
           <option value="all">All priorities</option>
           <option value="high">High</option>
@@ -60,7 +60,7 @@ export function SignalsIndex() {
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value as 'all' | SignalType)}
-          className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
+          className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1.5 text-sm"
         >
           <option value="all">All types</option>
           <option value="new_permit">Permits</option>

@@ -20,7 +20,7 @@ export function CompetitorCard({ competitor, onDelete }: CompetitorCardProps) {
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4 transition-colors hover:bg-[#0F0F17]"
+      className="flex items-center gap-4 rounded-xl border border-border bg-[#1C1C1C] p-4 transition-colors hover:bg-[#0F0F0F]"
       style={{ borderWidth: '0.5px' }}
     >
       <Link

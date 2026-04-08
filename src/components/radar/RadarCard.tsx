@@ -15,7 +15,7 @@ export function RadarCard({ place, onAdd, alreadyAdded }: RadarCardProps) {
 
   return (
     <div
-      className="flex items-center gap-4 rounded-xl border border-border bg-[#1A1A24] p-4"
+      className="flex items-center gap-4 rounded-xl border border-border bg-[#1C1C1C] p-4"
       style={{ borderWidth: '0.5px' }}
     >
       <div

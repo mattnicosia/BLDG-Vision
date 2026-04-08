@@ -173,7 +173,7 @@ export function EmailSignatureSettings() {
   if (loading) return null
 
   return (
-    <div className="rounded-xl border border-border bg-[#1A1A24] p-5" style={{ borderWidth: '0.5px' }}>
+    <div className="rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-base font-medium">Email settings</h2>
         {!editing ? (
@@ -295,7 +295,7 @@ export function EmailSignatureSettings() {
           {currentSignatureHtml && (
             <div className="flex flex-col gap-1">
               <label className="text-xs text-muted-foreground">Preview</label>
-              <div className="rounded-lg border border-border bg-[#1A1A24] p-3" dangerouslySetInnerHTML={{ __html: currentSignatureHtml }} />
+              <div className="rounded-lg border border-border bg-[#1C1C1C] p-3" dangerouslySetInnerHTML={{ __html: currentSignatureHtml }} />
             </div>
           )}
         </div>
@@ -307,7 +307,7 @@ export function EmailSignatureSettings() {
               {settings.signature_html && (
                 <div className="mt-2 flex flex-col gap-1">
                   <label className="text-xs text-muted-foreground">Signature</label>
-                  <div className="rounded-lg border border-border bg-[#1A1A24] p-3" dangerouslySetInnerHTML={{ __html: settings.signature_html }} />
+                  <div className="rounded-lg border border-border bg-[#1C1C1C] p-3" dangerouslySetInnerHTML={{ __html: settings.signature_html }} />
                 </div>
               )}
             </div>

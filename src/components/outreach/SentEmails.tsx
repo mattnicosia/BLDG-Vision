@@ -39,7 +39,7 @@ export function SentEmails({ sentDrafts, architects }: SentEmailsProps) {
         <select
           value={archFilter}
           onChange={(e) => setArchFilter(e.target.value)}
-          className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
+          className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1.5 text-sm"
         >
           <option value="">All recipients</option>
           {[...new Set(sentDrafts.map((d) => d.architect_id).filter(Boolean))].map((id) => {
@@ -59,7 +59,7 @@ export function SentEmails({ sentDrafts, architects }: SentEmailsProps) {
         return (
           <div
             key={draft.id}
-            className="rounded-xl border border-border bg-[#1A1A24]"
+            className="rounded-xl border border-border bg-[#1C1C1C]"
             style={{ borderWidth: '0.5px' }}
           >
             <button

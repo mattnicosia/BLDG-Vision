@@ -62,7 +62,7 @@ export function LinkArchitectDialog({
             <select
               value={architectId}
               onChange={(e) => setArchitectId(e.target.value)}
-              className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
+              className="rounded-md border border-border bg-[#1C1C1C] px-3 py-2 text-sm"
               required
             >
               <option value="">Select architect...</option>

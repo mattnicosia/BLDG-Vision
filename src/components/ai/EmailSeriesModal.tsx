@@ -164,7 +164,7 @@ export function EmailSeriesModal({ architectId, architectName, architectEmail, o
               <select
                 value={seriesType}
                 onChange={(e) => setSeriesType(e.target.value)}
-                className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
+                className="rounded-md border border-border bg-[#1C1C1C] px-3 py-2 text-sm"
               >
                 {SERIES_TYPES.map((t) => (
                   <option key={t} value={t}>{t}</option>
@@ -192,7 +192,7 @@ export function EmailSeriesModal({ architectId, architectName, architectEmail, o
             {emails.map((email, i) => (
               <div
                 key={i}
-                className="flex flex-col gap-2 rounded-xl border border-border bg-[#1A1A24] p-4"
+                className="flex flex-col gap-2 rounded-xl border border-border bg-[#1C1C1C] p-4"
                 style={{ borderWidth: '0.5px' }}
               >
                 <div className="flex items-center justify-between">

@@ -45,7 +45,7 @@ export function SignalCard({ signal, onAction, onDismiss }: SignalCardProps) {
 
   return (
     <div
-      className="flex items-start gap-3 rounded-xl border border-border bg-[#1A1A24] p-4"
+      className="flex items-start gap-3 rounded-xl border border-border bg-[#1C1C1C] p-4"
       style={{
         borderWidth: '0.5px',
         opacity: isDismissed ? 0.5 : 1,

@@ -192,7 +192,7 @@ export function BoardsIndex() {
         <select
           value={boardFilter}
           onChange={(e) => setBoardFilter(e.target.value)}
-          className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
+          className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1.5 text-sm"
         >
           <option value="all">All boards</option>
           <option value="planning">Planning Board</option>
@@ -202,7 +202,7 @@ export function BoardsIndex() {
         <select
           value={decisionFilter}
           onChange={(e) => setDecisionFilter(e.target.value)}
-          className="rounded-md border border-border bg-[#1A1A24] px-2 py-1.5 text-sm"
+          className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1.5 text-sm"
         >
           <option value="all">All decisions</option>
           <option value="approved">Approved</option>
@@ -236,7 +236,7 @@ export function BoardsIndex() {
             return (
               <div
                 key={item.id}
-                className="rounded-xl border border-border bg-[#1A1A24] p-4"
+                className="rounded-xl border border-border bg-[#1C1C1C] p-4"
                 style={{ borderWidth: '0.5px' }}
               >
                 <div className="flex items-start justify-between">

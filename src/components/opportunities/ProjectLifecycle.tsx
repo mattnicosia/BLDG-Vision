@@ -318,14 +318,14 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                   </span>
                   <span className="text-[10px] text-muted-foreground">{stageProjects.length}</span>
                 </div>
-                <div className="flex max-h-[300px] flex-col gap-1 overflow-y-auto rounded-lg bg-[#0F0F17] p-1.5" style={{ minHeight: 80 }}>
+                <div className="flex max-h-[300px] flex-col gap-1 overflow-y-auto rounded-lg bg-[#0F0F0F] p-1.5" style={{ minHeight: 80 }}>
                   {stageProjects.length === 0 ? (
                     <p className="py-2 text-center text-[9px] text-muted-foreground">None</p>
                   ) : (
                     stageProjects.map((project) => (
                       <div
                         key={project.id}
-                        className={`group relative w-full rounded-md border bg-[#1A1A24] p-2 text-left transition-colors hover:bg-[#111118] ${project.dismissed ? 'opacity-40' : ''} ${project.opportunity_id ? 'border-primary/30' : 'border-border'}`}
+                        className={`group relative w-full rounded-md border bg-[#1C1C1C] p-2 text-left transition-colors hover:bg-[#141414] ${project.dismissed ? 'opacity-40' : ''} ${project.opportunity_id ? 'border-primary/30' : 'border-border'}`}
                         style={{ borderWidth: '0.5px' }}
                       >
                         {/* Quick action buttons - visible on hover */}
@@ -503,7 +503,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                   <p className="mb-2 text-xs text-muted-foreground">People involved</p>
                   <div className="flex flex-col gap-1.5">
                     {selectedProject.architect_name && (
-                      <div className="flex items-center gap-2 rounded-lg bg-[#111118] p-2">
+                      <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
                         <User className="h-3.5 w-3.5 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Architect</p>
@@ -518,7 +518,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                       </div>
                     )}
                     {selectedProject.applicant_name && (
-                      <div className="flex items-center gap-2 rounded-lg bg-[#111118] p-2">
+                      <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
                         <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Applicant</p>
@@ -527,7 +527,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                       </div>
                     )}
                     {selectedProject.attorney_name && (
-                      <div className="flex items-center gap-2 rounded-lg bg-[#111118] p-2">
+                      <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
                         <FileText className="h-3.5 w-3.5" style={{ color: '#3C3489' }} />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Land Use Attorney</p>
@@ -536,7 +536,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                       </div>
                     )}
                     {selectedProject.engineer_name && (
-                      <div className="flex items-center gap-2 rounded-lg bg-[#111118] p-2">
+                      <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
                         <FileText className="h-3.5 w-3.5 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Engineer</p>
@@ -545,7 +545,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                       </div>
                     )}
                     {selectedProject.contractor_name && (
-                      <div className="flex items-center gap-2 rounded-lg bg-[#111118] p-2">
+                      <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
                         <Building2 className="h-3.5 w-3.5" style={{ color: '#A32D2D' }} />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Contractor</p>

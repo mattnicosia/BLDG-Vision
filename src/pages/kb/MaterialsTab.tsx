@@ -22,7 +22,7 @@ export function MaterialsTab() {
         materials.map((m) => (
           <div
             key={m.id}
-            className="rounded-xl border border-border bg-[#1A1A24] p-4"
+            className="rounded-xl border border-border bg-[#1C1C1C] p-4"
             style={{ borderWidth: '0.5px' }}
           >
             <div className="flex items-center justify-between">

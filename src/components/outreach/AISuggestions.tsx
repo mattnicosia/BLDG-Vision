@@ -86,7 +86,7 @@ export function AISuggestions({ architects, sentDrafts, signals, onGenerateDraft
     const status = getRelationshipStatus(arch, sentDrafts)
     const relStyle = RELATIONSHIP_LABELS[status]
     return (
-      <div key={arch.id + reason} className="flex items-center justify-between rounded-xl border border-border bg-[#1A1A24] p-3" style={{ borderWidth: '0.5px' }}>
+      <div key={arch.id + reason} className="flex items-center justify-between rounded-xl border border-border bg-[#1C1C1C] p-3" style={{ borderWidth: '0.5px' }}>
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {icon}
           <div className="min-w-0">

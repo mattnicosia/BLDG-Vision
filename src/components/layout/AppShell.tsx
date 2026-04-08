@@ -10,7 +10,7 @@ export function AppShell() {
         <Header />
         <main
           className="flex-1 overflow-y-auto p-6 page-enter"
-          style={{ backgroundColor: '#111118' }}
+          style={{ backgroundColor: '#141414' }}
         >
           <Outlet />
         </main>

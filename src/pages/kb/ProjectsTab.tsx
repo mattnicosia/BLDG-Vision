@@ -33,7 +33,7 @@ export function ProjectsTab() {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value as ProjectCategory | 'all')}
-            className="rounded-md border border-border bg-[#1A1A24] px-2 py-1 text-xs"
+            className="rounded-md border border-border bg-[#1C1C1C] px-2 py-1 text-xs"
           >
             <option value="all">All categories</option>
             <option value="residential">Residential</option>
@@ -62,7 +62,7 @@ export function ProjectsTab() {
           return (
             <div
               key={p.id}
-              className="rounded-xl border border-border bg-[#1A1A24] p-4"
+              className="rounded-xl border border-border bg-[#1C1C1C] p-4"
               style={{ borderWidth: '0.5px' }}
             >
               <div className="flex items-start justify-between">

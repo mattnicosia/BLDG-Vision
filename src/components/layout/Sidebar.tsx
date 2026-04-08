@@ -39,7 +39,7 @@ export function Sidebar() {
       </div>
 
       {/* Separator */}
-      <div className="mx-5 mb-4" style={{ height: '1px', backgroundColor: '#1E1E2E' }} />
+      <div className="mx-5 mb-4" style={{ height: '1px', backgroundColor: '#1E1E1E' }} />
 
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-0.5 px-3">
@@ -53,18 +53,18 @@ export function Sidebar() {
               to={item.to}
               className="nav-item flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium"
               style={{
-                backgroundColor: isActive ? '#1A1A24' : 'transparent',
-                color: isActive ? '#E8E8F0' : '#7C7C96',
+                backgroundColor: isActive ? '#1C1C1C' : 'transparent',
+                color: isActive ? '#E8E8F0' : '#7C7C7C',
               }}
               onMouseEnter={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = '#A0A0B8'
-                  e.currentTarget.style.backgroundColor = '#12121C'
+                  e.currentTarget.style.color = '#A0A0A0'
+                  e.currentTarget.style.backgroundColor = '#121212'
                 }
               }}
               onMouseLeave={(e) => {
                 if (!isActive) {
-                  e.currentTarget.style.color = '#7C7C96'
+                  e.currentTarget.style.color = '#7C7C7C'
                   e.currentTarget.style.backgroundColor = 'transparent'
                 }
               }}
@@ -98,7 +98,7 @@ export function Sidebar() {
             <span className="text-[12px] font-medium" style={{ color: '#E8E8F0' }}>
               {org?.name ?? 'BLDG Vision'}
             </span>
-            <span className="text-[10px]" style={{ color: '#4A4A64' }}>
+            <span className="text-[10px]" style={{ color: '#4A4A4A' }}>
               {org?.region ?? 'Pro plan'}
             </span>
           </div>

@@ -66,7 +66,7 @@ export function DashboardIndex() {
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center">
-        <p style={{ color: '#7C7C96' }}>Loading dashboard...</p>
+        <p style={{ color: '#7C7C7C' }}>Loading dashboard...</p>
       </div>
     )
   }
@@ -78,7 +78,7 @@ export function DashboardIndex() {
         <h1 className="text-2xl font-bold" style={{ color: '#E8E8F0' }}>
           {greeting}, {firstName}
         </h1>
-        <p className="mt-1 text-[13px]" style={{ color: '#7C7C96' }}>
+        <p className="mt-1 text-[13px]" style={{ color: '#7C7C7C' }}>
           {today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
         </p>
       </div>
@@ -124,11 +124,11 @@ export function DashboardIndex() {
             to={card.to}
             className="card-hover rounded-xl p-5"
             style={{
-              backgroundColor: '#1A1A24',
-              border: '1px solid #2A2A3A',
+              backgroundColor: '#1C1C1C',
+              border: '1px solid #2A2A2A',
             }}
           >
-            <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase" style={{ color: '#7C7C96', letterSpacing: '0.5px' }}>
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>
               <card.icon className="h-3.5 w-3.5" />
               {card.label}
             </div>
@@ -138,7 +138,7 @@ export function DashboardIndex() {
             >
               {card.value}
             </p>
-            <p className="mt-1.5 text-[11px]" style={{ color: '#4A4A64' }}>{card.sub}</p>
+            <p className="mt-1.5 text-[11px]" style={{ color: '#4A4A4A' }}>{card.sub}</p>
           </Link>
         ))}
       </div>
@@ -147,7 +147,7 @@ export function DashboardIndex() {
         {/* Relationships needing attention */}
         <div
           className="card-hover rounded-xl p-5"
-          style={{ backgroundColor: '#1A1A24', border: '1px solid #2A2A3A' }}
+          style={{ backgroundColor: '#1C1C1C', border: '1px solid #2A2A2A' }}
         >
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#E8E8F0' }}>
@@ -161,7 +161,7 @@ export function DashboardIndex() {
             </Link>
           </div>
           {coolingArchitects.length === 0 ? (
-            <p className="text-[13px]" style={{ color: '#7C7C96' }}>All relationships are healthy</p>
+            <p className="text-[13px]" style={{ color: '#7C7C7C' }}>All relationships are healthy</p>
           ) : (
             <div className="flex flex-col gap-1.5">
               {coolingArchitects.map((arch) => {
@@ -174,9 +174,9 @@ export function DashboardIndex() {
                     key={arch.id}
                     to={`/relationships/${arch.id}`}
                     className="nav-item flex items-center justify-between rounded-lg p-2.5"
-                    style={{ backgroundColor: '#111118' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#16161F' }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#111118' }}
+                    style={{ backgroundColor: '#141414' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#161616' }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#141414' }}
                   >
                     <div className="flex items-center gap-2.5">
                       <div
@@ -186,12 +186,12 @@ export function DashboardIndex() {
                       <div>
                         <span className="text-[13px] font-medium" style={{ color: '#E8E8F0' }}>{arch.name}</span>
                         {arch.firm && arch.firm !== arch.name && (
-                          <span className="ml-1.5 text-[11px]" style={{ color: '#4A4A64' }}>{arch.firm}</span>
+                          <span className="ml-1.5 text-[11px]" style={{ color: '#4A4A4A' }}>{arch.firm}</span>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-[11px]">
-                      {days !== null && <span style={{ color: '#4A4A64' }}>{days}d ago</span>}
+                      {days !== null && <span style={{ color: '#4A4A4A' }}>{days}d ago</span>}
                       <span className="metric-number font-medium" style={{ color: pulseColor }}>
                         {arch.pulse_score}
                       </span>
@@ -206,7 +206,7 @@ export function DashboardIndex() {
         {/* Recent signals */}
         <div
           className="card-hover rounded-xl p-5"
-          style={{ backgroundColor: '#1A1A24', border: '1px solid #2A2A3A' }}
+          style={{ backgroundColor: '#1C1C1C', border: '1px solid #2A2A2A' }}
         >
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-[13px] font-semibold" style={{ color: '#E8E8F0' }}>
@@ -220,7 +220,7 @@ export function DashboardIndex() {
             </Link>
           </div>
           {recentSignals.length === 0 ? (
-            <p className="text-[13px]" style={{ color: '#7C7C96' }}>No new signals</p>
+            <p className="text-[13px]" style={{ color: '#7C7C7C' }}>No new signals</p>
           ) : (
             <div className="flex flex-col gap-1.5">
               {recentSignals.map((signal) => {
@@ -230,7 +230,7 @@ export function DashboardIndex() {
                   <div
                     key={signal.id}
                     className="flex items-start gap-2.5 rounded-lg p-2.5"
-                    style={{ backgroundColor: '#111118' }}
+                    style={{ backgroundColor: '#141414' }}
                   >
                     <div
                       className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
@@ -239,7 +239,7 @@ export function DashboardIndex() {
                     <div className="min-w-0">
                       <p className="text-[13px] leading-tight" style={{ color: '#E8E8F0' }}>{signal.headline}</p>
                       {signal.source && (
-                        <p className="mt-0.5 text-[11px]" style={{ color: '#4A4A64' }}>{signal.source}</p>
+                        <p className="mt-0.5 text-[11px]" style={{ color: '#4A4A4A' }}>{signal.source}</p>
                       )}
                     </div>
                   </div>
@@ -256,7 +256,7 @@ export function DashboardIndex() {
           <Button
             variant="outline"
             className="nav-item gap-2 text-[13px]"
-            style={{ backgroundColor: '#1A1A24', borderColor: '#2A2A3A', color: '#E8E8F0' }}
+            style={{ backgroundColor: '#1C1C1C', borderColor: '#2A2A2A', color: '#E8E8F0' }}
           >
             <FileText className="h-4 w-4" /> Check new permits
           </Button>
@@ -265,7 +265,7 @@ export function DashboardIndex() {
           <Button
             variant="outline"
             className="nav-item gap-2 text-[13px]"
-            style={{ backgroundColor: '#1A1A24', borderColor: '#2A2A3A', color: '#E8E8F0' }}
+            style={{ backgroundColor: '#1C1C1C', borderColor: '#2A2A2A', color: '#E8E8F0' }}
           >
             <DollarSign className="h-4 w-4" /> View pipeline
           </Button>
@@ -274,7 +274,7 @@ export function DashboardIndex() {
           <Button
             variant="outline"
             className="nav-item gap-2 text-[13px]"
-            style={{ backgroundColor: '#1A1A24', borderColor: '#2A2A3A', color: '#E8E8F0' }}
+            style={{ backgroundColor: '#1C1C1C', borderColor: '#2A2A2A', color: '#E8E8F0' }}
           >
             <User className="h-4 w-4" /> Browse relationships
           </Button>

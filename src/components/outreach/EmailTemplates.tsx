@@ -108,7 +108,7 @@ export function EmailTemplates({ templates, onUseTemplate, onRefresh }: EmailTem
           return (
             <div
               key={template.id}
-              className="flex items-start justify-between rounded-xl border border-border bg-[#1A1A24] p-4"
+              className="flex items-start justify-between rounded-xl border border-border bg-[#1C1C1C] p-4"
               style={{ borderWidth: '0.5px' }}
             >
               <div className="min-w-0 flex-1">
@@ -159,7 +159,7 @@ export function EmailTemplates({ templates, onUseTemplate, onRefresh }: EmailTem
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value as TemplateCategory)}
-                className="rounded-md border border-border bg-[#1A1A24] px-3 py-2 text-sm"
+                className="rounded-md border border-border bg-[#1C1C1C] px-3 py-2 text-sm"
               >
                 {Object.entries(TEMPLATE_CATEGORY_LABELS).map(([key, label]) => (
                   <option key={key} value={key}>{label}</option>

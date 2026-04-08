@@ -106,7 +106,7 @@ export function TouchpointLog({ architectId, touchpoints, onAdd }: TouchpointLog
           return (
             <div
               key={tp.id}
-              className="flex items-start gap-3 rounded-lg bg-[#111118] p-3"
+              className="flex items-start gap-3 rounded-lg bg-[#141414] p-3"
             >
               <TypeIcon className="mt-0.5 h-3.5 w-3.5 text-muted-foreground" />
               <div className="flex flex-1 flex-col gap-0.5">

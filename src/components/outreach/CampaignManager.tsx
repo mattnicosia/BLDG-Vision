@@ -89,7 +89,7 @@ export function CampaignManager({ campaigns, campaignEmails, onRefresh }: Campai
         return (
           <div
             key={campaign.id}
-            className="rounded-xl border border-border bg-[#1A1A24]"
+            className="rounded-xl border border-border bg-[#1C1C1C]"
             style={{ borderWidth: '0.5px' }}
           >
             <button
@@ -125,7 +125,7 @@ export function CampaignManager({ campaigns, campaignEmails, onRefresh }: Campai
                   {emails.map((email) => {
                     const eStyle = STATUS_STYLES[email.status] ?? STATUS_STYLES.pending
                     return (
-                      <div key={email.id} className="flex items-center justify-between rounded-lg bg-[#111118] p-2">
+                      <div key={email.id} className="flex items-center justify-between rounded-lg bg-[#141414] p-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-medium text-muted-foreground">
                             Email {email.sequence_number}
