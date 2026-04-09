@@ -144,6 +144,37 @@ export function IntelligenceIndex() {
         parts.push(`${entityResult.connectionsCreated} person connections`)
       }
 
+      // Step 9: CARVER target scoring
+      toast('Scoring targets...')
+      const carverResult = await fetch(`${supabaseUrl}/functions/v1/carver-score`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
+
+      if (carverResult?.scored > 0) {
+        parts.push(`${carverResult.scored} targets scored`)
+      }
+
+      // Step 10: Competitive displacement monitoring
+      const compResult = await fetch(`${supabaseUrl}/functions/v1/competitor-monitor`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
+
+      if (compResult?.alertsGenerated > 0) {
+        parts.push(`${compResult.alertsGenerated} displacement alerts`)
+      }
+
+      // Step 11: Win attribution
+      const attrResult = await fetch(`${supabaseUrl}/functions/v1/win-attribution`, {
+        method: 'POST', headers,
+        body: JSON.stringify({}),
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
+
+      if (attrResult?.deals > 0) {
+        parts.push(`${attrResult.deals} deals attributed ($${((attrResult.totalValue || 0) / 1000000).toFixed(1)}M)`)
+      }
+
       toast.success(parts.length > 0 ? `Scan complete: ${parts.join(', ')}` : 'Scan complete. No new data found.')
     } catch {
       toast.error('Scan failed')
