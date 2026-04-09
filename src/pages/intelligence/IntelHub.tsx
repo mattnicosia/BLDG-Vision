@@ -133,7 +133,7 @@ export function IntelHub() {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, 'apikey': anonKey },
         body: JSON.stringify({ action: 'process', report_id: report.id }),
       })
-      const data = await res.ok ? res.json() : null
+      const data = res.ok ? await res.json() : null
       if (data?.actionable) {
         toast.success(`Intel processed: ${data.recommended_action || 'Actionable intelligence captured'}`)
       } else {
