@@ -78,12 +78,15 @@ Deno.serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     )
 
-    const { data: memberData } = await supabase.from('org_members').select('org_id').single()
-    if (!memberData?.org_id) throw new Error('No org found')
+    const { data: memberData, error: memberError } = await supabase.from('org_members').select('org_id').single()
+    if (memberError) { console.error('org_members query error:', memberError.message); throw new Error(`Auth error: ${memberError.message}`) }
+    if (!memberData?.org_id) throw new Error('No org found in org_members')
     const orgId = memberData.org_id
+    console.log(`Land transactions: org ${orgId}`)
 
     const body = await req.json()
     const action = body.action as string
+    console.log(`Action: ${action}, county: ${body.county}`)
 
     if (action === 'fetch') {
       const county = body.county || 'Rockland'

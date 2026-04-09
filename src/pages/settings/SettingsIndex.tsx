@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { CountyPicker } from '@/components/territory/CountyPicker'
 import { EmailSignatureSettings } from '@/components/settings/EmailSignatureSettings'
+import { BoardSourcesManager } from '@/components/settings/BoardSourcesManager'
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
@@ -284,6 +285,9 @@ export function SettingsIndex() {
             <span className="text-xs text-muted-foreground">Eastern Time</span>
           </div>
         </div>
+
+        {/* Board meeting sources */}
+        <BoardSourcesManager />
 
         {/* Email settings */}
         <EmailSignatureSettings />
