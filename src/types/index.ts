@@ -164,6 +164,12 @@ export interface Architect {
   next_action?: string
   source: 'manual' | 'google_places' | 'radar' | 'procore' | 'referral'
   is_in_radar: boolean
+  tone?: string
+  cadence?: string
+  next_touch_date?: string
+  outreach_context?: string
+  communication_notes?: string
+  contact_type?: string
   created_at: string
   updated_at: string
 }
