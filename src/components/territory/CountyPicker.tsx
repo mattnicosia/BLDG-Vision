@@ -105,9 +105,9 @@ export function CountyPicker({ selected, onChange }: CountyPickerProps) {
                 onClick={() => toggleState(s.abbr)}
                 className="rounded-md px-2 py-0.5 text-[11px] font-medium transition-colors"
                 style={{
-                  backgroundColor: isActive ? '#0F6E56' : 'transparent',
-                  color: isActive ? '#ffffff' : '#71717a',
-                  border: `1px solid ${isActive ? '#0F6E56' : '#e4e4e7'}`,
+                  backgroundColor: isActive ? '#06B6D4' : 'transparent',
+                  color: isActive ? '#ffffff' : '#7C7C7C',
+                  border: `1px solid ${isActive ? '#06B6D4' : '#2A2A2A'}`,
                 }}
               >
                 {s.abbr}
@@ -157,8 +157,8 @@ export function CountyPicker({ selected, onChange }: CountyPickerProps) {
                     <div
                       className="flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded border"
                       style={{
-                        backgroundColor: isSelected ? '#0F6E56' : 'transparent',
-                        borderColor: isSelected ? '#0F6E56' : '#d4d4d8',
+                        backgroundColor: isSelected ? '#06B6D4' : 'transparent',
+                        borderColor: isSelected ? '#06B6D4' : '#d4d4d8',
                       }}
                     >
                       {isSelected && (

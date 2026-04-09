@@ -3,9 +3,9 @@ import { Button } from '@/components/ui/button'
 import { Check, X, ExternalLink } from 'lucide-react'
 
 const PRIORITY_COLORS = {
-  high: '#A32D2D',
-  medium: '#BA7517',
-  low: '#0F6E56',
+  high: '#EF4444',
+  medium: '#F59E0B',
+  low: '#06B6D4',
 }
 
 const TYPE_LABELS: Record<string, string> = {
@@ -101,7 +101,7 @@ export function SignalCard({ signal, onAction, onDismiss }: SignalCardProps) {
 
       <div className="flex shrink-0 items-center gap-1">
         {isActioned ? (
-          <span className="text-xs font-medium" style={{ color: '#0F6E56' }}>
+          <span className="text-xs font-medium" style={{ color: '#06B6D4' }}>
             Actioned
           </span>
         ) : isDismissed ? (

@@ -28,7 +28,7 @@ const SIGNAL_TYPES: { value: SignalType; label: string }[] = [
 const PRIORITIES = ['high', 'medium', 'low'] as const
 
 const PRIORITY_STYLES = {
-  high: { bg: '#FEE2E2', text: '#A32D2D', border: '#FECACA' },
+  high: { bg: '#FEE2E2', text: '#EF4444', border: '#FECACA' },
   medium: { bg: '#FAEEDA', text: '#854F0B', border: '#FAC775' },
   low: { bg: '#E1F5EE', text: '#085041', border: '#9FE1CB' },
 }
@@ -99,8 +99,8 @@ export function AddSignalDialog({ onClose, onCreate }: Props) {
                     className="rounded-full px-3 py-1 text-xs font-medium capitalize"
                     style={{
                       backgroundColor: priority === p ? style.bg : 'transparent',
-                      color: priority === p ? style.text : '#71717a',
-                      border: `1px solid ${priority === p ? style.border : '#e4e4e7'}`,
+                      color: priority === p ? style.text : '#7C7C7C',
+                      border: `1px solid ${priority === p ? style.border : '#2A2A2A'}`,
                     }}
                   >
                     {p}

@@ -130,8 +130,8 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
                     className="rounded-full px-1.5 py-0.5 text-[9px] font-medium transition-colors"
                     style={{
                       backgroundColor: opp.stage === s ? style.bg : 'transparent',
-                      color: opp.stage === s ? style.text : '#a1a1aa',
-                      border: `1px solid ${opp.stage === s ? (style.text === '#ffffff' ? style.bg : style.text) : '#e4e4e7'}`,
+                      color: opp.stage === s ? style.text : '#7C7C7C',
+                      border: `1px solid ${opp.stage === s ? (style.text === '#ffffff' ? style.bg : style.text) : '#2A2A2A'}`,
                     }}
                   >
                     {OPPORTUNITY_STAGE_LABELS[s]}

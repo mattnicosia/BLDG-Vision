@@ -37,7 +37,7 @@ export function VETab() {
             <div className="flex items-start justify-between">
               <h3 className="text-sm font-medium">{c.title}</h3>
               {c.savings_amount ? (
-                <div className="flex items-center gap-1 text-sm font-medium" style={{ color: '#0F6E56' }}>
+                <div className="flex items-center gap-1 text-sm font-medium" style={{ color: '#06B6D4' }}>
                   <DollarSign className="h-3.5 w-3.5" />
                   {c.savings_amount.toLocaleString()} saved
                 </div>

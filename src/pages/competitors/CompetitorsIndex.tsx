@@ -170,8 +170,8 @@ export function CompetitorsIndex() {
           onClick={() => setTab('tracked')}
           className="pb-2 text-sm font-medium transition-colors"
           style={{
-            color: tab === 'tracked' ? '#0F6E56' : '#71717a',
-            borderBottom: tab === 'tracked' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: tab === 'tracked' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: tab === 'tracked' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           Tracked ({competitors.length})
@@ -180,8 +180,8 @@ export function CompetitorsIndex() {
           onClick={() => setTab('discovered')}
           className="pb-2 text-sm font-medium transition-colors"
           style={{
-            color: tab === 'discovered' ? '#0F6E56' : '#71717a',
-            borderBottom: tab === 'discovered' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: tab === 'discovered' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: tab === 'discovered' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           Discovered ({discovered.filter((d) => !d.added_to_competitors).length})
@@ -254,7 +254,7 @@ export function CompetitorsIndex() {
                   <div className="flex items-center gap-3">
                     {dc.rating && (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                        <Star className="h-3 w-3" style={{ color: '#F59E0B' }} />
                         {dc.rating}
                         {dc.review_count && ` (${dc.review_count})`}
                       </span>

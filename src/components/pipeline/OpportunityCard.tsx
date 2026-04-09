@@ -31,7 +31,7 @@ export function OpportunityCard({ opportunity, onClick }: OpportunityCardProps) 
       <div className="flex items-start justify-between">
         <span className="text-sm font-medium leading-tight">{opportunity.project_name}</span>
         {opportunity.estimated_value ? (
-          <span className="shrink-0 text-xs font-medium" style={{ color: '#0F6E56' }}>
+          <span className="shrink-0 text-xs font-medium" style={{ color: '#06B6D4' }}>
             {formatValue(opportunity.estimated_value)}
           </span>
         ) : null}
@@ -39,7 +39,7 @@ export function OpportunityCard({ opportunity, onClick }: OpportunityCardProps) 
 
       {opportunity.architect_name && (
         <Link
-          to={opportunity.architect_id ? `/crm/${opportunity.architect_id}` : '#'}
+          to={opportunity.architect_id ? `/relationships/${opportunity.architect_id}` : '#'}
           onClick={(e) => e.stopPropagation()}
           className="mt-1 flex items-center gap-1 text-xs text-primary hover:underline"
         >

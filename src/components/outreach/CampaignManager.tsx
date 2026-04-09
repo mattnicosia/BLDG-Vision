@@ -15,10 +15,10 @@ const STATUS_STYLES: Record<string, { bg: string; text: string }> = {
   active: { bg: '#E1F5EE', text: '#085041' },
   completed: { bg: '#F1EFE8', text: '#5F5E5A' },
   paused: { bg: '#FAEEDA', text: '#854F0B' },
-  cancelled: { bg: '#FEE2E2', text: '#A32D2D' },
+  cancelled: { bg: '#FEE2E2', text: '#EF4444' },
   scheduled: { bg: '#EEEDFE', text: '#3C3489' },
   sent: { bg: '#E1F5EE', text: '#085041' },
-  failed: { bg: '#FEE2E2', text: '#A32D2D' },
+  failed: { bg: '#FEE2E2', text: '#EF4444' },
   pending: { bg: '#F1EFE8', text: '#5F5E5A' },
 }
 

@@ -261,8 +261,8 @@ export function ArchitectDetail() {
                         className="rounded-full px-3 py-1 text-xs font-medium"
                         style={{
                           backgroundColor: editStage === s ? style.bg : 'transparent',
-                          color: editStage === s ? style.text : '#71717a',
-                          border: `1px solid ${editStage === s ? style.border : '#e4e4e7'}`,
+                          color: editStage === s ? style.text : '#7C7C7C',
+                          border: `1px solid ${editStage === s ? style.border : '#2A2A2A'}`,
                         }}
                       >
                         {s}

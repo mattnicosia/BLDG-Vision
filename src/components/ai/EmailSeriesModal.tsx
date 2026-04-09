@@ -180,7 +180,7 @@ export function EmailSeriesModal({ architectId, architectName, architectEmail, o
               />
             </div>
 
-            {error && <p className="text-sm" style={{ color: '#A32D2D' }}>{error}</p>}
+            {error && <p className="text-sm" style={{ color: '#EF4444' }}>{error}</p>}
 
             <Button onClick={handleGenerate} disabled={loading} className="gap-2">
               <Mail className="h-4 w-4" />
@@ -225,7 +225,7 @@ export function EmailSeriesModal({ architectId, architectName, architectEmail, o
 
             {/* Campaign scheduling */}
             {architectEmail && !scheduled && (
-              <div className="rounded-lg border border-border p-3" style={{ borderColor: '#0F6E56', borderWidth: '0.5px' }}>
+              <div className="rounded-lg border border-border p-3" style={{ borderColor: '#06B6D4', borderWidth: '0.5px' }}>
                 <h4 className="mb-2 text-xs font-medium">Schedule as campaign</h4>
                 <div className="flex items-end gap-3">
                   <div className="flex flex-1 flex-col gap-1">

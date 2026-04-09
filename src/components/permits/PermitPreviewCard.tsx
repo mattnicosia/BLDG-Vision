@@ -3,7 +3,7 @@ import { MapPin, Calendar, DollarSign, ExternalLink, User, Building2, Briefcase,
 import { categorizePermit, CONSTRUCTION_TYPE_STYLES, RELEVANCE_STYLES } from '@/lib/permitCategories'
 
 const CONTACT_TYPE_STYLES: Record<string, { bg: string; text: string }> = {
-  Contractor: { bg: '#FEE2E2', text: '#A32D2D' },
+  Contractor: { bg: '#FEE2E2', text: '#EF4444' },
   'Authorized Representative': { bg: '#FAEEDA', text: '#854F0B' },
   'Property Owner/Builder': { bg: '#EEEDFE', text: '#3C3489' },
   Architect: { bg: '#E1F5EE', text: '#085041' },
@@ -39,7 +39,7 @@ export function PermitPreviewCard({ permit, selected, onToggle }: PermitPreviewC
       className="rounded-xl border bg-[#1C1C1C] p-4 transition-colors"
       style={{
         borderWidth: '0.5px',
-        borderColor: selected ? '#0F6E56' : '#e4e4e7',
+        borderColor: selected ? '#06B6D4' : '#2A2A2A',
         backgroundColor: selected ? '#fafffe' : '#ffffff',
       }}
     >
@@ -50,8 +50,8 @@ export function PermitPreviewCard({ permit, selected, onToggle }: PermitPreviewC
             onClick={onToggle}
             className="flex h-4 w-4 items-center justify-center rounded border"
             style={{
-              backgroundColor: selected ? '#0F6E56' : 'transparent',
-              borderColor: selected ? '#0F6E56' : '#d4d4d8',
+              backgroundColor: selected ? '#06B6D4' : 'transparent',
+              borderColor: selected ? '#06B6D4' : '#d4d4d8',
             }}
           >
             {selected && (

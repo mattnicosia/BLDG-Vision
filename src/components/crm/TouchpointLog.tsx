@@ -70,8 +70,8 @@ export function TouchpointLog({ architectId, touchpoints, onAdd }: TouchpointLog
                 className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors"
                 style={{
                   backgroundColor: type === t.value ? '#E1F5EE' : 'transparent',
-                  color: type === t.value ? '#085041' : '#71717a',
-                  border: `1px solid ${type === t.value ? '#9FE1CB' : '#e4e4e7'}`,
+                  color: type === t.value ? '#085041' : '#7C7C7C',
+                  border: `1px solid ${type === t.value ? '#9FE1CB' : '#2A2A2A'}`,
                 }}
               >
                 <t.icon className="h-3 w-3" />

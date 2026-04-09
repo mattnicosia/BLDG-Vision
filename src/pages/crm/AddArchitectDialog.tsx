@@ -156,7 +156,7 @@ export function AddArchitectDialog({ onClose, onCreate, existingPlaceIds }: Prop
                   <div className="flex items-center gap-2">
                     {place.rating && (
                       <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                        <Star className="h-2.5 w-2.5" style={{ color: '#BA7517' }} />
+                        <Star className="h-2.5 w-2.5" style={{ color: '#F59E0B' }} />
                         {place.rating}
                       </span>
                     )}

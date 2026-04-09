@@ -4,9 +4,9 @@ import { getInitials, getAvatarColor } from '@/types'
 import { MapPin, Globe, Trash2, Instagram } from 'lucide-react'
 
 function getDisplacementColor(score: number): string {
-  if (score >= 70) return '#A32D2D'
-  if (score >= 40) return '#BA7517'
-  return '#0F6E56'
+  if (score >= 70) return '#EF4444'
+  if (score >= 40) return '#F59E0B'
+  return '#06B6D4'
 }
 
 interface CompetitorCardProps {

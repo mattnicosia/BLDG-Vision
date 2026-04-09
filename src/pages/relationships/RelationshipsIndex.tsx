@@ -17,8 +17,8 @@ export function RelationshipsIndex() {
             onClick={() => setTab(t.key)}
             className="pb-2 text-sm font-medium transition-colors"
             style={{
-              color: tab === t.key ? '#0F6E56' : '#71717a',
-              borderBottom: tab === t.key ? '2px solid #0F6E56' : '2px solid transparent',
+              color: tab === t.key ? '#06B6D4' : '#7C7C7C',
+              borderBottom: tab === t.key ? '2px solid #06B6D4' : '2px solid transparent',
             }}
           >
             {t.label}

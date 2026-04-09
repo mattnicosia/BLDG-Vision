@@ -78,7 +78,7 @@ export function PermitSyncButton() {
           <span>{lastResult.permitsImported} permits imported</span>
           <span>{lastResult.contractorsFound} contractors found</span>
           {lastResult.newCompetitorsCreated > 0 && (
-            <span style={{ color: '#0F6E56' }}>
+            <span style={{ color: '#06B6D4' }}>
               +{lastResult.newCompetitorsCreated} new competitors auto-created
             </span>
           )}

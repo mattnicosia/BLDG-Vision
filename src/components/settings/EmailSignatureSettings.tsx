@@ -49,18 +49,18 @@ function buildSignatureHtmlFromItems(items: SignatureItem[]): string {
         return `<tr><td style="padding-top:2px"><a href="tel:${item.value.replace(/[^0-9+]/g, '')}" style="color:#333333;text-decoration:none">${item.value}</a></td></tr>`
       case 'email':
         if (!item.value) return ''
-        return `<tr><td><a href="mailto:${item.value}" style="color:#0F6E56;text-decoration:none">${item.value}</a></td></tr>`
+        return `<tr><td><a href="mailto:${item.value}" style="color:#06B6D4;text-decoration:none">${item.value}</a></td></tr>`
       case 'website':
         if (!item.value) return ''
         const href = item.value.startsWith('http') ? item.value : `https://${item.value}`
         const display = item.value.replace(/^https?:\/\//, '').replace(/\/$/, '')
-        return `<tr><td><a href="${href}" style="color:#0F6E56;text-decoration:none">${display}</a></td></tr>`
+        return `<tr><td><a href="${href}" style="color:#06B6D4;text-decoration:none">${display}</a></td></tr>`
       case 'custom_link':
         if (!item.value || !item.url) return ''
         const linkHref = item.url.startsWith('http') ? item.url : `https://${item.url}`
-        return `<tr><td><a href="${linkHref}" style="color:#0F6E56;text-decoration:none">${item.value}</a></td></tr>`
+        return `<tr><td><a href="${linkHref}" style="color:#06B6D4;text-decoration:none">${item.value}</a></td></tr>`
       case 'divider':
-        return `<tr><td style="padding:6px 0"><hr style="border:none;border-top:1px solid #e4e4e7;margin:0" /></td></tr>`
+        return `<tr><td style="padding:6px 0"><hr style="border:none;border-top:1px solid #2A2A2A;margin:0" /></td></tr>`
       case 'text':
         if (!item.value) return ''
         return `<tr><td style="color:#999999;font-size:11px">${item.value}</td></tr>`
@@ -211,10 +211,10 @@ export function EmailSignatureSettings() {
           <div className="flex flex-col gap-2">
             <label className="text-xs text-muted-foreground">Email signature</label>
             <div className="flex gap-2">
-              <button onClick={() => setSigMode('html_paste')} className="rounded-full px-3 py-1 text-xs font-medium" style={{ backgroundColor: sigMode === 'html_paste' ? '#0F6E56' : 'transparent', color: sigMode === 'html_paste' ? '#fff' : '#71717a', border: `1px solid ${sigMode === 'html_paste' ? '#0F6E56' : '#e4e4e7'}` }}>
+              <button onClick={() => setSigMode('html_paste')} className="rounded-full px-3 py-1 text-xs font-medium" style={{ backgroundColor: sigMode === 'html_paste' ? '#06B6D4' : 'transparent', color: sigMode === 'html_paste' ? '#fff' : '#7C7C7C', border: `1px solid ${sigMode === 'html_paste' ? '#06B6D4' : '#2A2A2A'}` }}>
                 Paste from Outlook
               </button>
-              <button onClick={() => setSigMode('builder')} className="rounded-full px-3 py-1 text-xs font-medium" style={{ backgroundColor: sigMode === 'builder' ? '#0F6E56' : 'transparent', color: sigMode === 'builder' ? '#fff' : '#71717a', border: `1px solid ${sigMode === 'builder' ? '#0F6E56' : '#e4e4e7'}` }}>
+              <button onClick={() => setSigMode('builder')} className="rounded-full px-3 py-1 text-xs font-medium" style={{ backgroundColor: sigMode === 'builder' ? '#06B6D4' : 'transparent', color: sigMode === 'builder' ? '#fff' : '#7C7C7C', border: `1px solid ${sigMode === 'builder' ? '#06B6D4' : '#2A2A2A'}` }}>
                 Build signature
               </button>
             </div>

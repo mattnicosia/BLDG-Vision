@@ -25,7 +25,7 @@ export function ArchitectCard({ architect, onDelete, onBlock }: ArchitectCardPro
       style={{ borderWidth: '0.5px' }}
     >
       <Link
-        to={`/crm/${architect.id}`}
+        to={`/relationships/${architect.id}`}
         className="flex min-w-0 flex-1 items-center gap-4"
       >
         <div

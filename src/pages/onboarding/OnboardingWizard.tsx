@@ -233,7 +233,7 @@ export function OnboardingWizard() {
         <div className="mb-8 flex flex-col items-center gap-3">
           <div
             className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ backgroundColor: '#0F6E56' }}
+            style={{ backgroundColor: '#06B6D4' }}
           >
             <Building2 className="h-5 w-5 text-white" />
           </div>
@@ -244,7 +244,7 @@ export function OnboardingWizard() {
                 key={s}
                 className="h-1.5 w-8 rounded-full"
                 style={{
-                  backgroundColor: s <= step ? '#0F6E56' : '#e4e4e7',
+                  backgroundColor: s <= step ? '#06B6D4' : '#2A2A2A',
                 }}
               />
             ))}
@@ -456,7 +456,7 @@ export function OnboardingWizard() {
                               : stage === 'Warm'
                                 ? '#854F0B'
                                 : '#5F5E5A'
-                            : '#71717a',
+                            : '#7C7C7C',
                         border: `1px solid ${
                           a.stage === stage
                             ? stage === 'Active'
@@ -464,7 +464,7 @@ export function OnboardingWizard() {
                               : stage === 'Warm'
                                 ? '#FAC775'
                                 : '#D3D1C7'
-                            : '#e4e4e7'
+                            : '#2A2A2A'
                         }`,
                       }}
                     >
@@ -483,7 +483,7 @@ export function OnboardingWizard() {
         )}
 
         {error && (
-          <p className="mt-4 text-sm" style={{ color: '#A32D2D' }}>
+          <p className="mt-4 text-sm" style={{ color: '#EF4444' }}>
             {error}
           </p>
         )}

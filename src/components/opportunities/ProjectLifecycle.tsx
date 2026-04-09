@@ -40,12 +40,12 @@ interface LifecycleProject {
 }
 
 const STAGES = [
-  { key: 'land_sale', label: 'Land Sale', color: '#FEE2E2', text: '#A32D2D' },
+  { key: 'land_sale', label: 'Land Sale', color: '#FEE2E2', text: '#EF4444' },
   { key: 'planning', label: 'Planning Board', color: '#EEEDFE', text: '#3C3489' },
   { key: 'zoning', label: 'Zoning Board', color: '#FAEEDA', text: '#854F0B' },
   { key: 'arb', label: 'Architectural Review', color: '#E1F5EE', text: '#085041' },
   { key: 'permit_filed', label: 'Permit Filed', color: '#F1EFE8', text: '#5F5E5A' },
-  { key: 'permit_approved', label: 'Permit Approved', color: '#0F6E56', text: '#ffffff' },
+  { key: 'permit_approved', label: 'Permit Approved', color: '#06B6D4', text: '#ffffff' },
 ]
 
 // Low-value permit types to auto-hide (not relevant to GC opportunities)
@@ -390,7 +390,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                                 </span>
                               )}
                               {project.value ? (
-                                <span className="text-[9px] font-medium" style={{ color: '#0F6E56' }}>
+                                <span className="text-[9px] font-medium" style={{ color: '#06B6D4' }}>
                                   ${(project.value / 1000000).toFixed(1)}M
                                 </span>
                               ) : null}
@@ -471,7 +471,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                 {selectedProject.value ? (
                   <div>
                     <p className="text-xs text-muted-foreground">Estimated value</p>
-                    <p className="text-sm font-medium" style={{ color: '#0F6E56' }}>
+                    <p className="text-sm font-medium" style={{ color: '#06B6D4' }}>
                       <DollarSign className="mr-0.5 inline h-3 w-3" />
                       {selectedProject.value.toLocaleString()}
                     </p>
@@ -546,7 +546,7 @@ export function ProjectLifecycle({ onAddToPipeline }: Props) {
                     )}
                     {selectedProject.contractor_name && (
                       <div className="flex items-center gap-2 rounded-lg bg-[#141414] p-2">
-                        <Building2 className="h-3.5 w-3.5" style={{ color: '#A32D2D' }} />
+                        <Building2 className="h-3.5 w-3.5" style={{ color: '#EF4444' }} />
                         <div>
                           <p className="text-[10px] text-muted-foreground">Contractor</p>
                           <p className="text-sm">{selectedProject.contractor_name}</p>

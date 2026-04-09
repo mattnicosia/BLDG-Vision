@@ -68,7 +68,7 @@ export function SentEmails({ sentDrafts, architects }: SentEmailsProps) {
             >
               <div className="flex items-center gap-2">
                 {isExpanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />}
-                <Send className="h-3 w-3" style={{ color: '#0F6E56' }} />
+                <Send className="h-3 w-3" style={{ color: '#06B6D4' }} />
                 <span className="text-sm font-medium">{draft.subject || draft.type}</span>
               </div>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">

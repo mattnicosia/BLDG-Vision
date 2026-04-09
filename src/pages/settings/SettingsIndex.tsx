@@ -78,8 +78,8 @@ export function SettingsIndex() {
           onClick={() => setSettingsTab('general')}
           className="pb-2 text-sm font-medium"
           style={{
-            color: settingsTab === 'general' ? '#0F6E56' : '#71717a',
-            borderBottom: settingsTab === 'general' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: settingsTab === 'general' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: settingsTab === 'general' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           General
@@ -88,8 +88,8 @@ export function SettingsIndex() {
           onClick={() => setSettingsTab('playbook')}
           className="pb-2 text-sm font-medium"
           style={{
-            color: settingsTab === 'playbook' ? '#0F6E56' : '#71717a',
-            borderBottom: settingsTab === 'playbook' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: settingsTab === 'playbook' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: settingsTab === 'playbook' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           Playbook

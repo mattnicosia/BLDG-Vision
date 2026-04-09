@@ -94,9 +94,9 @@ export function ArchitectMap({
             >
               <div
                 className="flex h-4 w-4 items-center justify-center rounded-sm border-2"
-                style={{ backgroundColor: '#FEE2E2', borderColor: '#A32D2D' }}
+                style={{ backgroundColor: '#FEE2E2', borderColor: '#EF4444' }}
               >
-                <Swords className="h-2 w-2" style={{ color: '#A32D2D' }} />
+                <Swords className="h-2 w-2" style={{ color: '#EF4444' }} />
               </div>
             </AdvancedMarker>
           )
@@ -189,12 +189,12 @@ export function ArchitectMap({
                 )}
               </div>
               {selectedArchitect.active_lead && (
-                <span className="text-xs" style={{ color: '#0F6E56' }}>
+                <span className="text-xs" style={{ color: '#06B6D4' }}>
                   Active lead: {selectedArchitect.active_lead}
                 </span>
               )}
               <Link
-                to={`/crm/${selectedArchitect.id}`}
+                to={`/relationships/${selectedArchitect.id}`}
                 className="mt-0.5 text-xs text-primary hover:underline"
               >
                 View profile
@@ -219,7 +219,7 @@ export function ArchitectMap({
               <div className="flex items-center gap-2">
                 {selectedPlace.rating && (
                   <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                    <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                    <Star className="h-3 w-3" style={{ color: '#F59E0B' }} />
                     {selectedPlace.rating}
                     {selectedPlace.review_count && ` (${selectedPlace.review_count})`}
                   </span>
@@ -256,7 +256,7 @@ export function ArchitectMap({
           >
             <div className="flex flex-col gap-1.5 p-1">
               <div className="flex items-center gap-2">
-                <Swords className="h-3 w-3" style={{ color: '#A32D2D' }} />
+                <Swords className="h-3 w-3" style={{ color: '#EF4444' }} />
                 <span className="text-sm font-medium">{selectedCompetitor.name}</span>
               </div>
               {selectedCompetitor.location && (
@@ -264,12 +264,12 @@ export function ArchitectMap({
               )}
               {selectedCompetitor.google_rating && (
                 <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                  <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                  <Star className="h-3 w-3" style={{ color: '#F59E0B' }} />
                   {selectedCompetitor.google_rating}
                   {selectedCompetitor.google_review_count && ` (${selectedCompetitor.google_review_count})`}
                 </span>
               )}
-              <span className="text-xs font-medium" style={{ color: '#A32D2D' }}>
+              <span className="text-xs font-medium" style={{ color: '#EF4444' }}>
                 Displacement: {selectedCompetitor.displacement_score}
               </span>
               <Link

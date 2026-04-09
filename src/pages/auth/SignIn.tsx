@@ -37,7 +37,7 @@ export function SignIn() {
         <div className="mb-8 flex flex-col items-center gap-3">
           <div
             className="flex h-10 w-10 items-center justify-center rounded-xl"
-            style={{ backgroundColor: '#0F6E56' }}
+            style={{ backgroundColor: '#06B6D4' }}
           >
             <Building2 className="h-5 w-5 text-white" />
           </div>
@@ -76,7 +76,7 @@ export function SignIn() {
           </div>
 
           {error && (
-            <p className="text-sm" style={{ color: '#A32D2D' }}>
+            <p className="text-sm" style={{ color: '#EF4444' }}>
               {error}
             </p>
           )}

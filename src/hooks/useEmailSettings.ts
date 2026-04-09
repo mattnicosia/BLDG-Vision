@@ -33,7 +33,7 @@ export function useEmailSettings() {
         { onConflict: 'org_id' }
       )
       .select()
-      .single()
+      .maybeSingle()
     if (!error && data) setSettings(data)
     return { error: error?.message }
   }

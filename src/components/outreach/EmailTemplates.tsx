@@ -81,9 +81,9 @@ export function EmailTemplates({ templates, onUseTemplate, onRefresh }: EmailTem
               onClick={() => setCategoryFilter(cat)}
               className="rounded-full px-2.5 py-1 text-[10px] font-medium transition-colors"
               style={{
-                backgroundColor: categoryFilter === cat ? '#0F6E56' : 'transparent',
-                color: categoryFilter === cat ? '#fff' : '#71717a',
-                border: `1px solid ${categoryFilter === cat ? '#0F6E56' : '#e4e4e7'}`,
+                backgroundColor: categoryFilter === cat ? '#06B6D4' : 'transparent',
+                color: categoryFilter === cat ? '#fff' : '#7C7C7C',
+                border: `1px solid ${categoryFilter === cat ? '#06B6D4' : '#2A2A2A'}`,
               }}
             >
               {cat === 'all' ? 'All' : TEMPLATE_CATEGORY_LABELS[cat]}

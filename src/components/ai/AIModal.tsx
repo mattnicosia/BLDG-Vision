@@ -189,7 +189,7 @@ export function AIModal({ architectId, architectName, architectEmail, open, onCl
               <p className="text-sm text-muted-foreground">Generating...</p>
             </div>
           ) : error ? (
-            <p className="text-sm" style={{ color: '#A32D2D' }}>{error}</p>
+            <p className="text-sm" style={{ color: '#EF4444' }}>{error}</p>
           ) : result ? (
             isEditing ? (
               <Textarea

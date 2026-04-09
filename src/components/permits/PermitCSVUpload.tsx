@@ -258,7 +258,7 @@ export function PermitCSVUpload({ open, onClose }: Props) {
                     </span>
                   )}
                   {row.architect_id && (
-                    <Check className="h-3 w-3" style={{ color: '#0F6E56' }} />
+                    <Check className="h-3 w-3" style={{ color: '#06B6D4' }} />
                   )}
                 </div>
               ))}

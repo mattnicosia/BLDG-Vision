@@ -114,7 +114,7 @@ export function AISuggestions({ architects, sentDrafts, signals, onGenerateDraft
       {cooling.length > 0 && (
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <AlertTriangle className="h-4 w-4" style={{ color: '#BA7517' }} /> Relationships cooling
+            <AlertTriangle className="h-4 w-4" style={{ color: '#F59E0B' }} /> Relationships cooling
           </h3>
           <div className="flex flex-col gap-2">
             {cooling.map((arch) => {
@@ -141,7 +141,7 @@ export function AISuggestions({ architects, sentDrafts, signals, onGenerateDraft
       {newProspects.length > 0 && (
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <UserPlus className="h-4 w-4" style={{ color: '#0F6E56' }} /> New prospects
+            <UserPlus className="h-4 w-4" style={{ color: '#06B6D4' }} /> New prospects
           </h3>
           <div className="flex flex-col gap-2">
             {newProspects.map((arch) => renderCard(arch, `${arch.firm || 'Independent'} / ${arch.location || 'Location unknown'}`, <User className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />))}
@@ -152,11 +152,11 @@ export function AISuggestions({ architects, sentDrafts, signals, onGenerateDraft
       {signalOpps.length > 0 && (
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <Zap className="h-4 w-4" style={{ color: '#0F6E56' }} /> Signal opportunities
+            <Zap className="h-4 w-4" style={{ color: '#06B6D4' }} /> Signal opportunities
           </h3>
           <div className="flex flex-col gap-2">
             {signalOpps.map(({ signal, architect }) => renderCard(architect!, signal.headline,
-              <div className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: signal.priority === 'high' ? '#A32D2D' : '#BA7517' }} />))}
+              <div className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: signal.priority === 'high' ? '#EF4444' : '#F59E0B' }} />))}
           </div>
         </div>
       )}
@@ -164,7 +164,7 @@ export function AISuggestions({ architects, sentDrafts, signals, onGenerateDraft
       {followUps.length > 0 && (
         <div>
           <h3 className="mb-2 flex items-center gap-2 text-sm font-medium">
-            <Clock className="h-4 w-4" style={{ color: '#71717a' }} /> Follow-up needed
+            <Clock className="h-4 w-4" style={{ color: '#7C7C7C' }} /> Follow-up needed
           </h3>
           <div className="flex flex-col gap-2">
             {followUps.map(({ draft, architect }) => renderCard(architect!, `Sent "${draft.subject || 'outreach'}" ${draft.sent_at ? `${daysAgo(draft.sent_at)}d ago` : ''}`,

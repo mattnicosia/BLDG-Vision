@@ -47,7 +47,7 @@ export function IntelligenceIndex() {
       const boardScan = await fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
         method: 'POST', headers,
         body: JSON.stringify({ action: 'scan_all' }),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (boardScan?.sources) {
         const newDocs = boardScan.sources.reduce((s: number, r: any) => s + (r.newDocs || 0), 0)
@@ -59,7 +59,7 @@ export function IntelligenceIndex() {
       const boardParse = await fetch(`${supabaseUrl}/functions/v1/board-monitor`, {
         method: 'POST', headers,
         body: JSON.stringify({ action: 'parse_unparsed' }),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (boardParse?.itemsExtracted > 0) {
         parts.push(`${boardParse.itemsExtracted} projects extracted`)
@@ -73,7 +73,7 @@ export function IntelligenceIndex() {
       const landResult = await fetch(`${supabaseUrl}/functions/v1/land-transactions`, {
         method: 'POST', headers,
         body: JSON.stringify({ action: 'fetch', county: 'Rockland', minPrice: 300000, monthsBack: 6 }),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (landResult?.inserted > 0) {
         parts.push(`${landResult.inserted} land transactions`)
@@ -87,7 +87,7 @@ export function IntelligenceIndex() {
       const permitSync = await fetch(`${supabaseUrl}/functions/v1/energov-sync`, {
         method: 'POST', headers,
         body: JSON.stringify({ action: 'sync', maxPages: 2 }),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (permitSync?.permitsImported > 0) {
         parts.push(`${permitSync.permitsImported} permits imported`)
@@ -101,7 +101,7 @@ export function IntelligenceIndex() {
       const valueResult = await fetch(`${supabaseUrl}/functions/v1/estimate-values`, {
         method: 'POST', headers,
         body: JSON.stringify({}),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (valueResult?.estimated > 0) {
         parts.push(`${valueResult.estimated} values estimated`)
@@ -112,7 +112,7 @@ export function IntelligenceIndex() {
       const peopleResult = await fetch(`${supabaseUrl}/functions/v1/enrich-people`, {
         method: 'POST', headers,
         body: JSON.stringify({}),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (peopleResult?.enriched > 0) {
         const totalContacts = peopleResult.results?.reduce((s: number, r: any) => s + (r.contacts?.length || 0), 0) || 0
@@ -124,7 +124,7 @@ export function IntelligenceIndex() {
       const alertResult = await fetch(`${supabaseUrl}/functions/v1/generate-alerts`, {
         method: 'POST', headers,
         body: JSON.stringify({}),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (alertResult?.alertsGenerated > 0) {
         parts.push(`${alertResult.alertsGenerated} alerts`)
@@ -135,7 +135,7 @@ export function IntelligenceIndex() {
       const entityResult = await fetch(`${supabaseUrl}/functions/v1/entity-resolution`, {
         method: 'POST', headers,
         body: JSON.stringify({}),
-      }).then(r => r.json()).catch(() => null)
+      }).then(r => r.ok ? r.json() : null).catch(() => null)
 
       if (entityResult?.entitiesCreated > 0) {
         parts.push(`${entityResult.entitiesCreated} project entities linked`)
@@ -194,9 +194,9 @@ export function IntelligenceIndex() {
             onClick={() => setView(v.key as typeof view)}
             className="rounded-full px-3 py-1 text-xs font-medium transition-colors"
             style={{
-              backgroundColor: view === v.key ? '#0F6E56' : 'transparent',
-              color: view === v.key ? '#fff' : '#71717a',
-              border: `1px solid ${view === v.key ? '#0F6E56' : '#e4e4e7'}`,
+              backgroundColor: view === v.key ? '#06B6D4' : 'transparent',
+              color: view === v.key ? '#fff' : '#7C7C7C',
+              border: `1px solid ${view === v.key ? '#06B6D4' : '#2A2A2A'}`,
             }}
           >
             {v.label}

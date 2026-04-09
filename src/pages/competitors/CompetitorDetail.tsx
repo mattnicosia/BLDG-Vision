@@ -22,9 +22,9 @@ import {
 import { supabase } from '@/lib/supabase'
 
 function getDisplacementColor(score: number): string {
-  if (score >= 70) return '#A32D2D'
-  if (score >= 40) return '#BA7517'
-  return '#0F6E56'
+  if (score >= 70) return '#EF4444'
+  if (score >= 40) return '#F59E0B'
+  return '#06B6D4'
 }
 
 export function CompetitorDetail() {
@@ -136,7 +136,7 @@ export function CompetitorDetail() {
             </div>
             {competitor.google_rating && (
               <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
-                <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+                <Star className="h-3 w-3" style={{ color: '#F59E0B' }} />
                 {competitor.google_rating} rating
                 {competitor.google_review_count && ` (${competitor.google_review_count} reviews)`}
               </div>
@@ -254,7 +254,7 @@ export function CompetitorDetail() {
                   <p className="mb-1 text-xs text-muted-foreground">Weaknesses</p>
                   <div className="flex flex-wrap gap-1.5">
                     {competitor.weaknesses.map((w, i) => (
-                      <span key={i} className="rounded-full px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: '#FEE2E2', color: '#A32D2D' }}>
+                      <span key={i} className="rounded-full px-2 py-0.5 text-[10px] font-medium" style={{ backgroundColor: '#FEE2E2', color: '#EF4444' }}>
                         {w}
                       </span>
                     ))}
@@ -300,7 +300,7 @@ export function CompetitorDetail() {
                     <div className="flex items-center gap-2">
                       <Users className="h-3 w-3 text-muted-foreground" />
                       <Link
-                        to={`/crm/${link.architect_id}`}
+                        to={`/relationships/${link.architect_id}`}
                         className="text-xs text-primary hover:underline"
                       >
                         {link.architect_name ?? 'Unknown'}

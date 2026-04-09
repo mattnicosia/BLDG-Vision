@@ -35,7 +35,7 @@ export function RadarCard({ place, onAdd, alreadyAdded }: RadarCardProps) {
         <div className="flex items-center gap-3">
           {place.rating && (
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Star className="h-3 w-3" style={{ color: '#BA7517' }} />
+              <Star className="h-3 w-3" style={{ color: '#F59E0B' }} />
               <span>{place.rating}</span>
               {place.userRatingCount && (
                 <span>({place.userRatingCount})</span>

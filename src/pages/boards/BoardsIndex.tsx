@@ -34,12 +34,12 @@ const BOARD_TYPE_STYLES: Record<string, { bg: string; text: string }> = {
 }
 
 const DECISION_STYLES: Record<string, { icon: typeof CheckCircle; color: string }> = {
-  approved: { icon: CheckCircle, color: '#0F6E56' },
-  denied: { icon: XCircle, color: '#A32D2D' },
-  tabled: { icon: Clock, color: '#BA7517' },
-  adjourned: { icon: Clock, color: '#BA7517' },
-  pending: { icon: Clock, color: '#71717a' },
-  discussed: { icon: FileText, color: '#71717a' },
+  approved: { icon: CheckCircle, color: '#06B6D4' },
+  denied: { icon: XCircle, color: '#EF4444' },
+  tabled: { icon: Clock, color: '#F59E0B' },
+  adjourned: { icon: Clock, color: '#F59E0B' },
+  pending: { icon: Clock, color: '#7C7C7C' },
+  discussed: { icon: FileText, color: '#7C7C7C' },
 }
 
 interface BoardItem {
@@ -282,7 +282,7 @@ export function BoardsIndex() {
                     <span className="flex items-center gap-1">
                       <User className="h-3 w-3 text-muted-foreground" />
                       {item.architect_id ? (
-                        <Link to={`/crm/${item.architect_id}`} className="text-primary hover:underline">
+                        <Link to={`/relationships/${item.architect_id}`} className="text-primary hover:underline">
                           {item.architect_name}
                         </Link>
                       ) : (
@@ -297,7 +297,7 @@ export function BoardsIndex() {
                     <span className="text-muted-foreground">Engineer: {item.engineer_name}</span>
                   )}
                   {item.estimated_scope && (
-                    <span className="font-medium" style={{ color: '#0F6E56' }}>{item.estimated_scope}</span>
+                    <span className="font-medium" style={{ color: '#06B6D4' }}>{item.estimated_scope}</span>
                   )}
                 </div>
 

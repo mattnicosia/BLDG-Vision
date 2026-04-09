@@ -243,8 +243,8 @@ export function PermitsIndex() {
           onClick={() => setTab('imported')}
           className="pb-2 text-sm font-medium"
           style={{
-            color: tab === 'imported' ? '#0F6E56' : '#71717a',
-            borderBottom: tab === 'imported' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: tab === 'imported' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: tab === 'imported' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           Permits ({importedPermits.length})
@@ -253,8 +253,8 @@ export function PermitsIndex() {
           onClick={() => setTab('fetch')}
           className="pb-2 text-sm font-medium"
           style={{
-            color: tab === 'fetch' ? '#0F6E56' : '#71717a',
-            borderBottom: tab === 'fetch' ? '2px solid #0F6E56' : '2px solid transparent',
+            color: tab === 'fetch' ? '#06B6D4' : '#7C7C7C',
+            borderBottom: tab === 'fetch' ? '2px solid #06B6D4' : '2px solid transparent',
           }}
         >
           Fetch new
@@ -305,9 +305,9 @@ export function PermitsIndex() {
                   onClick={() => setKeyword(suggestion)}
                   className="rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors"
                   style={{
-                    backgroundColor: keyword === suggestion ? '#0F6E56' : 'transparent',
-                    color: keyword === suggestion ? '#ffffff' : '#71717a',
-                    border: `1px solid ${keyword === suggestion ? '#0F6E56' : '#e4e4e7'}`,
+                    backgroundColor: keyword === suggestion ? '#06B6D4' : 'transparent',
+                    color: keyword === suggestion ? '#ffffff' : '#7C7C7C',
+                    border: `1px solid ${keyword === suggestion ? '#06B6D4' : '#2A2A2A'}`,
                   }}
                 >
                   {suggestion}
@@ -515,7 +515,7 @@ export function PermitsIndex() {
                       <span className="flex items-center gap-1"><DollarSign className="h-3 w-3" /> ${permit.estimated_value.toLocaleString()}</span>
                     ) : null}
                     {permit.contractor_name && (
-                      <span className="flex items-center gap-1 font-medium" style={{ color: '#A32D2D' }}>Contractor: {permit.contractor_name}</span>
+                      <span className="flex items-center gap-1 font-medium" style={{ color: '#EF4444' }}>Contractor: {permit.contractor_name}</span>
                     )}
                   </div>
                   {permit.scope_description && (
