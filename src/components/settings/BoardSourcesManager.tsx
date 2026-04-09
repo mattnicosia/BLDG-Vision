@@ -37,20 +37,20 @@ const BOARD_TYPE_LABELS: Record<string, string> = {
 // Known board meeting pages for Rockland County towns
 const KNOWN_SOURCES = [
   { town_name: 'Clarkstown', county: 'Rockland', lat: 41.1220, lng: -73.9590, boards: [
-    { board_type: 'planning', meeting_page_url: 'https://www.clarkstown.org/boards-committees/planning-board', base_url: 'https://www.clarkstown.org' },
-    { board_type: 'zoning', meeting_page_url: 'https://www.clarkstown.org/boards-committees/zoning-board-of-appeals', base_url: 'https://www.clarkstown.org' },
+    { board_type: 'planning', meeting_page_url: 'https://www.clarkstown.gov/planning/downloads/', base_url: 'https://www.clarkstown.gov' },
+    { board_type: 'zoning', meeting_page_url: 'https://www.clarkstown.gov/planning/zoning-board-projects/', base_url: 'https://www.clarkstown.gov' },
   ]},
   { town_name: 'Ramapo', county: 'Rockland', lat: 41.1404, lng: -74.1121, boards: [
-    { board_type: 'planning', meeting_page_url: 'https://ramapo.org/planning-board', base_url: 'https://ramapo.org' },
-    { board_type: 'zoning', meeting_page_url: 'https://ramapo.org/zoning-board', base_url: 'https://ramapo.org' },
+    { board_type: 'planning', meeting_page_url: 'https://www.ramapo.gov/page/agendas--minutes-37.html', base_url: 'https://www.ramapo.gov' },
+    { board_type: 'zoning', meeting_page_url: 'https://www.ramapo.gov/page/agendas--minutes-37.html', base_url: 'https://www.ramapo.gov' },
   ]},
   { town_name: 'Haverstraw', county: 'Rockland', lat: 41.1976, lng: -73.9640, boards: [
-    { board_type: 'planning', meeting_page_url: 'https://www.townofhaverstraw.us/planning-board', base_url: 'https://www.townofhaverstraw.us' },
-    { board_type: 'zoning', meeting_page_url: 'https://www.townofhaverstraw.us/zoning-board', base_url: 'https://www.townofhaverstraw.us' },
+    { board_type: 'planning', meeting_page_url: 'https://www.townofhaverstraw.org/pzbinfo.html', base_url: 'https://www.townofhaverstraw.org' },
+    { board_type: 'zoning', meeting_page_url: 'https://www.townofhaverstraw.org/zbminutes.html', base_url: 'https://www.townofhaverstraw.org' },
   ]},
   { town_name: 'Stony Point', county: 'Rockland', lat: 41.2293, lng: -73.9871, boards: [
-    { board_type: 'planning', meeting_page_url: 'https://www.townofstonypoint.org/planning-board', base_url: 'https://www.townofstonypoint.org' },
-    { board_type: 'zoning', meeting_page_url: 'https://www.townofstonypoint.org/zoning-board', base_url: 'https://www.townofstonypoint.org' },
+    { board_type: 'planning', meeting_page_url: 'https://www.stonypointny.gov/planning-documents', base_url: 'https://www.stonypointny.gov' },
+    { board_type: 'zoning', meeting_page_url: 'https://www.stonypointny.gov/zoning-documents', base_url: 'https://www.stonypointny.gov' },
   ]},
 ]
 
