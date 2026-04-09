@@ -458,6 +458,94 @@ export function ArchitectDetail() {
             </div>
           </div>
 
+          {/* Relationship Intelligence */}
+          <div className="rounded-xl border border-border bg-[#1C1C1C] p-4" style={{ borderWidth: '0.5px' }}>
+            <h3 className="mb-3 text-sm font-medium">Relationship intelligence</h3>
+            <div className="flex flex-col gap-2.5">
+              <div>
+                <label className="text-[10px] font-medium uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>Tone</label>
+                <select
+                  value={architect.tone || 'professional'}
+                  onChange={async (e) => {
+                    await updateArchitect({ tone: e.target.value })
+                  }}
+                  className="mt-0.5 w-full rounded-md border px-2 py-1.5 text-[12px]"
+                  style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0' }}
+                >
+                  <option value="casual">Casual (first name, informal)</option>
+                  <option value="friendly">Friendly (warm, personable)</option>
+                  <option value="professional">Professional (polished, clear)</option>
+                  <option value="formal">Formal (structured, credentials)</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-medium uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>Cadence</label>
+                <select
+                  value={architect.cadence || 'quarterly'}
+                  onChange={async (e) => {
+                    await updateArchitect({ cadence: e.target.value })
+                  }}
+                  className="mt-0.5 w-full rounded-md border px-2 py-1.5 text-[12px]"
+                  style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0' }}
+                >
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="quarterly">Quarterly</option>
+                  <option value="biannual">Twice a year</option>
+                  <option value="annual">Annually</option>
+                  <option value="event_driven">Only when relevant</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-medium uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>Contact type</label>
+                <select
+                  value={architect.contact_type || 'architect'}
+                  onChange={async (e) => {
+                    await updateArchitect({ contact_type: e.target.value })
+                  }}
+                  className="mt-0.5 w-full rounded-md border px-2 py-1.5 text-[12px]"
+                  style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0' }}
+                >
+                  <option value="architect">Architect</option>
+                  <option value="attorney">Land Use Attorney</option>
+                  <option value="developer">Developer</option>
+                  <option value="engineer">Engineer</option>
+                  <option value="owner">Property Owner</option>
+                  <option value="realtor">Realtor</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-[10px] font-medium uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>Communication notes</label>
+                <textarea
+                  defaultValue={architect.communication_notes || ''}
+                  onBlur={async (e) => {
+                    if (e.target.value !== (architect.communication_notes || '')) {
+                      await updateArchitect({ communication_notes: e.target.value })
+                    }
+                  }}
+                  placeholder="e.g., Prefers text over email, assistant screens calls, calls me Matt..."
+                  className="mt-0.5 w-full rounded-md border px-2 py-1.5 text-[11px]"
+                  style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0', minHeight: '48px', resize: 'vertical' }}
+                />
+              </div>
+              <div>
+                <label className="text-[10px] font-medium uppercase" style={{ color: '#7C7C7C', letterSpacing: '0.5px' }}>Outreach context</label>
+                <textarea
+                  defaultValue={architect.outreach_context || ''}
+                  onBlur={async (e) => {
+                    if (e.target.value !== (architect.outreach_context || '')) {
+                      await updateArchitect({ outreach_context: e.target.value })
+                    }
+                  }}
+                  placeholder="e.g., Met at AIA gala, loves modernist design, kids in same school..."
+                  className="mt-0.5 w-full rounded-md border px-2 py-1.5 text-[11px]"
+                  style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0', minHeight: '48px', resize: 'vertical' }}
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Pipeline */}
           <OpportunityPanel architectId={architect.id} architectName={architect.name} />
 
