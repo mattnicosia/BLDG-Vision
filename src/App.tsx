@@ -12,6 +12,7 @@ import { CRMIndex } from '@/pages/crm/CRMIndex'
 import { RelationshipsIndex } from '@/pages/relationships/RelationshipsIndex'
 import { ArchitectDetail } from '@/pages/crm/ArchitectDetail'
 import { OutreachIndex } from '@/pages/outreach/OutreachIndex'
+import { IntelHub } from '@/pages/intelligence/IntelHub'
 import { ReconIndex } from '@/pages/recon/ReconIndex'
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { AddProject } from '@/pages/kb/AddProject'
@@ -45,6 +46,7 @@ export default function App() {
               <Route path="/pipeline" element={<PipelineIndex />} />
               <Route path="/relationships" element={<RelationshipsIndex />} />
               <Route path="/relationships/:id" element={<ArchitectDetail />} />
+              <Route path="/intel" element={<IntelHub />} />
               <Route path="/outreach" element={<OutreachIndex />} />
               <Route path="/recon" element={<ReconIndex />} />
 

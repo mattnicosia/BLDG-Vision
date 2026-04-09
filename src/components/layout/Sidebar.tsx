@@ -7,6 +7,7 @@ import {
   Send,
   Radar,
   Settings,
+  Crosshair,
 } from 'lucide-react'
 import { useOrg } from '@/hooks/useOrg'
 
@@ -15,6 +16,7 @@ const navItems = [
   { to: '/opportunities', label: 'Opportunities', icon: Lightbulb },
   { to: '/pipeline', label: 'Pipeline', icon: Kanban },
   { to: '/relationships', label: 'Relationships', icon: Users },
+  { to: '/intel', label: 'Intel Hub', icon: Crosshair },
   { to: '/outreach', label: 'Outreach', icon: Send },
   { to: '/recon', label: 'Recon', icon: Radar },
   { to: '/settings', label: 'Settings', icon: Settings },
