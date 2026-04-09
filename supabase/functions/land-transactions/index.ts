@@ -1,5 +1,4 @@
 import { createClient } from 'npm:@supabase/supabase-js'
-import Anthropic from 'npm:@anthropic-ai/sdk'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',

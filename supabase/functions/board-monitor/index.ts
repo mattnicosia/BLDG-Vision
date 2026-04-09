@@ -56,6 +56,13 @@ async function scrapeMeetingPage(meetingPageUrl: string): Promise<Array<{ title:
   return meetingLinks
 }
 
+// Junk PDF patterns to exclude
+const JUNK_PDF_PATTERNS = [
+  /pothole/i, /letterhead/i, /logo/i, /banner/i, /header/i,
+  /newsletter/i, /flyer/i, /brochure/i, /form/i, /application-form/i,
+  /recycling/i, /medication/i, /museum/i, /library/i, /email-update/i,
+]
+
 // Scrape a single meeting page for PDF document links
 async function findDocumentUrls(meetingUrl: string): Promise<Array<{ title: string; url: string }>> {
   const res = await fetch(meetingUrl, { headers: BROWSER_HEADERS })
@@ -63,37 +70,30 @@ async function findDocumentUrls(meetingUrl: string): Promise<Array<{ title: stri
   const html = await res.text()
 
   const docs: Array<{ title: string; url: string }> = []
+  const seen = new Set<string>()
 
-  // Find PDF links in wp-content/uploads (filter out logos, potholes, etc.)
-  const pdfRegex = /href="(https?:\/\/www\.orangetown\.com\/wp-content\/uploads\/[^"]+\.pdf)"/gi
+  // Find PDF links in wp-content/uploads — only from recent years and board-related
+  const pdfRegex = /href="(https?:\/\/www\.orangetown\.com\/wp-content\/uploads\/20(?:2[4-9]|[3-9]\d)\/[^"]+\.pdf)"/gi
   let match
   while ((match = pdfRegex.exec(html)) !== null) {
     const url = match[1]
+    if (seen.has(url)) continue
+    seen.add(url)
+
     const filename = url.split('/').pop()?.replace('.pdf', '').replace(/-/g, ' ') ?? ''
-    // Only include minutes, agendas, and project plans
     const lower = filename.toLowerCase()
-    if (lower.includes('minute') || lower.includes('agenda') || lower.includes('plan') || lower.includes('site') || lower.includes('subd')) {
+
+    // Skip known junk
+    if (JUNK_PDF_PATTERNS.some(p => p.test(lower))) continue
+
+    // Only include board-related documents
+    if (lower.includes('minute') || lower.includes('agenda') ||
+        lower.includes('site plan') || lower.includes('subd') ||
+        lower.includes('zba') || lower.includes('acabor') ||
+        lower.includes('planning') || lower.includes('zoning') ||
+        lower.includes('arch plan')) {
       docs.push({ title: filename, url })
     }
-  }
-
-  // Also look for document page links that contain PDFs
-  const docPageRegex = /href="(https?:\/\/www\.orangetown\.com\/document\/[^"]+)"/gi
-  while ((match = docPageRegex.exec(html)) !== null) {
-    const pageUrl = match[1]
-    // Fetch the document page to find the actual PDF
-    try {
-      const pageRes = await fetch(pageUrl)
-      if (pageRes.ok) {
-        const pageHtml = await pageRes.text()
-        const innerPdfMatch = pageHtml.match(/href="(https?:\/\/www\.orangetown\.com\/wp-content\/uploads\/[^"]+\.pdf)"/i)
-        if (innerPdfMatch) {
-          const pdfUrl = innerPdfMatch[1]
-          const title = pageUrl.split('/document/')[1]?.replace(/\/$/, '').replace(/-/g, ' ') ?? ''
-          docs.push({ title, url: pdfUrl })
-        }
-      }
-    } catch {}
   }
 
   return docs
