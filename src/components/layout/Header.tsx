@@ -4,6 +4,7 @@ import { LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { getInitials } from '@/types'
 import { NotificationBell } from './NotificationBell'
+import { CommandBar } from './CommandBar'
 
 export function Header() {
   const { user, signOut } = useAuth()
@@ -19,8 +20,11 @@ export function Header() {
         borderBottom: '1px solid #1E1E1E',
       }}
     >
-      <div className="text-[13px] font-medium" style={{ color: '#7C7C7C' }}>
-        {org?.region ?? ''}
+      <div className="flex items-center gap-4">
+        <div className="text-[13px] font-medium" style={{ color: '#7C7C7C' }}>
+          {org?.region ?? ''}
+        </div>
+        <CommandBar />
       </div>
       <div className="flex items-center gap-4">
         <NotificationBell />
