@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useDraggable } from '@dnd-kit/core'
+import { CSS } from '@dnd-kit/utilities'
 import { usePipelineStages } from '@/hooks/usePipelineStages'
 import type { Opportunity } from '@/types'
 import { DESIGN_PHASE_SHORT } from '@/types'
@@ -8,7 +9,6 @@ import { MapPin, Clock, User, PhoneOutgoing, FileText } from 'lucide-react'
 interface LeadCardProps {
   lead: Opportunity
   onClick: () => void
-  isOverlay?: boolean
 }
 
 function formatValue(v: number): string {
@@ -21,21 +21,30 @@ function daysAgo(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000)
 }
 
-/** Inner card UI - no drag logic, used by both normal and overlay */
-function LeadCardContent({ lead, onClick, isOverlay }: LeadCardProps) {
+export function LeadCard({ lead, onClick }: LeadCardProps) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: lead.id,
+    data: { lead },
+  })
   const { styleMap } = usePipelineStages()
   const stageStyle = styleMap[lead.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
   const days = daysAgo(lead.updated_at)
 
   return (
     <div
-      onClick={isOverlay ? undefined : onClick}
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      onClick={isDragging ? undefined : onClick}
       style={{
+        transform: transform ? CSS.Translate.toString(transform) : undefined,
         borderWidth: '0.5px',
-        cursor: isOverlay ? 'grabbing' : 'grab',
+        zIndex: isDragging ? 50 : undefined,
+        position: isDragging ? 'relative' as const : undefined,
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
       className={`w-full rounded-lg border border-border bg-[#1C1C1C] p-3 text-left transition-colors ${
-        isOverlay ? 'shadow-lg shadow-black/50 ring-1 ring-indigo-500/30' : 'hover:bg-[#242424]'
+        isDragging ? 'shadow-lg shadow-black/50 ring-1 ring-indigo-500/30' : 'hover:bg-[#242424]'
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -108,34 +117,6 @@ function LeadCardContent({ lead, onClick, isOverlay }: LeadCardProps) {
           {lead.probability}%
         </span>
       </div>
-    </div>
-  )
-}
-
-/** Draggable wrapper - only used for in-column cards, NOT for overlay */
-export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
-  // Overlay cards skip drag hooks entirely
-  if (isOverlay) {
-    return <LeadCardContent lead={lead} onClick={onClick} isOverlay />
-  }
-
-  return <DraggableLeadCard lead={lead} onClick={onClick} />
-}
-
-function DraggableLeadCard({ lead, onClick }: { lead: Opportunity; onClick: () => void }) {
-  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: lead.id,
-    data: { lead },
-  })
-
-  return (
-    <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      style={{ opacity: isDragging ? 0.25 : 1 }}
-    >
-      <LeadCardContent lead={lead} onClick={onClick} />
     </div>
   )
 }

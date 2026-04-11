@@ -1,11 +1,9 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import {
   DndContext,
-  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
-  type DragStartEvent,
   type DragEndEvent,
 } from '@dnd-kit/core'
 import { useOpportunities } from '@/hooks/useOpportunities'
@@ -50,25 +48,12 @@ export function PipelineIndex() {
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [showAdd, setShowAdd] = useState(false)
   const [showEnded, setShowEnded] = useState(false)
-  const [activeId, setActiveId] = useState<string | null>(null)
 
-  // Require 8px of movement before starting drag (prevents accidental drags on click)
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   )
 
-  // Find the lead being dragged for the overlay
-  const activeLead = useMemo(
-    () => (activeId ? opportunities.find((o) => o.id === activeId) : null),
-    [activeId, opportunities]
-  )
-
-  function handleDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id as string)
-  }
-
   function handleDragEnd(event: DragEndEvent) {
-    setActiveId(null)
     const { active, over } = event
     if (!over) return
 
@@ -182,7 +167,6 @@ export function PipelineIndex() {
       ) : (
         <DndContext
           sensors={sensors}
-          onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
           {/* Pipeline columns */}
@@ -263,16 +247,6 @@ export function PipelineIndex() {
             </div>
           )}
 
-          {/* Drag overlay - floating card that follows cursor */}
-          <DragOverlay dropAnimation={null}>
-            {activeLead ? (
-              <LeadCard
-                lead={activeLead}
-                onClick={() => {}}
-                isOverlay
-              />
-            ) : null}
-          </DragOverlay>
         </DndContext>
       )}
 
