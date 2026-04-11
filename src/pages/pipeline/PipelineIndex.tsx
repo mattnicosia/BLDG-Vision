@@ -1,9 +1,19 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragStartEvent,
+  type DragEndEvent,
+} from '@dnd-kit/core'
 import { useOpportunities } from '@/hooks/useOpportunities'
 import { useArchitects } from '@/hooks/useArchitects'
 import { PipelineMetrics } from '@/components/pipeline/PipelineMetrics'
 import { LeadCard } from '@/components/pipeline/LeadCard'
 import { LeadDetail } from '@/components/pipeline/LeadDetail'
+import { KanbanColumn } from '@/components/pipeline/KanbanColumn'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -42,6 +52,35 @@ export function PipelineIndex() {
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [showAdd, setShowAdd] = useState(false)
   const [showEnded, setShowEnded] = useState(false)
+  const [activeId, setActiveId] = useState<string | null>(null)
+
+  // Require 8px of movement before starting drag (prevents accidental drags on click)
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
+
+  // Find the lead being dragged for the overlay
+  const activeLead = useMemo(
+    () => (activeId ? opportunities.find((o) => o.id === activeId) : null),
+    [activeId, opportunities]
+  )
+
+  function handleDragStart(event: DragStartEvent) {
+    setActiveId(event.active.id as string)
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setActiveId(null)
+    const { active, over } = event
+    if (!over) return
+
+    const leadId = active.id as string
+    const targetStage = over.id as LeadStatus
+    const lead = opportunities.find((o) => o.id === leadId)
+    if (!lead || lead.stage === targetStage) return
+
+    advanceStage(leadId, targetStage)
+  }
 
   // Add form state
   const [newName, setNewName] = useState('')
@@ -143,47 +182,37 @@ export function PipelineIndex() {
           </Button>
         </div>
       ) : (
-        <>
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           {/* 6-column pipeline */}
           <div className="grid grid-cols-6 gap-2" style={{ minHeight: 300 }}>
             {PIPELINE_STAGES.map((stage) => {
-              const stageStyle = LEAD_STAGE_STYLES[stage]
               const stageLeads = byStage[stage] ?? []
               const stageValue = stageLeads.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
               return (
-                <div key={stage} className="flex flex-col gap-2 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                        style={{ backgroundColor: stageStyle.bg, color: stageStyle.text }}
-                      >
-                        {LEAD_STAGE_LABELS[stage]}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">{stageLeads.length}</span>
-                    </div>
-                    {stageValue > 0 && (
-                      <span className="text-[10px] text-muted-foreground">
-                        ${(stageValue / 1000000).toFixed(1)}M
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1.5 rounded-lg bg-[#0F0F0F] p-1.5" style={{ minHeight: 200 }}>
-                    {stageLeads.length === 0 ? (
-                      <p className="py-4 text-center text-[10px] text-muted-foreground">
-                        No leads
-                      </p>
-                    ) : (
-                      stageLeads.map((lead) => (
-                        <LeadCard
-                          key={lead.id}
-                          lead={lead}
-                          onClick={() => setSelectedOpp(lead)}
-                        />
-                      ))
-                    )}
-                  </div>
-                </div>
+                <KanbanColumn
+                  key={stage}
+                  stage={stage}
+                  count={stageLeads.length}
+                  value={stageValue}
+                >
+                  {stageLeads.length === 0 ? (
+                    <p className="py-4 text-center text-[10px] text-muted-foreground">
+                      No leads
+                    </p>
+                  ) : (
+                    stageLeads.map((lead) => (
+                      <LeadCard
+                        key={lead.id}
+                        lead={lead}
+                        onClick={() => setSelectedOpp(lead)}
+                      />
+                    ))
+                  )}
+                </KanbanColumn>
               )
             })}
           </div>
@@ -200,49 +229,47 @@ export function PipelineIndex() {
               {showEnded && (
                 <div className="mt-2 grid grid-cols-5 gap-2">
                   {END_STATES.map((state) => {
-                    const stateStyle = LEAD_STAGE_STYLES[state]
                     const stateLeads = byStage[state] ?? []
-                    if (stateLeads.length === 0) return (
-                      <div key={state} className="flex flex-col gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                            style={{ backgroundColor: stateStyle.bg, color: stateStyle.text }}
-                          >
-                            {LEAD_STAGE_LABELS[state]}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">0</span>
-                        </div>
-                      </div>
-                    )
+                    const stateValue = stateLeads.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
                     return (
-                      <div key={state} className="flex flex-col gap-2">
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className="rounded-full px-2 py-0.5 text-[10px] font-medium"
-                            style={{ backgroundColor: stateStyle.bg, color: stateStyle.text }}
-                          >
-                            {LEAD_STAGE_LABELS[state]}
-                          </span>
-                          <span className="text-[10px] text-muted-foreground">{stateLeads.length}</span>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                          {stateLeads.map((lead) => (
+                      <KanbanColumn
+                        key={state}
+                        stage={state}
+                        count={stateLeads.length}
+                        value={stateValue}
+                      >
+                        {stateLeads.length === 0 ? (
+                          <p className="py-4 text-center text-[10px] text-muted-foreground">
+                            None
+                          </p>
+                        ) : (
+                          stateLeads.map((lead) => (
                             <LeadCard
                               key={lead.id}
                               lead={lead}
                               onClick={() => setSelectedOpp(lead)}
                             />
-                          ))}
-                        </div>
-                      </div>
+                          ))
+                        )}
+                      </KanbanColumn>
                     )
                   })}
                 </div>
               )}
             </div>
           )}
-        </>
+
+          {/* Drag overlay - floating card that follows cursor */}
+          <DragOverlay dropAnimation={null}>
+            {activeLead ? (
+              <LeadCard
+                lead={activeLead}
+                onClick={() => {}}
+                isOverlay
+              />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
       )}
 
       {/* Detail modal */}
@@ -261,7 +288,6 @@ export function PipelineIndex() {
           }}
           onRecordOutreach={(id) => {
             recordOutreach(id)
-            // Refresh selectedOpp
             setSelectedOpp((prev) => prev ? { ...prev, outreach_attempts: (prev.outreach_attempts ?? 0) + 1 } : null)
           }}
           onRecordRevision={(id) => {
