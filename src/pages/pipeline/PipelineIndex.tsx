@@ -73,7 +73,7 @@ export function PipelineIndex() {
     if (!over) return
 
     const leadId = active.id as string
-    const targetStage = over.id as LeadStatus
+    const targetStage = over.id as string
     const lead = opportunities.find((o) => o.id === leadId)
     if (!lead || lead.stage === targetStage) return
 

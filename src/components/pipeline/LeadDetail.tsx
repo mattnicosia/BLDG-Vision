@@ -38,7 +38,7 @@ interface LeadDetailProps {
   open: boolean
   onClose: () => void
   onUpdate: (id: string, updates: Partial<Opportunity>) => void
-  onAdvance: (id: string, stage: LeadStatus) => void
+  onAdvance: (id: string, stage: string) => void
   onRecordOutreach: (id: string) => void
   onRecordRevision: (id: string) => void
   onDelete: (id: string) => void
@@ -179,7 +179,7 @@ export function LeadDetail({
             return (
               <button
                 key={s}
-                onClick={() => onAdvance(lead.id, s as any)}
+                onClick={() => onAdvance(lead.id, s)}
                 className="rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all"
                 style={{
                   backgroundColor: isActive ? sStyle.bg : 'transparent',

@@ -206,7 +206,7 @@ export function PipelineStagesManager() {
         {/* Actions */}
         <div className="flex items-center gap-1">
           {stage.is_protected && (
-            <Lock className="h-3 w-3 text-muted-foreground" title="Protected stage" />
+            <span title="Protected stage"><Lock className="h-3 w-3 text-muted-foreground" /></span>
           )}
           <button
             onClick={() => startEdit(stage)}

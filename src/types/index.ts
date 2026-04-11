@@ -419,7 +419,7 @@ export interface Opportunity {
   project_name: string
   location?: string
   estimated_value?: number
-  stage: LeadStatus
+  stage: string
   probability: number
   expected_close_date?: string
   competitor_ids?: string[]

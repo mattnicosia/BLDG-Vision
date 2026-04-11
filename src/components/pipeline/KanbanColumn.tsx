@@ -1,10 +1,9 @@
 import { useDroppable } from '@dnd-kit/core'
 import type { ReactNode } from 'react'
-import type { LeadStatus } from '@/types'
-import { LEAD_STAGE_LABELS, LEAD_STAGE_STYLES } from '@/types'
+import { usePipelineStages } from '@/hooks/usePipelineStages'
 
 interface KanbanColumnProps {
-  stage: LeadStatus
+  stage: string
   count: number
   value: number
   children: ReactNode
@@ -12,7 +11,8 @@ interface KanbanColumnProps {
 
 export function KanbanColumn({ stage, count, value, children }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: stage })
-  const stageStyle = LEAD_STAGE_STYLES[stage]
+  const { labelMap, styleMap } = usePipelineStages()
+  const stageStyle = styleMap[stage] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
 
   return (
     <div className="flex flex-col gap-2 min-w-0">
@@ -22,7 +22,7 @@ export function KanbanColumn({ stage, count, value, children }: KanbanColumnProp
             className="rounded-full px-2 py-0.5 text-[10px] font-medium"
             style={{ backgroundColor: stageStyle.bg, color: stageStyle.text }}
           >
-            {LEAD_STAGE_LABELS[stage]}
+            {labelMap[stage] ?? stage}
           </span>
           <span className="text-[10px] text-muted-foreground">{count}</span>
         </div>
