@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { useDraggable } from '@dnd-kit/core'
-import { CSS } from '@dnd-kit/utilities'
 import { usePipelineStages } from '@/hooks/usePipelineStages'
 import type { Opportunity } from '@/types'
 import { DESIGN_PHASE_SHORT } from '@/types'
@@ -32,20 +31,15 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
   const stageStyle = styleMap[lead.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
   const days = daysAgo(lead.updated_at)
 
-  const dragStyle = transform
-    ? { transform: CSS.Translate.toString(transform) }
-    : undefined
-
   return (
     <div
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      onClick={onClick}
+      onClick={isDragging ? undefined : onClick}
       style={{
-        ...dragStyle,
         borderWidth: '0.5px',
-        opacity: isDragging ? 0.3 : 1,
+        opacity: isDragging ? 0.25 : 1,
         cursor: isOverlay ? 'grabbing' : 'grab',
       }}
       className={`w-full rounded-lg border border-border bg-[#1C1C1C] p-3 text-left transition-colors ${
