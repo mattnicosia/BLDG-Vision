@@ -10,23 +10,16 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useArchitects } from '@/hooks/useArchitects'
+import { usePipelineStages } from '@/hooks/usePipelineStages'
 import { supabase } from '@/lib/supabase'
-import type { Opportunity, LeadStatus, LeadStage, DesignPhase, Permit } from '@/types'
-import {
-  PIPELINE_STAGES,
-  END_STATES,
-  LEAD_STAGE_LABELS,
-  LEAD_STAGE_STYLES,
-  LEAD_STAGE_PROBABILITY,
-  DESIGN_PHASE_LABELS,
-} from '@/types'
+import type { Opportunity, DesignPhase, Permit } from '@/types'
+import { DESIGN_PHASE_LABELS } from '@/types'
 import {
   User, Trash2, MapPin, DollarSign, Calendar, FileText,
   Building2, Pencil, Check, X, ExternalLink, Clock,
   PhoneOutgoing, Ruler, Home, UserCircle,
 } from 'lucide-react'
 
-const ALL_STATUSES: LeadStatus[] = [...PIPELINE_STAGES, ...END_STATES]
 const DESIGN_PHASES: DesignPhase[] = ['PD', 'SD', 'DD', 'CD', 'PER']
 
 function formatValue(v: number): string {
@@ -56,6 +49,7 @@ export function LeadDetail({
   onRecordOutreach, onRecordRevision, onDelete,
 }: LeadDetailProps) {
   const { architects } = useArchitects()
+  const { allKeys, labelMap, styleMap } = usePipelineStages()
   const [editing, setEditing] = useState(false)
   const [linkedPermit, setLinkedPermit] = useState<Permit | null>(null)
 
@@ -135,7 +129,7 @@ export function LeadDetail({
     setEditing(false)
   }
 
-  const style = LEAD_STAGE_STYLES[lead.stage]
+  const style = styleMap[lead.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
   const daysInStage = Math.floor((Date.now() - new Date(lead.updated_at).getTime()) / 86400000)
 
   return (
@@ -179,13 +173,13 @@ export function LeadDetail({
 
         {/* Stage selector */}
         <div className="flex flex-wrap gap-1.5">
-          {ALL_STATUSES.map((s) => {
-            const sStyle = LEAD_STAGE_STYLES[s]
+          {allKeys.map((s) => {
+            const sStyle = styleMap[s] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
             const isActive = lead.stage === s
             return (
               <button
                 key={s}
-                onClick={() => onAdvance(lead.id, s)}
+                onClick={() => onAdvance(lead.id, s as any)}
                 className="rounded-full px-2.5 py-1 text-[10px] font-semibold transition-all"
                 style={{
                   backgroundColor: isActive ? sStyle.bg : 'transparent',
@@ -193,7 +187,7 @@ export function LeadDetail({
                   border: `1px solid ${isActive ? sStyle.text + '40' : '#2A2A2A'}`,
                 }}
               >
-                {LEAD_STAGE_LABELS[s]}
+                {labelMap[s] ?? s}
               </button>
             )
           })}

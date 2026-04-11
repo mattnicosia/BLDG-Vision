@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { useOpportunities } from '@/hooks/useOpportunities'
 import { useArchitects } from '@/hooks/useArchitects'
+import { usePipelineStages } from '@/hooks/usePipelineStages'
 import { PipelineMetrics } from '@/components/pipeline/PipelineMetrics'
 import { LeadCard } from '@/components/pipeline/LeadCard'
 import { LeadDetail } from '@/components/pipeline/LeadDetail'
@@ -23,14 +24,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Plus, Kanban } from 'lucide-react'
-import type { Opportunity, LeadStage, LeadStatus, DesignPhase } from '@/types'
-import {
-  PIPELINE_STAGES,
-  END_STATES,
-  LEAD_STAGE_LABELS,
-  LEAD_STAGE_STYLES,
-  LEAD_STAGE_PROBABILITY,
-} from '@/types'
+import type { Opportunity, DesignPhase } from '@/types'
 
 const DESIGN_PHASES: DesignPhase[] = ['PD', 'SD', 'DD', 'CD', 'PER']
 
@@ -48,6 +42,10 @@ export function PipelineIndex() {
     recordBudgetRevision,
   } = useOpportunities()
   const { architects } = useArchitects()
+  const {
+    pipelineStages, endStates, pipelineKeys, endStateKeys,
+    labelMap, styleMap, probabilityMap, loading: stagesLoading,
+  } = usePipelineStages()
 
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null)
   const [showAdd, setShowAdd] = useState(false)
@@ -89,7 +87,7 @@ export function PipelineIndex() {
   const [newArchitectId, setNewArchitectId] = useState('')
   const [newNotes, setNewNotes] = useState('')
   const [newDesignPhase, setNewDesignPhase] = useState<DesignPhase | ''>('')
-  const [newStage, setNewStage] = useState<LeadStage>('cold_lead')
+  const [newStage, setNewStage] = useState(pipelineKeys[0] ?? 'cold_lead')
   const [newClientName, setNewClientName] = useState('')
   const [newProjectType, setNewProjectType] = useState('')
   const [saving, setSaving] = useState(false)
@@ -101,7 +99,7 @@ export function PipelineIndex() {
     setNewArchitectId('')
     setNewNotes('')
     setNewDesignPhase('')
-    setNewStage('cold_lead')
+    setNewStage(pipelineKeys[0] ?? 'cold_lead')
     setNewClientName('')
     setNewProjectType('')
   }
@@ -116,7 +114,7 @@ export function PipelineIndex() {
       architect_id: newArchitectId || undefined,
       architect_name: arch?.name,
       stage: newStage,
-      probability: LEAD_STAGE_PROBABILITY[newStage],
+      probability: probabilityMap[newStage] ?? 10,
       notes: newNotes || undefined,
       design_phase: (newDesignPhase as DesignPhase) || undefined,
       client_name: newClientName || undefined,
@@ -130,13 +128,13 @@ export function PipelineIndex() {
   }
 
   // Count ended deals
-  const endedCounts = END_STATES.reduce((acc, s) => {
+  const endedCounts = endStateKeys.reduce((acc, s) => {
     acc[s] = byStage[s]?.length ?? 0
     return acc
   }, {} as Record<string, number>)
   const totalEnded = Object.values(endedCounts).reduce((a, b) => a + b, 0)
 
-  if (loading) {
+  if (loading || stagesLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <p className="text-muted-foreground">Loading pipeline...</p>
@@ -187,9 +185,12 @@ export function PipelineIndex() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          {/* 6-column pipeline */}
-          <div className="grid grid-cols-6 gap-2" style={{ minHeight: 300 }}>
-            {PIPELINE_STAGES.map((stage) => {
+          {/* Pipeline columns */}
+          <div
+            className="gap-2"
+            style={{ display: 'grid', gridTemplateColumns: `repeat(${pipelineKeys.length}, minmax(0, 1fr))`, minHeight: 300 }}
+          >
+            {pipelineKeys.map((stage) => {
               const stageLeads = byStage[stage] ?? []
               const stageValue = stageLeads.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
               return (
@@ -224,11 +225,14 @@ export function PipelineIndex() {
                 onClick={() => setShowEnded(!showEnded)}
                 className="text-xs text-muted-foreground hover:text-[#E8E8F0]"
               >
-                {showEnded ? 'Hide' : 'Show'} closed leads ({endedCounts.awarded ?? 0} awarded, {endedCounts.lost ?? 0} lost, {endedCounts.on_hold ?? 0} on hold, {endedCounts.redesign ?? 0} redesign, {endedCounts.cancelled ?? 0} cancelled)
+                {showEnded ? 'Hide' : 'Show'} closed leads ({totalEnded})
               </button>
               {showEnded && (
-                <div className="mt-2 grid grid-cols-5 gap-2">
-                  {END_STATES.map((state) => {
+                <div
+                  className="mt-2 gap-2"
+                  style={{ display: 'grid', gridTemplateColumns: `repeat(${endStateKeys.length}, minmax(0, 1fr))` }}
+                >
+                  {endStateKeys.map((state) => {
                     const stateLeads = byStage[state] ?? []
                     const stateValue = stateLeads.reduce((s, o) => s + (o.estimated_value ?? 0), 0)
                     return (
@@ -333,12 +337,12 @@ export function PipelineIndex() {
                   <label className="text-[11px] font-medium" style={{ color: '#7C7C7C' }}>Stage</label>
                   <select
                     value={newStage}
-                    onChange={(e) => setNewStage(e.target.value as LeadStage)}
+                    onChange={(e) => setNewStage(e.target.value)}
                     className="rounded-md border border-border px-3 py-2 text-sm"
                     style={{ backgroundColor: '#141414', borderColor: '#2A2A2A', color: '#E8E8F0' }}
                   >
-                    {PIPELINE_STAGES.map((s) => (
-                      <option key={s} value={s}>{LEAD_STAGE_LABELS[s]}</option>
+                    {pipelineKeys.map((s) => (
+                      <option key={s} value={s}>{labelMap[s] ?? s}</option>
                     ))}
                   </select>
                 </div>

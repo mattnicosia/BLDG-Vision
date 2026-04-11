@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { CountyPicker } from '@/components/territory/CountyPicker'
 import { EmailSignatureSettings } from '@/components/settings/EmailSignatureSettings'
 import { BoardSourcesManager } from '@/components/settings/BoardSourcesManager'
+import { PipelineStagesManager } from '@/components/settings/PipelineStagesManager'
 import { KBIndex } from '@/pages/kb/KBIndex'
 import { computeTerritoryCenter, type CountyData } from '@/data/counties'
 import { Button } from '@/components/ui/button'
@@ -184,6 +185,9 @@ export function SettingsIndex() {
             </div>
           )}
         </div>
+
+        {/* Pipeline Stages */}
+        <PipelineStagesManager />
 
         {/* Service Territory */}
         <div className="rounded-xl border border-border bg-[#1C1C1C] p-5" style={{ borderWidth: '0.5px' }}>

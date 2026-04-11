@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
+import { usePipelineStages } from '@/hooks/usePipelineStages'
 import type { Opportunity } from '@/types'
-import { LEAD_STAGE_STYLES, DESIGN_PHASE_SHORT } from '@/types'
-import { MapPin, Clock, User, PhoneOutgoing, FileText, GripVertical } from 'lucide-react'
+import { DESIGN_PHASE_SHORT } from '@/types'
+import { MapPin, Clock, User, PhoneOutgoing, FileText } from 'lucide-react'
 
 interface LeadCardProps {
   lead: Opportunity
@@ -26,8 +27,9 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
     id: lead.id,
     data: { lead },
   })
+  const { styleMap } = usePipelineStages()
 
-  const style = LEAD_STAGE_STYLES[lead.stage]
+  const stageStyle = styleMap[lead.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
   const days = daysAgo(lead.updated_at)
 
   const dragStyle = transform
@@ -37,37 +39,27 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
   return (
     <div
       ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      onClick={onClick}
       style={{
         ...dragStyle,
         borderWidth: '0.5px',
         opacity: isDragging ? 0.3 : 1,
-        cursor: isOverlay ? 'grabbing' : undefined,
+        cursor: isOverlay ? 'grabbing' : 'grab',
       }}
       className={`w-full rounded-lg border border-border bg-[#1C1C1C] p-3 text-left transition-colors ${
         isOverlay ? 'shadow-lg shadow-black/50 ring-1 ring-indigo-500/30' : 'hover:bg-[#242424]'
       }`}
     >
-      {/* Row 1: Drag handle + Name + Value */}
-      <div className="flex items-start gap-1.5">
-        <button
-          {...listeners}
-          {...attributes}
-          className="mt-0.5 shrink-0 cursor-grab text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:text-[#E8E8F0] [div:hover>&]:opacity-100"
-          style={{ opacity: isOverlay ? 1 : undefined }}
-          tabIndex={-1}
-        >
-          <GripVertical className="h-3.5 w-3.5" />
-        </button>
-        <button onClick={onClick} className="flex-1 text-left min-w-0">
-          <div className="flex items-start justify-between gap-2">
-            <span className="text-sm font-medium leading-tight">{lead.project_name}</span>
-            {lead.estimated_value ? (
-              <span className="shrink-0 text-xs font-medium" style={{ color: '#06B6D4' }}>
-                {formatValue(lead.estimated_value)}
-              </span>
-            ) : null}
-          </div>
-        </button>
+      {/* Row 1: Name + Value */}
+      <div className="flex items-start justify-between gap-2">
+        <span className="text-sm font-medium leading-tight">{lead.project_name}</span>
+        {lead.estimated_value ? (
+          <span className="shrink-0 text-xs font-medium" style={{ color: '#06B6D4' }}>
+            {formatValue(lead.estimated_value)}
+          </span>
+        ) : null}
       </div>
 
       {/* Row 2: Architect link */}
@@ -75,7 +67,8 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
         <Link
           to={lead.architect_id ? `/relationships/${lead.architect_id}` : '#'}
           onClick={(e) => e.stopPropagation()}
-          className="mt-1 ml-5 flex items-center gap-1 text-xs text-primary hover:underline"
+          onPointerDown={(e) => e.stopPropagation()}
+          className="mt-1 flex items-center gap-1 text-xs text-primary hover:underline"
         >
           <User className="h-2.5 w-2.5" />
           {lead.architect_name}
@@ -83,7 +76,7 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
       )}
 
       {/* Row 3: Metadata chips */}
-      <div className="mt-1.5 ml-5 flex items-center gap-1.5 flex-wrap">
+      <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
         {lead.design_phase && (
           <span
             className="rounded px-1.5 py-0.5 text-[9px] font-semibold"
@@ -129,7 +122,7 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
 
         <span
           className="rounded-full px-1.5 py-0.5 text-[9px] font-medium"
-          style={{ backgroundColor: style.bg, color: style.text }}
+          style={{ backgroundColor: stageStyle.bg, color: stageStyle.text }}
         >
           {lead.probability}%
         </span>

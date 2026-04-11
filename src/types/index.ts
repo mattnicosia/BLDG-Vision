@@ -376,7 +376,22 @@ export interface CampaignEmail {
   created_at: string
 }
 
-// ─── LEAD PIPELINE ──────────────────────────────────────────────────────────
+// ─── PIPELINE STAGE CONFIG ──────────────────────────────────────────────────
+
+export interface PipelineStageConfig {
+  id: string
+  org_id: string
+  key: string
+  label: string
+  color: string
+  probability: number
+  stage_type: 'pipeline' | 'end_state'
+  sort_order: number
+  is_protected: boolean
+  created_at: string
+}
+
+// ─── LEAD PIPELINE (defaults / fallbacks) ───────────────────────────────────
 
 // Pipeline stages (active progression)
 export type LeadStage =

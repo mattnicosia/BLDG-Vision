@@ -10,16 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Plus, DollarSign, Trash2 } from 'lucide-react'
-import type { LeadStatus } from '@/types'
-import {
-  PIPELINE_STAGES,
-  END_STATES,
-  LEAD_STAGE_LABELS,
-  LEAD_STAGE_STYLES,
-  LEAD_STAGE_PROBABILITY,
-} from '@/types'
-
-const ALL_STATUSES: LeadStatus[] = [...PIPELINE_STAGES, ...END_STATES]
+import { usePipelineStages } from '@/hooks/usePipelineStages'
 
 interface OpportunityPanelProps {
   architectId: string
@@ -29,6 +20,7 @@ interface OpportunityPanelProps {
 export function OpportunityPanel({ architectId, architectName }: OpportunityPanelProps) {
   const { opportunities, loading, createOpportunity, updateOpportunity, deleteOpportunity, metrics } =
     useOpportunities(architectId)
+  const { allKeys, labelMap, styleMap, probabilityMap, pipelineKeys } = usePipelineStages()
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
   const [newValue, setNewValue] = useState('')
@@ -44,8 +36,8 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
       project_name: newName,
       location: newLocation || undefined,
       estimated_value: parseInt(newValue) || undefined,
-      stage: 'cold_lead',
-      probability: LEAD_STAGE_PROBABILITY.cold_lead,
+      stage: pipelineKeys[0] ?? 'cold_lead',
+      probability: probabilityMap[pipelineKeys[0]] ?? 5,
       notes: newNotes || undefined,
       outreach_attempts: 0,
       budget_revision: 0,
@@ -58,10 +50,10 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
     setSaving(false)
   }
 
-  async function handleStageChange(id: string, stage: LeadStatus) {
+  async function handleStageChange(id: string, stage: string) {
     const updates: Record<string, unknown> = {
       stage,
-      probability: LEAD_STAGE_PROBABILITY[stage],
+      probability: probabilityMap[stage] ?? 10,
     }
     if (stage === 'awarded') updates.awarded_date = new Date().toISOString().split('T')[0]
     if (stage === 'lost') updates.lost_date = new Date().toISOString().split('T')[0]
@@ -103,7 +95,7 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
           <p className="text-xs text-muted-foreground">No leads yet</p>
         )}
         {opportunities.map((opp) => {
-          const style = LEAD_STAGE_STYLES[opp.stage]
+          const style = styleMap[opp.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
           return (
             <div key={opp.id} className="rounded-lg bg-[#141414] p-2">
               <div className="flex items-center justify-between">
@@ -133,20 +125,23 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
                 </p>
               )}
               <div className="mt-1.5 flex flex-wrap gap-1">
-                {ALL_STATUSES.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => handleStageChange(opp.id, s)}
-                    className="rounded-full px-1.5 py-0.5 text-[9px] font-medium transition-colors"
-                    style={{
-                      backgroundColor: opp.stage === s ? style.bg : 'transparent',
-                      color: opp.stage === s ? style.text : '#7C7C7C',
-                      border: `1px solid ${opp.stage === s ? style.text + '40' : '#2A2A2A'}`,
-                    }}
-                  >
-                    {LEAD_STAGE_LABELS[s]}
-                  </button>
-                ))}
+                {allKeys.map((s) => {
+                  const sStyle = styleMap[s] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => handleStageChange(opp.id, s)}
+                      className="rounded-full px-1.5 py-0.5 text-[9px] font-medium transition-colors"
+                      style={{
+                        backgroundColor: opp.stage === s ? sStyle.bg : 'transparent',
+                        color: opp.stage === s ? sStyle.text : '#7C7C7C',
+                        border: `1px solid ${opp.stage === s ? sStyle.text + '40' : '#2A2A2A'}`,
+                      }}
+                    >
+                      {labelMap[s] ?? s}
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )

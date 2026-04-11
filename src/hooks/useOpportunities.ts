@@ -1,11 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useOrg } from './useOrg'
-import type { Opportunity, LeadStatus, LeadStage, LeadEndState } from '@/types'
-import { PIPELINE_STAGES, END_STATES, LEAD_STAGE_PROBABILITY } from '@/types'
+import { usePipelineStages } from './usePipelineStages'
+import type { Opportunity } from '@/types'
 
 export function useOpportunities(architectId?: string) {
   const { org } = useOrg()
+  const { pipelineKeys, endStateKeys, allKeys, probabilityMap } = usePipelineStages()
   const [opportunities, setOpportunities] = useState<Opportunity[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -75,11 +76,11 @@ export function useOpportunities(architectId?: string) {
     if (!error) setOpportunities((prev) => prev.filter((o) => o.id !== id))
   }
 
-  // Move to next stage with auto-probability
-  function advanceStage(id: string, newStage: LeadStatus) {
+  // Move to next stage with auto-probability from dynamic config
+  function advanceStage(id: string, newStage: string) {
     const updates: Partial<Opportunity> = {
-      stage: newStage,
-      probability: LEAD_STAGE_PROBABILITY[newStage],
+      stage: newStage as Opportunity['stage'],
+      probability: probabilityMap[newStage] ?? 10,
     }
     if (newStage === 'awarded') updates.awarded_date = new Date().toISOString().split('T')[0]
     if (newStage === 'lost') updates.lost_date = new Date().toISOString().split('T')[0]
@@ -105,12 +106,17 @@ export function useOpportunities(architectId?: string) {
     })
   }
 
-  // Active = in pipeline (not end states)
-  const active = opportunities.filter((o) =>
-    PIPELINE_STAGES.includes(o.stage as LeadStage)
+  // Active = in pipeline stages (not end states)
+  const pipelineSet = useMemo(() => new Set(pipelineKeys), [pipelineKeys])
+  const endSet = useMemo(() => new Set(endStateKeys), [endStateKeys])
+
+  const active = useMemo(
+    () => opportunities.filter((o) => pipelineSet.has(o.stage as string)),
+    [opportunities, pipelineSet]
   )
-  const ended = opportunities.filter((o) =>
-    END_STATES.includes(o.stage as LeadEndState)
+  const ended = useMemo(
+    () => opportunities.filter((o) => endSet.has(o.stage as string)),
+    [opportunities, endSet]
   )
 
   // Pipeline metrics
@@ -123,18 +129,23 @@ export function useOpportunities(architectId?: string) {
   const winRate = awardedCount + lostCount > 0 ? Math.round((awardedCount / (awardedCount + lostCount)) * 100) : 0
   const avgDealSize = active.length > 0 ? pipelineValue / active.length : 0
 
-  // Group by stage for Kanban
-  const byStage: Record<LeadStatus, Opportunity[]> = {} as any
-  for (const s of [...PIPELINE_STAGES, ...END_STATES]) {
-    byStage[s] = []
-  }
-  for (const opp of opportunities) {
-    if (byStage[opp.stage]) byStage[opp.stage].push(opp)
-  }
-  // Sort each column by value descending
-  for (const key of Object.keys(byStage) as LeadStatus[]) {
-    byStage[key].sort((a, b) => (b.estimated_value ?? 0) - (a.estimated_value ?? 0))
-  }
+  // Group by stage for Kanban (dynamic keys)
+  const byStage = useMemo(() => {
+    const grouped: Record<string, Opportunity[]> = {}
+    for (const s of allKeys) {
+      grouped[s] = []
+    }
+    for (const opp of opportunities) {
+      const key = opp.stage as string
+      if (!grouped[key]) grouped[key] = []
+      grouped[key].push(opp)
+    }
+    // Sort each column by value descending
+    for (const key of Object.keys(grouped)) {
+      grouped[key].sort((a, b) => (b.estimated_value ?? 0) - (a.estimated_value ?? 0))
+    }
+    return grouped
+  }, [opportunities, allKeys])
 
   return {
     opportunities,
