@@ -18,7 +18,7 @@ import {
   Building2, Pencil, Check, X, ExternalLink, Clock,
 } from 'lucide-react'
 
-const STAGES: OpportunityStage[] = ['lead', 'interview', 'proposal', 'negotiation', 'won', 'lost']
+const STAGES: OpportunityStage[] = ['cold_lead', 'warm_lead', 'preliminary_budget', 'pre_construction', 'formal_pricing', 'pending', 'awarded', 'lost', 'on_hold', 'redesign', 'cancelled']
 
 function formatValue(v: number): string {
   if (v >= 1000000) return `$${(v / 1000000).toFixed(1)}M`
@@ -80,9 +80,9 @@ export function OpportunityDetail({ opportunity, open, onClose, onUpdate, onDele
 
   function handleStageChange(stage: OpportunityStage) {
     const updates: Partial<Opportunity> = { stage }
-    const probMap: Record<string, number> = { lead: 10, interview: 25, proposal: 50, negotiation: 75, won: 100, lost: 0 }
+    const probMap: Record<string, number> = { cold_lead: 5, warm_lead: 15, preliminary_budget: 30, pre_construction: 50, formal_pricing: 60, pending: 75, awarded: 100, lost: 0, on_hold: 10, redesign: 20, cancelled: 0 }
     updates.probability = probMap[stage] ?? 10
-    if (stage === 'won') updates.won_date = new Date().toISOString().split('T')[0]
+    if (stage === 'awarded') updates.awarded_date = new Date().toISOString().split('T')[0]
     if (stage === 'lost') updates.lost_date = new Date().toISOString().split('T')[0]
     onUpdate(opportunity.id, updates)
   }
