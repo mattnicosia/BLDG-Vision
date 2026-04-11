@@ -21,32 +21,23 @@ function daysAgo(date: string): number {
   return Math.floor((Date.now() - new Date(date).getTime()) / 86400000)
 }
 
-export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
-    id: lead.id,
-    data: { lead },
-  })
+/** Inner card UI - no drag logic, used by both normal and overlay */
+function LeadCardContent({ lead, onClick, isOverlay }: LeadCardProps) {
   const { styleMap } = usePipelineStages()
-
   const stageStyle = styleMap[lead.stage as string] ?? { bg: 'rgba(124,124,150,0.15)', text: '#7C7C7C' }
   const days = daysAgo(lead.updated_at)
 
   return (
     <div
-      ref={setNodeRef}
-      {...listeners}
-      {...attributes}
-      onClick={isDragging ? undefined : onClick}
+      onClick={isOverlay ? undefined : onClick}
       style={{
         borderWidth: '0.5px',
-        opacity: isDragging ? 0.25 : 1,
         cursor: isOverlay ? 'grabbing' : 'grab',
       }}
       className={`w-full rounded-lg border border-border bg-[#1C1C1C] p-3 text-left transition-colors ${
         isOverlay ? 'shadow-lg shadow-black/50 ring-1 ring-indigo-500/30' : 'hover:bg-[#242424]'
       }`}
     >
-      {/* Row 1: Name + Value */}
       <div className="flex items-start justify-between gap-2">
         <span className="text-sm font-medium leading-tight">{lead.project_name}</span>
         {lead.estimated_value ? (
@@ -56,7 +47,6 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
         ) : null}
       </div>
 
-      {/* Row 2: Architect link */}
       {lead.architect_name && (
         <Link
           to={lead.architect_id ? `/relationships/${lead.architect_id}` : '#'}
@@ -69,7 +59,6 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
         </Link>
       )}
 
-      {/* Row 3: Metadata chips */}
       <div className="mt-1.5 flex items-center gap-1.5 flex-wrap">
         {lead.design_phase && (
           <span
@@ -84,7 +73,6 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
           <span
             className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium"
             style={{ backgroundColor: 'rgba(124, 124, 150, 0.2)', color: '#A3A3A3' }}
-            title={`${lead.outreach_attempts} outreach attempt${lead.outreach_attempts !== 1 ? 's' : ''}`}
           >
             <PhoneOutgoing className="h-2 w-2" />
             {lead.outreach_attempts}x
@@ -95,7 +83,6 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
           <span
             className="flex items-center gap-0.5 rounded px-1.5 py-0.5 text-[9px] font-medium"
             style={{ backgroundColor: 'rgba(129, 140, 248, 0.15)', color: '#A5B4FC' }}
-            title={`Budget revision ${lead.budget_revision}`}
           >
             <FileText className="h-2 w-2" />
             Rev {lead.budget_revision}
@@ -121,6 +108,34 @@ export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
           {lead.probability}%
         </span>
       </div>
+    </div>
+  )
+}
+
+/** Draggable wrapper - only used for in-column cards, NOT for overlay */
+export function LeadCard({ lead, onClick, isOverlay }: LeadCardProps) {
+  // Overlay cards skip drag hooks entirely
+  if (isOverlay) {
+    return <LeadCardContent lead={lead} onClick={onClick} isOverlay />
+  }
+
+  return <DraggableLeadCard lead={lead} onClick={onClick} />
+}
+
+function DraggableLeadCard({ lead, onClick }: { lead: Opportunity; onClick: () => void }) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: lead.id,
+    data: { lead },
+  })
+
+  return (
+    <div
+      ref={setNodeRef}
+      {...listeners}
+      {...attributes}
+      style={{ opacity: isDragging ? 0.25 : 1 }}
+    >
+      <LeadCardContent lead={lead} onClick={onClick} />
     </div>
   )
 }
