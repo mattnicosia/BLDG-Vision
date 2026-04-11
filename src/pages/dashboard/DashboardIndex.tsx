@@ -221,7 +221,7 @@ export function DashboardIndex() {
         {[
           { to: '/pipeline', icon: DollarSign, label: 'Pipeline', value: `$${(metrics.pipelineValue / 1000000).toFixed(1)}M`, sub: `${metrics.pipelineCount} active deals`, valueColor: '#06B6D4' },
           { to: '/pipeline', icon: TrendingUp, label: 'Weighted', value: `$${(metrics.weightedValue / 1000000).toFixed(1)}M`, sub: 'Expected revenue', valueColor: '#06B6D4' },
-          { to: '/pipeline', icon: Target, label: 'Win rate', value: `${metrics.winRate}%`, sub: `${metrics.wonCount} won / ${metrics.lostCount} lost`, valueColor: '#818CF8' },
+          { to: '/pipeline', icon: Target, label: 'Win rate', value: `${metrics.winRate}%`, sub: `${metrics.awardedCount} awarded / ${metrics.lostCount} lost`, valueColor: '#818CF8' },
           { to: '/opportunities', icon: Zap, label: 'Signals', value: String(recentSignals.length), sub: 'Unactioned', valueColor: '#F59E0B' },
         ].map((card) => (
           <Link

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useOpportunities } from '@/hooks/useOpportunities'
-import { useArchitects } from '@/hooks/useArchitects'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -11,10 +10,16 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Plus, DollarSign, Trash2 } from 'lucide-react'
-import type { OpportunityStage } from '@/types'
-import { OPPORTUNITY_STAGE_LABELS, OPPORTUNITY_STAGE_STYLES } from '@/types'
+import type { LeadStatus } from '@/types'
+import {
+  PIPELINE_STAGES,
+  END_STATES,
+  LEAD_STAGE_LABELS,
+  LEAD_STAGE_STYLES,
+  LEAD_STAGE_PROBABILITY,
+} from '@/types'
 
-const STAGES: OpportunityStage[] = ['lead', 'interview', 'proposal', 'negotiation', 'won', 'lost']
+const ALL_STATUSES: LeadStatus[] = [...PIPELINE_STAGES, ...END_STATES]
 
 interface OpportunityPanelProps {
   architectId: string
@@ -39,9 +44,11 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
       project_name: newName,
       location: newLocation || undefined,
       estimated_value: parseInt(newValue) || undefined,
-      stage: 'lead',
-      probability: 10,
+      stage: 'cold_lead',
+      probability: LEAD_STAGE_PROBABILITY.cold_lead,
       notes: newNotes || undefined,
+      outreach_attempts: 0,
+      budget_revision: 0,
     })
     setNewName('')
     setNewValue('')
@@ -51,18 +58,13 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
     setSaving(false)
   }
 
-  async function handleStageChange(id: string, stage: OpportunityStage) {
-    const updates: Record<string, unknown> = { stage }
-    if (stage === 'won') {
-      updates.won_date = new Date().toISOString().split('T')[0]
-      updates.probability = 100
-    } else if (stage === 'lost') {
-      updates.lost_date = new Date().toISOString().split('T')[0]
-      updates.probability = 0
-    } else {
-      const probMap: Record<string, number> = { lead: 10, interview: 25, proposal: 50, negotiation: 75 }
-      updates.probability = probMap[stage] ?? 10
+  async function handleStageChange(id: string, stage: LeadStatus) {
+    const updates: Record<string, unknown> = {
+      stage,
+      probability: LEAD_STAGE_PROBABILITY[stage],
     }
+    if (stage === 'awarded') updates.awarded_date = new Date().toISOString().split('T')[0]
+    if (stage === 'lost') updates.lost_date = new Date().toISOString().split('T')[0]
     await updateOpportunity(id, updates)
   }
 
@@ -95,13 +97,13 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
         </div>
       )}
 
-      {/* Opportunity list */}
+      {/* Lead list */}
       <div className="flex flex-col gap-2">
         {opportunities.length === 0 && (
-          <p className="text-xs text-muted-foreground">No opportunities yet</p>
+          <p className="text-xs text-muted-foreground">No leads yet</p>
         )}
         {opportunities.map((opp) => {
-          const style = OPPORTUNITY_STAGE_STYLES[opp.stage]
+          const style = LEAD_STAGE_STYLES[opp.stage]
           return (
             <div key={opp.id} className="rounded-lg bg-[#141414] p-2">
               <div className="flex items-center justify-between">
@@ -120,10 +122,18 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
                   <DollarSign className="h-2.5 w-2.5" />
                   {(opp.estimated_value / 1000000).toFixed(1)}M
                   <span className="ml-1">({opp.probability}%)</span>
+                  {opp.design_phase && (
+                    <span
+                      className="ml-1 rounded px-1 py-0.5 text-[8px] font-semibold"
+                      style={{ backgroundColor: 'rgba(99, 102, 241, 0.15)', color: '#818CF8' }}
+                    >
+                      {opp.design_phase}
+                    </span>
+                  )}
                 </p>
               )}
               <div className="mt-1.5 flex flex-wrap gap-1">
-                {STAGES.map((s) => (
+                {ALL_STATUSES.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleStageChange(opp.id, s)}
@@ -131,10 +141,10 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
                     style={{
                       backgroundColor: opp.stage === s ? style.bg : 'transparent',
                       color: opp.stage === s ? style.text : '#7C7C7C',
-                      border: `1px solid ${opp.stage === s ? (style.text === '#ffffff' ? style.bg : style.text) : '#2A2A2A'}`,
+                      border: `1px solid ${opp.stage === s ? style.text + '40' : '#2A2A2A'}`,
                     }}
                   >
-                    {OPPORTUNITY_STAGE_LABELS[s]}
+                    {LEAD_STAGE_LABELS[s]}
                   </button>
                 ))}
               </div>
@@ -148,7 +158,7 @@ export function OpportunityPanel({ architectId, architectName }: OpportunityPane
         <Dialog open onOpenChange={() => setShowAdd(false)}>
           <DialogContent className="max-w-sm">
             <DialogHeader>
-              <DialogTitle>Add opportunity</DialogTitle>
+              <DialogTitle>Add lead</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-3">
               <Input

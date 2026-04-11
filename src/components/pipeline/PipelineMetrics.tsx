@@ -1,4 +1,4 @@
-import { DollarSign, Target, TrendingUp, BarChart3 } from 'lucide-react'
+import { DollarSign, Target, TrendingUp, BarChart3, Trophy } from 'lucide-react'
 
 interface PipelineMetricsProps {
   pipelineValue: number
@@ -6,6 +6,7 @@ interface PipelineMetricsProps {
   pipelineCount: number
   winRate: number
   avgDealSize: number
+  awardedCount?: number
 }
 
 function formatValue(v: number): string {
@@ -14,7 +15,7 @@ function formatValue(v: number): string {
   return `$${v.toLocaleString()}`
 }
 
-export function PipelineMetrics({ pipelineValue, weightedValue, pipelineCount, winRate, avgDealSize }: PipelineMetricsProps) {
+export function PipelineMetrics({ pipelineValue, weightedValue, pipelineCount, winRate, avgDealSize, awardedCount }: PipelineMetricsProps) {
   return (
     <div className="grid grid-cols-5 gap-3">
       <div className="rounded-lg bg-[#1C1C1C] border border-border p-3" style={{ borderWidth: '0.5px' }}>
@@ -31,13 +32,13 @@ export function PipelineMetrics({ pipelineValue, weightedValue, pipelineCount, w
       </div>
       <div className="rounded-lg bg-[#1C1C1C] border border-border p-3" style={{ borderWidth: '0.5px' }}>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <BarChart3 className="h-3 w-3" /> Active deals
+          <BarChart3 className="h-3 w-3" /> Active leads
         </div>
         <p className="mt-1 text-lg font-medium">{pipelineCount}</p>
       </div>
       <div className="rounded-lg bg-[#1C1C1C] border border-border p-3" style={{ borderWidth: '0.5px' }}>
         <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-          <Target className="h-3 w-3" /> Win rate
+          <Trophy className="h-3 w-3" /> Win rate
         </div>
         <p className="mt-1 text-lg font-medium">{winRate}%</p>
       </div>

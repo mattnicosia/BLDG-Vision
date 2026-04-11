@@ -376,9 +376,25 @@ export interface CampaignEmail {
   created_at: string
 }
 
-// ─── OPPORTUNITIES ───────────────────────────────────────────────────────────
+// ─── LEAD PIPELINE ──────────────────────────────────────────────────────────
 
-export type OpportunityStage = 'lead' | 'interview' | 'proposal' | 'negotiation' | 'won' | 'lost'
+// Pipeline stages (active progression)
+export type LeadStage =
+  | 'cold_lead'
+  | 'warm_lead'
+  | 'preliminary_budget'
+  | 'pre_construction'
+  | 'formal_pricing'
+  | 'pending'
+
+// End states (terminal)
+export type LeadEndState = 'awarded' | 'lost' | 'on_hold' | 'redesign' | 'cancelled'
+
+// All possible stages (pipeline + end states)
+export type LeadStatus = LeadStage | LeadEndState
+
+// Design phases (where the project is in the architect's process)
+export type DesignPhase = 'PD' | 'SD' | 'DD' | 'CD' | 'PER'
 
 export interface Opportunity {
   id: string
@@ -388,7 +404,7 @@ export interface Opportunity {
   project_name: string
   location?: string
   estimated_value?: number
-  stage: OpportunityStage
+  stage: LeadStatus
   probability: number
   expected_close_date?: string
   competitor_ids?: string[]
@@ -399,27 +415,95 @@ export interface Opportunity {
   lost_date?: string
   lost_reason?: string
   permit_id?: string
+  // New pipeline fields
+  design_phase?: DesignPhase
+  outreach_attempts: number
+  budget_revision: number
+  client_name?: string
+  client_email?: string
+  client_phone?: string
+  on_hold_reason?: string
+  redesign_notes?: string
+  cancelled_reason?: string
+  awarded_date?: string
+  sf?: number
+  project_type?: string
+  last_outreach_date?: string
   created_at: string
   updated_at: string
 }
 
-export const OPPORTUNITY_STAGE_LABELS: Record<OpportunityStage, string> = {
-  lead: 'Lead',
-  interview: 'Interview',
-  proposal: 'Proposal',
-  negotiation: 'Negotiation',
-  won: 'Won',
+// Backward compat alias
+export type OpportunityStage = LeadStatus
+
+export const PIPELINE_STAGES: LeadStage[] = [
+  'cold_lead', 'warm_lead', 'preliminary_budget', 'pre_construction', 'formal_pricing', 'pending',
+]
+
+export const END_STATES: LeadEndState[] = ['awarded', 'lost', 'on_hold', 'redesign', 'cancelled']
+
+export const LEAD_STAGE_LABELS: Record<LeadStatus, string> = {
+  cold_lead: 'Cold Lead',
+  warm_lead: 'Warm Lead',
+  preliminary_budget: 'Prelim Budget',
+  pre_construction: 'Pre-Con',
+  formal_pricing: 'Formal Pricing',
+  pending: 'Pending',
+  awarded: 'Awarded',
   lost: 'Lost',
+  on_hold: 'On Hold',
+  redesign: 'Redesign',
+  cancelled: 'Cancelled',
 }
 
-export const OPPORTUNITY_STAGE_STYLES: Record<OpportunityStage, { bg: string; text: string }> = {
-  lead: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C7C' },
-  interview: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' },
-  proposal: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8' },
-  negotiation: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4' },
-  won: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
+export const LEAD_STAGE_STYLES: Record<LeadStatus, { bg: string; text: string }> = {
+  cold_lead: { bg: 'rgba(124, 124, 150, 0.15)', text: '#7C7C7C' },
+  warm_lead: { bg: 'rgba(245, 158, 11, 0.15)', text: '#F59E0B' },
+  preliminary_budget: { bg: 'rgba(129, 140, 248, 0.15)', text: '#818CF8' },
+  pre_construction: { bg: 'rgba(6, 182, 212, 0.15)', text: '#06B6D4' },
+  formal_pricing: { bg: 'rgba(168, 85, 247, 0.15)', text: '#A855F7' },
+  pending: { bg: 'rgba(251, 191, 36, 0.15)', text: '#FBBF24' },
+  awarded: { bg: 'rgba(34, 197, 94, 0.2)', text: '#22C55E' },
   lost: { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444' },
+  on_hold: { bg: 'rgba(251, 191, 36, 0.1)', text: '#A3A3A3' },
+  redesign: { bg: 'rgba(245, 158, 11, 0.1)', text: '#D97706' },
+  cancelled: { bg: 'rgba(124, 124, 124, 0.1)', text: '#6B7280' },
 }
+
+export const DESIGN_PHASE_LABELS: Record<DesignPhase, string> = {
+  PD: 'Pre-Design',
+  SD: 'Schematic Design',
+  DD: 'Design Development',
+  CD: 'Construction Docs',
+  PER: 'Permit',
+}
+
+export const DESIGN_PHASE_SHORT: Record<DesignPhase, string> = {
+  PD: 'PD',
+  SD: 'SD',
+  DD: 'DD',
+  CD: 'CD',
+  PER: 'PER',
+}
+
+// Probability defaults per stage
+export const LEAD_STAGE_PROBABILITY: Record<LeadStatus, number> = {
+  cold_lead: 5,
+  warm_lead: 15,
+  preliminary_budget: 30,
+  pre_construction: 50,
+  formal_pricing: 60,
+  pending: 75,
+  awarded: 100,
+  lost: 0,
+  on_hold: 10,
+  redesign: 20,
+  cancelled: 0,
+}
+
+// Legacy aliases for backward compatibility
+export const OPPORTUNITY_STAGE_LABELS = LEAD_STAGE_LABELS
+export const OPPORTUNITY_STAGE_STYLES = LEAD_STAGE_STYLES
 
 // ─── EMAIL TEMPLATES ─────────────────────────────────────────────────────────
 
